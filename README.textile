@@ -48,9 +48,7 @@ Inside the panel is a simple select list containing one entry for each thumbnail
 
 Once created, the thumbnails appear in the panel; remember they can be tucked away if you don't want to look at them.
 
-If you select 'All sizes' and hit 'Create', you will get one thumbnail for each active profile. Similarly, if you hit 'Delete' any thumbnails stored against an active profile for the current image will be removed. By toggling certain thumbnail profiles on/off you can control which ones are created or deleted.
-
-By default:
+If you select 'All sizes' and hit 'Create', you will get one thumbnail for each active profile. Similarly, if you hit 'Delete' any thumbnails stored against an active profile for the current image will be removed. By toggling certain thumbnail profiles on/off you can control which ones are created or deleted - by default:
 
 * When you upload a new image, thumbnails will be automatically created for any active profiles.
 * When you replace an existing image, thumbnails will only be automatically created for active profiles if thumbs *do not* already exist. This option can be altered with the "prefs":#smd_thumb_prefs.
@@ -86,9 +84,7 @@ If you have sufficient privileges, in the lower portion of the 'Tools' panel are
 
 h4. Create smd_thumbnails from
 
-Governs whether the smd_thumbnails are created from the full size image or its (Textpattern) thumbnail. If you have elected not to have Textpattern thumbnails created then it'll probably not work very well!
-
-This preference applies:
+Governs whether the smd_thumbnails are created from the full size image or its (Textpattern) thumbnail. If you have elected not to have Textpattern thumbnails created then it'll probably not work very well! This preference applies:
 
 # When you use any of the batch tools to mass-produce smd_thumbnails.
 # If you upload a new image.
@@ -100,19 +96,19 @@ h4. Keep Textpattern thumbnails in sync with default profile
 
 Ordinarily, smd_thumbnail works independently of Textpattern's thumbnails. If you disable the plugin you'll see that everything goes back to how it was before you installed it. This is great because your hard-graft isn't lost if you have uploaded your own thumbs. But, if you start creating thumbs with the plugin you will notice that Textpattern's built in tags such as @<txp:article_image thumbnail="1" />@ and @<txp:thumbnail />@ won't work for newer thumbnails. This might be confusing so you can opt to have smd_thumbnail update your Textpattern thumbnails at the same time.
 
-By ticking either of the checkboxes, the plugin will track any changes *to the default profile* and mimic them with Textpattern's thumbnails. This has a few effects worth highlighting.
+By ticking either of the checkboxes, the plugin will track any changes *to the default profile* and mimic them with Textpattern's thumbnails. This has a few effects worth highlighting...
 
-When the 'Creation' checkbox is ticked:
+*When the 'Creation' checkbox is ticked:*
 
 # If you batch create thumbs, upload a new image, or replace an existing image, a new Textpattern thumbnail will be created at the default size. Any existing thumbs will be overwritten.
 # If you change default profile, any Textpattern thumbnails that have been created will remain at the previous size. Only when you start creating, uploading or replacing images will the new thumbnail sizes be created.
 
-When the 'Deletion' checkbox is ticked:
+*When the 'Deletion' checkbox is ticked:*
 
 # If you delete a single thumb that corresponds to the default profile, both the profile thumb and Textpattern's thumbmail will be deleted.
 # If you delete an entire profile, all its thumbnails *and all Textpattern's thumbnails* will be removed.
 
-Further:
+*Further:*
 
 # If you have no default profile, the checkboxes disappear and the settings have no effect. Choose a default profile to reinstate the behaviour.
 # If you deactivate the default profile the checkboxes have no effect *unless* you delete the profile (since you're deleting it, its status is 'lost' and therefore the checkboxes function as normal). If there's any doubt, uncheck the 'Deletion' checkbox first!
