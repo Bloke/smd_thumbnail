@@ -6,7 +6,7 @@ h2. Features
 * Batch assign thumbnails to existing images.
 * Set one thumbnail size as default.
 * Display any of the thumbnail sizes on your site.
-* Keep thumbs in sync with Txp's thumbs if you wish.
+* Keep thumbs in sync with Textpattern's thumbs if you wish.
 * Conditional thumbnail check available.
 
 h2. Installation, upgrading and uninstallation
@@ -15,7 +15,7 @@ h2. Installation, upgrading and uninstallation
 
 Download the plugin from either "textpattern.org":http://textpattern.org/plugins/1186/smd_thumbnail, or the "software page":http://stefdawson.com/sw, paste the code into the Textpattern Admin → Plugins pane, install and enable the plugin. Visit the "forum thread":http://forum.textpattern.com/viewtopic.php?id=34367 for more info or to report on the success or otherwise of the plugin.
 
-*When upgrading from v0.1x to v0.20, your preferences for _Keep Textpattern thumbnails in sync with default profile_ will be removed. Please visit the _Tools/Prefs_ area to reinstate the behaviour you desire.*
+*When upgrading from v0.1x to v0.20, your preferences for 'Keep Textpattern thumbnails in sync with default profile' will be removed. Please visit the _Tools/Prefs_ area to reinstate the behaviour you desire.*
 
 To uninstall, delete from the Admin → Plugins page.
 
@@ -123,54 +123,60 @@ When this checkbox is cleared and you *replace* a main image (from the 'Image ed
 
 h2. Tags:
 
+h3. smd_thumbnail
+
 bc. <txp:smd_thumbnail />
 
-A direct replacement for the built in "txp:thumbnail":http://textpattern.net/wiki/index.php?title=thumbnail tag with exactly the same functionality and attributes apart from these exceptions:
+*A direct replacement for the built in "txp:thumbnail":http://textpattern.net/wiki/index.php?title=thumbnail tag with exactly the same functionality and attributes apart from these exceptions:*
 
-* %(atnm)type% : use this attribute to display thumbnails of the given profile name. e.g. @type="large"@. If you do not specify this attribute, the default profile will be used. If there is no default profile you'll see warning messages.
-* %(atnm)class% : if omitted, the name of the profile will be used as a @class@ name for the @<img>@ tag. If you specify a @wraptag@ and omit the @class@, the profile name will be used as a @class@ on both the container and the @<img>@ tag.
-* %(atnm)align% : this attribute has been removed.
-* %(atnm)add_stamp% : adds the image file modification time to the end of the thumbnail's URL. Use @add_stamp="1"@ to switch this feature on. This helps prevent stale images, but may prevent browsers from cacheing the thumbnails properly, thus increasing bandwidth usage. Default: @0@.
-* %(atnm)force_size% : usually when you set one or other width/height to @0@ in a profile, the browser scales the missing dimension automatically. It does this by omitting the @width=@ or @height=@ attribute in the @img@ tag. This may cause visual artefacts as the page is rendered and the browser calculates the sizes. If you wish the plugin to add the actual dimension to the @<img>@ tag (the size at the time the thumbnail was created), tell the plugin with this attribute. Choose one or both of @width@ or @height@. Comma-separate as required. Default: unset.
-* %(atnm)display% : by default, this tag outputs a full @<img>@ tag. If you just require the image URL so you can make your own image tags, set @display="url"@. Default: @thumbnail@.
-* %(atnm)form% : you can construct your own @<img>@ tags using the given form. If not specified, you may use the tag as a container.
+* @(atnm)type@: use this attribute to display thumbnails of the given profile name. e.g. @type="large"@. If you do not specify this attribute, the default profile will be used. If there is no default profile you'll see warning messages.
+* @(atnm)class@: if omitted, the name of the profile will be used as a @class@ name for the @<img>@ tag. If you specify a @wraptag@ and omit the @class@, the profile name will be used as a @class@ on both the container and the @<img>@ tag.
+* @(atnm)align@: this attribute has been removed.
+* @(atnm)add_stamp@: adds the image file modification time to the end of the thumbnail's URL. Use @add_stamp="1"@ to switch this feature on. This helps prevent stale images, but may prevent browsers from cacheing the thumbnails properly, thus increasing bandwidth usage. Default: @0@.
+* @(atnm)force_size@: usually when you set one or other width/height to @0@ in a profile, the browser scales the missing dimension automatically. It does this by omitting the @width=@ or @height=@ attribute in the @img@ tag. This may cause visual artefacts as the page is rendered and the browser calculates the sizes. If you wish the plugin to add the actual dimension to the @<img>@ tag (the size at the time the thumbnail was created), tell the plugin with this attribute. Choose one or both of @width@ or @height@. Comma-separate as required. Default: unset.
+* @(atnm)display@: by default, this tag outputs a full @<img>@ tag. If you just require the image URL so you can make your own image tags, set @display="url"@. Default: @thumbnail@.
+* @(atnm)form@: you can construct your own @<img>@ tags using the given form. If not specified, you may use the tag as a container.
 
 The tag works inside @<txp:images>@ or can be used standalone by specifying the @id@ or @name@ attribute. If using it as a container or with the @form@ attribute you display the various pieces of thumbnail information using the @<txp:smd_thumbnail_info>@ tag.
+
+h3. smd_thumbnail_info
 
 bc. <txp:smd_thumbnail_info />
 
 Display various information from the current @<txp:smd_thumbnail>@ tag (in either its form or container).
 
-Attributes:
+*Attributes:*
 
-* %(atnm)item% : list of things you wish to display. Choose from:
-** @url@ : full image URL of the thumbnail.
-** @type@ : thumbnail profile name.
-** @name@ : image name.
-** @id@ : thumbnail ID.
-** @ext@ : thumbnail file extension.
-** @category@ : image category name.
-** @category_title@ : image category title.
-** @alt@ : image alt text.
-** @title@ : image title/caption.
-** @author@ : image author.
-** @class@ : class applied to thumbnail (if not supplied, is same as type).
+* @(atnm)item@: list of things you wish to display. Choose from:
+** @url@: full image URL of the thumbnail.
+** @type@: thumbnail profile name.
+** @name@: image name.
+** @id@: thumbnail ID.
+** @ext@: thumbnail file extension.
+** @category@: image category name.
+** @category_title@: image category title.
+** @alt@: image alt text.
+** @title@: image title/caption.
+** @author@: image author.
+** @class@: class applied to thumbnail (if not supplied, is same as type).
 ** @date@ : raw datestamp of when the image was uploaded.
-** @w@ : thumbnail width (pixels).
-** @h@ : thumbnail height (pixels).
-** @html_w@ : HTML-formatted @width@ attribute.
-** @html_h@ : HTML-formatted @height@ attribute.
-* %(atnm)wraptag% : HTML tag, without angle brackets, to wrap all the items with. e.g. @wraptag="ul"@.
-* %(atnm)class% : CSS @class@ name to apply to the @wraptag@.
-* %(atnm)break% : HTML tag, without angle brackets, to wrap each item with. e.g. @break="li"@.
+** @w@: thumbnail width (pixels).
+** @h@: thumbnail height (pixels).
+** @html_w@: HTML-formatted @width@ attribute.
+** @html_h@: HTML-formatted @height@ attribute.
+* @(atnm)wraptag@: HTML tag, without angle brackets, to wrap all the items with. e.g. @wraptag="ul"@.
+* @(atnm)class@: CSS @class@ name to apply to the @wraptag@.
+* @(atnm)break@: HTML tag, without angle brackets, to wrap each item with. e.g. @break="li"@.
+
+h3. smd_if_thumbnail
 
 bc. <txp:smd_if_thumbnail>
 
 A direct replacement for the built in @<txp:if_thumbnail />@ tag with exactly the same functionality.
 
-Attributes:
+*Attributes:*
 
-* %(atnm)type% : use this attribute to check for thumbnails of the given profile name. e.g. @type="Medium"@. If you do not specify this attribute, the default profile will be tested. If there is no default profile the tag will always render the @<txp:else />@ portion.
+* @(atnm)type@: use this attribute to check for thumbnails of the given profile name. e.g. @type="Medium"@. If you do not specify this attribute, the default profile will be tested. If there is no default profile the tag will always render the @<txp:else />@ portion.
 
 h2. How it works
 
