@@ -48,9 +48,7 @@ Inside the panel is a simple select list containing one entry for each thumbnail
 
 Once created, the thumbnails appear in the panel; remember they can be tucked away if you don't want to look at them.
 
-If you select 'All sizes' and hit 'Create', you will get one thumbnail for each active profile. Similarly, if you hit 'Delete' any thumbnails stored against an active profile for the current image will be removed. By toggling certain thumbnail profiles on/off you can control which ones are created or deleted.
-
-By default:
+If you select 'All sizes' and hit 'Create', you will get one thumbnail for each active profile. Similarly, if you hit 'Delete' any thumbnails stored against an active profile for the current image will be removed. By toggling certain thumbnail profiles on/off you can control which ones are created or deleted - by default:
 
 * When you upload a new image, thumbnails will be automatically created for any active profiles.
 * When you replace an existing image, thumbnails will only be automatically created for active profiles if thumbs *do not* already exist. This option can be altered with the "prefs":#smd_thumb_prefs.
