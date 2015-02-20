@@ -100,17 +100,17 @@ Ordinarily, smd_thumbnail works independently of Textpattern's thumbnails. If yo
 
 By ticking either of the checkboxes, the plugin will track any changes *to the default profile* and mimic them with Textpattern's thumbnails. This has a few effects worth highlighting.
 
-When the 'Creation' checkbox is ticked:
+*When the 'Creation' checkbox is ticked:*
 
 # If you batch create thumbs, upload a new image, or replace an existing image, a new Textpattern thumbnail will be created at the default size. Any existing thumbs will be overwritten.
 # If you change default profile, any Textpattern thumbnails that have been created will remain at the previous size. Only when you start creating, uploading or replacing images will the new thumbnail sizes be created.
 
-When the 'Deletion' checkbox is ticked:
+*When the 'Deletion' checkbox is ticked:*
 
 # If you delete a single thumb that corresponds to the default profile, both the profile thumb and Textpattern's thumbmail will be deleted.
 # If you delete an entire profile, all its thumbnails *and all Textpattern's thumbnails* will be removed.
 
-Further:
+*Further:*
 
 # If you have no default profile, the checkboxes disappear and the settings have no effect. Choose a default profile to reinstate the behaviour.
 # If you deactivate the default profile the checkboxes have no effect *unless* you delete the profile (since you're deleting it, its status is 'lost' and therefore the checkboxes function as normal). If there's any doubt, uncheck the 'Deletion' checkbox first!
