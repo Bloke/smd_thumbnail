@@ -59,11 +59,11 @@ $plugin['textpack'] = <<<EOT
 smd_thumb_actions => Actions
 smd_thumb_all_sizes => All sizes
 smd_thumb_all_thumbs => Create
-smd_thumb_batch_legend => Create / recreate thumbnails
+smd_thumb_batch_legend => Create/recreate thumbnails
 smd_thumb_batch_preamble => For all active profiles:
 smd_thumb_btn_pnl => Profiles
 smd_thumb_btn_tools => Tools
-smd_thumb_btn_tools_prefs => Tools / Prefs
+smd_thumb_btn_tools_prefs => Tools/prefs
 smd_thumb_byall => All
 smd_thumb_bycat => By category
 smd_thumb_bysel => With selected
@@ -89,22 +89,22 @@ smd_thumb_txp_auto_replace => Recreate thumbnails on re-upload of main image:
 smd_thumb_txp_create_from => Create thumbnails from:
 smd_thumb_txp_create_from_full => Full size image
 smd_thumb_txp_create_from_thumb => Thumbnail
-smd_thumb_txp_default_sync => Keep Txp thumbnails in sync with default profile on:
+smd_thumb_txp_default_sync => Keep Textpattern thumbnails in sync with default profile on:
 smd_thumb_upload => Replace selected thumbnail
 #@smd_thumb
 #@language fr-fr
 smd_thumb_actions => Actions
 smd_thumb_all_sizes => Toutes les tailles
 smd_thumb_all_thumbs => Créer
-smd_thumb_batch_legend => Créer/Recréer des vignettes
+smd_thumb_batch_legend => Créer/recréer des vignettes
 smd_thumb_batch_preamble => Pour les profils actifs :
 smd_thumb_btn_pnl => Profils
 smd_thumb_btn_tools => Outils
-smd_thumb_btn_tools_prefs => Outils/Préf.
-smd_thumb_byAll => Tous
-smd_thumb_byCat => Par catégorie
-smd_thumb_bySel => Sélectionnées
-smd_thumb_byUsr => Par auteur
+smd_thumb_btn_tools_prefs => Outils/préf.
+smd_thumb_byall => Tous
+smd_thumb_bycat => Par catégorie
+smd_thumb_bysel => Sélectionnées
+smd_thumb_byusr => Par auteur
 smd_thumb_create => Création
 smd_thumb_create_group_confirm => Créer les vignettes pour TOUS les profils existant ? Les précédentes vignettes seront écrasées.
 smd_thumb_delete => Suppression
@@ -123,11 +123,10 @@ smd_thumb_sharpen => Rendre net
 smd_thumb_tables_not_installed => Tables non installées : essayez de réinstaller le plugin.
 smd_thumb_thumbnail_heading => Vignettes
 smd_thumb_txp_auto_replace => Recréer les vignettes au téléchargement des images :
-smd_thumb_txp_create => Créer
 smd_thumb_txp_create_from => Créer les vignettes à partir de :
 smd_thumb_txp_create_from_full => l'image originale
 smd_thumb_txp_create_from_thumb => la vignette
-smd_thumb_txp_delete => Supprimer
+smd_thumb_txp_default_sync => Gardez vignettes Textpattern en synchronisation avec le profil par défaut sur:
 smd_thumb_upload => Remplacer les vignettes sélectionnées
 EOT;
 
@@ -418,7 +417,7 @@ function smd_thumb_make($rs, $currimg, $force=0) {
 							@chmod($outfile, 0644);
 						}
 					}
-	
+
 					if ( parent::write ( $infile, $outfile ) ) {
 						@chmod($outfile, 0644);
 						return true;
