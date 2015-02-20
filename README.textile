@@ -1,5 +1,3 @@
-# smd_thumbnail
-
 h1. smd_thumbnail
 
 h2. Features
