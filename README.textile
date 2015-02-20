@@ -84,9 +84,7 @@ If you have sufficient privileges, in the lower portion of the 'Tools' panel are
 
 h4. Create smd_thumbnails from
 
-Governs whether the smd_thumbnails are created from the full size image or its (Textpattern) thumbnail. If you have elected not to have Textpattern thumbnails created then it'll probably not work very well!
-
-This preference applies:
+Governs whether the smd_thumbnails are created from the full size image or its (Textpattern) thumbnail. If you have elected not to have Textpattern thumbnails created then it'll probably not work very well! This preference applies:
 
 # When you use any of the batch tools to mass-produce smd_thumbnails.
 # If you upload a new image.
@@ -98,7 +96,7 @@ h4. Keep Textpattern thumbnails in sync with default profile
 
 Ordinarily, smd_thumbnail works independently of Textpattern's thumbnails. If you disable the plugin you'll see that everything goes back to how it was before you installed it. This is great because your hard-graft isn't lost if you have uploaded your own thumbs. But, if you start creating thumbs with the plugin you will notice that Textpattern's built in tags such as @<txp:article_image thumbnail="1" />@ and @<txp:thumbnail />@ won't work for newer thumbnails. This might be confusing so you can opt to have smd_thumbnail update your Textpattern thumbnails at the same time.
 
-By ticking either of the checkboxes, the plugin will track any changes *to the default profile* and mimic them with Textpattern's thumbnails. This has a few effects worth highlighting.
+By ticking either of the checkboxes, the plugin will track any changes *to the default profile* and mimic them with Textpattern's thumbnails. This has a few effects worth highlighting...
 
 *When the 'Creation' checkbox is ticked:*
 
