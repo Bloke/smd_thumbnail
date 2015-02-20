@@ -1,13 +1,65 @@
 h1. Changelog
 
-* 26 Sep 2014 | 0.31 | Selected thumbnail creation for 4.6.x (thanks jpdupont).
-* 14 Jan 2013 | 0.30 | For Textpattern 4.5.0 ; added mem_moderation_image support ; smd_thumbnail tag has form/container support ; added smd_thumbnail_info tag ; fixed image <-> select list interaction (damn you attr/prop!) ; added better tooltip on thumb hover ; fixed invalid markup ; added width & height attributes (thanks jstubbs).
-* 12 Oct 2011 | 0.22 | Added @display@ attribute ; added 'create from' preference (thanks the blue dragon/maniqui) ; fixed plugin for dashboard use ; fixed jQuery attr/prop in prefs ; fixed Txp menu interference (thanks maniqui).
-* 12 May 2011 | 0.21 | Added @smd_thumb_get_profiles()@ for other plugins to find which profiles are available.
-* 26 Jan 2011 | 0.20 | Tools/prefs separated from profile list ; permitted batch creation via 1) selected images 2) category 3) author (thanks jpdupont) ; added smd_thumb_auto_replace option and altered default behaviour (thanks maniqui) ; fixed Textpattern thumbnail creation on thumbnail replace and made prefs global - and only available to site admins (all thanks jstubbs) ; fixed New Profile button wrapping (thanks jpdupont).
-* 21 Nov 2010 | 0.14 | Permitted thumbnails to be larger than the original images (thanks maniqui) ; fixed callbacks for image uploading and deleting.
-* 10 Nov 2010 | 0.13 | Added confirmation on 'Create all' ; relabelled upload box (thank uli) ; tamed styles ; silenced chmod warnings (thanks zero).
-* 10 Nov 2010 | 0.12 | Added ability to sync default profile thumbs with the corresponding Textpattern thumbnails (thanks zero).
-* 09 Nov 2010 | 0.11 | Added @force_size@ and @add_stamp@ (both thanks zero) ; removed unnecessary database call.
-* 04 Oct 2010 | 0.10 | Official public release.
-* 06 Aug 2010 | 0.10beta | Initial beta release.
+h2. 0.31 - 26/09/2014
+
+* Selected thumbnail creation for 4.6.x (thanks jpdupont).
+
+h2. 0.30 - 14/01/2013
+
+* For Textpattern 4.5.0.
+* Added @mem_moderation_image@ support.
+* @smd_thumbnail@ tag has form/container support.
+* Added @smd_thumbnail_info@ tag.
+* Fixed image <-> select list interaction (damn you attr/prop!).
+* Added better tooltip on thumbnail hover.
+* Fixed invalid markup.
+* Added @width@ and @height@ attributes (thanks jstubbs).
+
+h2. 0.22 - 12/10/2011
+
+* Added @display@ attribute.
+* Added 'Create from' preference (thanks the blue dragon/maniqui).
+* Fixed plugin for dashboard use.
+* Fixed jQuery attr/prop in prefs.
+* Fixed Textpattern menu interference (thanks maniqui).
+
+h2. 0.21 - 12/05/2011
+
+* Added @smd_thumb_get_profiles()@ for other plugins to find which profiles are available.
+
+h2. 0.20 - 26/01/2011
+
+* Tools/prefs separated from profile list.
+* Permitted batch creation via 1) selected images 2) category 3) author (thanks jpdupont).
+* Added @smd_thumb_auto_replace@ option and altered default behaviour (thanks maniqui).
+* Fixed Textpattern thumbnail creation on thumbnail replace and made prefs global - and only available to site admins (all thanks jstubbs).
+* Fixed 'New profile' button wrapping (thanks jpdupont).
+
+h2. 0.14 - 21/112010
+
+* Permitted thumbnails to be larger than the original images (thanks maniqui).
+* Fixed callbacks for image uploading and deleting.
+
+h2. 0.13 - 10/11/2010
+
+* Added confirmation on 'Create all'.
+* Relabelled upload box (thank uli).
+* Tamed styles.
+* Silenced @chmod@ warnings (thanks zero).
+
+h2. 0.12 - 10/11/2010
+
+Added ability to sync default profile thumbnails with the corresponding Textpattern thumbnails (thanks zero).
+
+h2. 0.11 - 09/11/2010
+
+* Added @force_size@ and @add_stamp@ (both thanks zero).
+* Removed unnecessary database call.
+
+h2. 0.10 - 04/10/2010
+
+* Official public release.
+
+h2. 0.10beta - 06/08/2010
+
+* Initial beta release.
