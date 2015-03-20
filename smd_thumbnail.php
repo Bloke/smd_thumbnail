@@ -1749,6 +1749,12 @@ h5. Example 1
 
 TODO.
 
+h2. How it works
+
+For reference, when you create a profile a directory is created with that name inside your Textpattern @images@ folder. Inside this folder you will find images of the format @id.ext@: where @id@ and @ext@ match the corresponding image IDs in the Textpattern database. That's pretty much it!
+
+You can delete thumbnail files manually from any of these directories and the plugin will figure everything out. But it's probably not advisable to delete the directories themselves - use the 'Delete' buttons in the control panel for that.
+
 h2. History
 
 Please see the "changelog on GitHub":https://github.com/Bloke/smd_thumbnail/blob/master/CHANGELOG.textile.
