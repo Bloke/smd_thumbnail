@@ -17,7 +17,7 @@ $plugin['name'] = 'smd_thumbnail';
 // 1 = Plugin help is in raw HTML.  Not recommended.
 # $plugin['allow_html_help'] = 1;
 
-$plugin['version'] = '0.31';
+$plugin['version'] = '0.32';
 $plugin['author'] = 'Stef Dawson';
 $plugin['author_uri'] = 'http://stefdawson.com/';
 $plugin['description'] = 'Multiple image thumbnails of arbitrary dimensions';
@@ -1679,7 +1679,7 @@ h3. smd_thumbnail
 
 bc. <txp:smd_thumbnail />
 
-*A direct replacement for the built in "txp:thumbnail":http://textpattern.net/wiki/index.php?title=thumbnail tag with exactly the same functionality and attributes apart from the additonal attributes listed below.*
+*A direct replacement for the built in "txp:thumbnail":http://textpattern.net/wiki/index.php?title=thumbnail tag with exactly the same functionality and attributes apart from the additional attributes listed below.*
 
 h4. Attributes (in addition to standard txp:thumbnail tag attributes)
 
@@ -1727,9 +1727,7 @@ h4. Attributes
 ** @html_h@: HTML-formatted @height@ attribute.
 * @wraptag@: HTML element to wrap (markup) list block, specified without brackets (e.g., @wraptag="ul"@).
 
-h4. Examples
-
-h5. Example 1
+h5. Example 2
 
 TODO.
 
@@ -1743,9 +1741,7 @@ h4. Attributes
 
 * @type@: use this attribute to check for thumbnails of the given profile name (e.g., @type="Medium"@). If you do not specify this attribute, the default profile will be tested. If there is no default profile the tag will always render the @<txp:else />@ portion.
 
-h4. Examples
-
-h5. Example 1
+h5. Example 3
 
 TODO.
 
