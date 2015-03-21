@@ -1683,12 +1683,12 @@ bc. <txp:smd_thumbnail />
 
 h4. Attributes (in addition to standard txp:thumbnail tag attributes)
 
-* @add_stamp@: adds the image file modification time to the end of the thumbnail's URL. Use @add_stamp="1"@ to switch this feature on. This helps prevent stale images, but may prevent browsers from cacheing the thumbnails properly, thus increasing bandwidth usage. Default: @0@.
-* @class@: HTML @class@ to apply to the @wraptag@ and/or @<img>@ attribute value. If omitted, the name of the profile will be used as a @class@ name for the @<img>@ tag. If you specify a @wraptag@ and omit the @class@, the profile name will be used as a @class@ on both the container and the @<img>@ tag.
-* @display@: by default, this tag outputs a full @<img>@ tag. If you just require the image URL so you can make your own image tags, set @display="url"@. Default: @thumbnail@.
-* @force_size@: usually when you set one or other width/height to @0@ in a profile, the browser scales the missing dimension automatically. It does this by omitting the @width=@ or @height=@ attribute in the @img@ tag. This may cause visual artefacts as the page is rendered and the browser calculates the sizes. If you wish the plugin to add the actual dimension to the @<img>@ tag (the size at the time the thumbnail was created), tell the plugin with this attribute. Choose one or both of @width@ or @height@. Comma-separate as required. Default: unset.
-* @form@: you can construct your own @<img>@ tags using the given form. If not specified, you may use the tag as a container.
-* @type@: use this attribute to display thumbnails of the given profile name (e.g., @type="large"@). If you do not specify this attribute, the default profile will be used. If there is no default profile you'll see warning messages.
+* @add_stamp="boolean"@<br />Adds the image file modification time to the end of the thumbnail's URL. Use @add_stamp="1"@ to switch this feature on. This helps prevent stale images, but may prevent browsers from cacheing the thumbnails properly, thus increasing bandwidth usage. Default: @0@.
+* @class="class name"@<br />HTML @class@ to apply to the @wraptag@ and/or @<img>@ attribute value. If omitted, the name of the profile will be used as a @class@ name for the @<img>@ tag. If you specify a @wraptag@ and omit the @class@, the profile name will be used as a @class@ on both the container and the @<img>@ tag.
+* @display="value"@<br />By default, this tag outputs a full @<img>@ tag. If you just require the image URL so you can make your own image tags, set @display="url"@. Default: @thumbnail@.
+* @force_size="value"@<br />Usually when you set one or other width/height to @0@ in a profile, the browser scales the missing dimension automatically. It does this by omitting the @width=@ or @height=@ attribute in the @img@ tag. This may cause visual artefacts as the page is rendered and the browser calculates the sizes. If you wish the plugin to add the actual dimension to the @<img>@ tag (the size at the time the thumbnail was created), tell the plugin with this attribute. Choose one or both of @width@ or @height@. Comma-separate as required. Default: unset.
+* @form="form name"@<br />You can construct your own @<img>@ tags using the given form. If not specified, you may use the tag as a container.
+* @type="value"@<br />Use this attribute to display thumbnails of the given profile name (e.g., @type="large"@). If you do not specify this attribute, the default profile will be used. If there is no default profile you'll see warning messages.
 
 The tag works inside @<txp:images>@ or can be used standalone by specifying the @id@ or @name@ attribute. If using it as a container or with the @form@ attribute you display the various pieces of thumbnail information using the @<txp:smd_thumbnail_info>@ tag.
 
@@ -1706,9 +1706,9 @@ Display various information from the current @<txp:smd_thumbnail>@ tag (in eithe
 
 h4. Attributes
 
-* @class@: HTML @class@ to apply to the @wraptag@ attribute value.
-* @break@: where value is an HTML element, specified without brackets (e.g., @break="li"@) to separate list items.
-* @item@: list of things you wish to display. Choose from:
+* @class="class name"@<br />HTML @class@ to apply to the @wraptag@ attribute value.
+* @break="value"@<br />Where value is an HTML element, specified without brackets (e.g., @break="li"@) to separate list items.
+* @item="item value"@<br />List of things you wish to display. Choose from:
 ** @url@: full image URL of the thumbnail.
 ** @type@: thumbnail profile name.
 ** @name@: image name.
@@ -1725,7 +1725,7 @@ h4. Attributes
 ** @h@: thumbnail height (pixels).
 ** @html_w@: HTML-formatted @width@ attribute.
 ** @html_h@: HTML-formatted @height@ attribute.
-* @wraptag@: HTML element to wrap (markup) list block, specified without brackets (e.g., @wraptag="ul"@).
+* @wraptag="element"@<br />HTML element to wrap (markup) list block, specified without brackets (e.g., @wraptag="ul"@).
 
 h5. Example 2
 
