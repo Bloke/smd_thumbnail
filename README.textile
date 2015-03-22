@@ -123,7 +123,7 @@ When this checkbox is cleared and you *replace* a main image (from the 'Image ed
 
 h2. Tags:
 
-h3. smd_thumbnail
+h3. smd_thumbnail tag
 
 bc. <txp:smd_thumbnail />
 
@@ -144,9 +144,17 @@ h4. Examples
 
 h5. Example 1
 
-TODO.
+bc. <txp:images>
+    <txp:smd_thumbnail type="big-size" />
+</txp:images>
 
-h3. smd_thumbnail_info
+Show all images that have been generated with the 'big-size' smd_thumbnail profile.
+
+h5. Example 2
+
+TODO
+
+h3. smd_thumbnail_info tag
 
 bc. <txp:smd_thumbnail_info />
 
@@ -157,29 +165,29 @@ h4. Attributes
 * @class="class name"@<br />HTML @class@ to apply to the @wraptag@ attribute value.
 * @break="value"@<br />Where value is an HTML element, specified without brackets (e.g., @break="li"@) to separate list items.
 * @item="item value"@<br />List of things you wish to display. Choose from:
-** @url@: full image URL of the thumbnail.
-** @type@: thumbnail profile name.
-** @name@: image name.
-** @id@: thumbnail ID.
-** @ext@: thumbnail file extension.
+** @alt@: image alt text.
+** @author@: image author.
 ** @category@: image category name.
 ** @category_title@: image category title.
-** @alt@: image alt text.
-** @title@: image title/caption.
-** @author@: image author.
 ** @class@: class applied to thumbnail (if not supplied, is same as type).
 ** @date@ : raw datestamp of when the image was uploaded.
-** @w@: thumbnail width (pixels).
+** @ext@: thumbnail file extension.
 ** @h@: thumbnail height (pixels).
-** @html_w@: HTML-formatted @width@ attribute.
 ** @html_h@: HTML-formatted @height@ attribute.
+** @html_w@: HTML-formatted @width@ attribute.
+** @id@: thumbnail ID.
+** @name@: image name.
+** @title@: image title/caption.
+** @type@: thumbnail profile name.
+** @url@: full image URL of the thumbnail.
+** @w@: thumbnail width (pixels).
 * @wraptag="element"@<br />HTML element to wrap (markup) list block, specified without brackets (e.g., @wraptag="ul"@).
 
-h5. Example 2
+h5. Example 1
 
 TODO.
 
-h3. smd_if_thumbnail
+h3. smd_if_thumbnail tag
 
 bc. <txp:smd_if_thumbnail>
 
@@ -189,7 +197,7 @@ h4. Attributes
 
 * @type@: use this attribute to check for thumbnails of the given profile name (e.g., @type="Medium"@). If you do not specify this attribute, the default profile will be tested. If there is no default profile the tag will always render the @<txp:else />@ portion.
 
-h5. Example 3
+h5. Example 1
 
 TODO.
 
