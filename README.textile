@@ -23,7 +23,7 @@ Download the plugin from either "textpattern.org":http://textpattern.org/plugins
 
 To uninstall, delete from the Admin → Plugins page.
 
-h2. Usage - admin side
+h2. Usage
 
 Visit the Content → Images tab. Above the list of images is an area labelled *Thumbnail profiles*. Click it to reveal the control panel. You can toggle this panel on and off by clicking the heading.
 
@@ -121,7 +121,7 @@ When this checkbox is cleared and you *replace* a main image (from the 'Image ed
 
 *Note one important exception:* Textpattern thumbnails are *NOT* covered by this option - they are governed by the 'Keep Textpattern thumbs in sync' 'Creation' checkbox. Thus, if you upload a replacement image and the 'Creation' checkbox is on, you will replace Textpattern's thumbnail regardless of the setting of the 'Recreate thumbnails...' option.
 
-h2. Tags:
+h2. Tags
 
 h3. smd_thumbnail tag
 
