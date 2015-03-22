@@ -1558,7 +1558,19 @@ If you're bored of one Textpattern thumbnail per image and don't fancy using an 
 
 Please report bugs and problems with this plugin at "the GitHub project's issues page":https://github.com/Bloke/smd_thumbnail/issues.
 
-h2. Features
+h2. Contents
+
+* "Features":#features
+* "Upgrading and uninstallation":#install
+* "Usage":#usage
+* "Tags":#tags
+** "smd_thumbnail tag":#st
+** "smd_thumbnail_info tag":#st_info
+** "smd_if_thumbnail tag":#st_if
+* "History":#history
+* "Authors/credits":#credits
+
+h2(#features). Features
 
 * Assign any number of thumbnails to Textpattern's images.
 * Batch assign thumbnails to existing images.
@@ -1567,7 +1579,7 @@ h2. Features
 * Keep thumbs in sync with Textpattern's thumbs if you wish.
 * Conditional thumbnail check available.
 
-h2. Installation, upgrading and uninstallation
+h2(#install). Upgrading and uninstallation
 
 Download the plugin from either "textpattern.org":http://textpattern.org/plugins/1186/smd_thumbnail, or the "software page":http://stefdawson.com/sw, paste the code into the Textpattern Admin → Plugins pane, install and enable the plugin. Visit the "forum thread":http://forum.textpattern.com/viewtopic.php?id=34367 for more info or to report on the success or otherwise of the plugin.
 
@@ -1575,7 +1587,7 @@ Download the plugin from either "textpattern.org":http://textpattern.org/plugins
 
 To uninstall, delete from the Admin → Plugins page.
 
-h2. Usage - admin side
+h2(#usage). Usage
 
 Visit the Content → Images tab. Above the list of images is an area labelled *Thumbnail profiles*. Click it to reveal the control panel. You can toggle this panel on and off by clicking the heading.
 
@@ -1673,9 +1685,9 @@ When this checkbox is cleared and you *replace* a main image (from the 'Image ed
 
 *Note one important exception:* Textpattern thumbnails are *NOT* covered by this option - they are governed by the 'Keep Textpattern thumbs in sync' 'Creation' checkbox. Thus, if you upload a replacement image and the 'Creation' checkbox is on, you will replace Textpattern's thumbnail regardless of the setting of the 'Recreate thumbnails...' option.
 
-h2. Tags:
+h2(#tags). Tags
 
-h3. smd_thumbnail
+h3(#st). smd_thumbnail tag
 
 bc. <txp:smd_thumbnail />
 
@@ -1696,9 +1708,17 @@ h4. Examples
 
 h5. Example 1
 
-TODO.
+bc. <txp:images>
+    <txp:smd_thumbnail type="big-size" />
+</txp:images>
 
-h3. smd_thumbnail_info
+Show all images that have been generated with the 'big-size' smd_thumbnail profile.
+
+h5. Example 2
+
+TODO
+
+h3(#st_info). smd_thumbnail_info tag
 
 bc. <txp:smd_thumbnail_info />
 
@@ -1709,29 +1729,29 @@ h4. Attributes
 * @class="class name"@<br />HTML @class@ to apply to the @wraptag@ attribute value.
 * @break="value"@<br />Where value is an HTML element, specified without brackets (e.g., @break="li"@) to separate list items.
 * @item="item value"@<br />List of things you wish to display. Choose from:
-** @url@: full image URL of the thumbnail.
-** @type@: thumbnail profile name.
-** @name@: image name.
-** @id@: thumbnail ID.
-** @ext@: thumbnail file extension.
+** @alt@: image alt text.
+** @author@: image author.
 ** @category@: image category name.
 ** @category_title@: image category title.
-** @alt@: image alt text.
-** @title@: image title/caption.
-** @author@: image author.
 ** @class@: class applied to thumbnail (if not supplied, is same as type).
 ** @date@ : raw datestamp of when the image was uploaded.
-** @w@: thumbnail width (pixels).
+** @ext@: thumbnail file extension.
 ** @h@: thumbnail height (pixels).
-** @html_w@: HTML-formatted @width@ attribute.
 ** @html_h@: HTML-formatted @height@ attribute.
+** @html_w@: HTML-formatted @width@ attribute.
+** @id@: thumbnail ID.
+** @name@: image name.
+** @title@: image title/caption.
+** @type@: thumbnail profile name.
+** @url@: full image URL of the thumbnail.
+** @w@: thumbnail width (pixels).
 * @wraptag="element"@<br />HTML element to wrap (markup) list block, specified without brackets (e.g., @wraptag="ul"@).
 
-h5. Example 2
+h5. Example 1
 
 TODO.
 
-h3. smd_if_thumbnail
+h3(#st_if). smd_if_thumbnail tag
 
 bc. <txp:smd_if_thumbnail>
 
@@ -1741,7 +1761,7 @@ h4. Attributes
 
 * @type@: use this attribute to check for thumbnails of the given profile name (e.g., @type="Medium"@). If you do not specify this attribute, the default profile will be tested. If there is no default profile the tag will always render the @<txp:else />@ portion.
 
-h5. Example 3
+h5. Example 1
 
 TODO.
 
@@ -1751,11 +1771,11 @@ For reference, when you create a profile a directory is created with that name i
 
 You can delete thumbnail files manually from any of these directories and the plugin will figure everything out. But it's probably not advisable to delete the directories themselves - use the 'Delete' buttons in the control panel for that.
 
-h2. History
+h2(#history). History
 
 Please see the "changelog on GitHub":https://github.com/Bloke/smd_thumbnail/blob/master/CHANGELOG.textile.
 
-h2. Author/credits
+h2(#credits). Authors/credits
 
 Written by "Stef Dawson":http://stefdawson.com/contact. Many thanks to "all additional contributors":https://github.com/Bloke/smd_thumbnail/graphs/contributors. Special thanks also to the beta test crew who offered feature and workflow advice, especially thebombsite, jakob, jstubbs and maniqui.
 # --- END PLUGIN HELP ---
