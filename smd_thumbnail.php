@@ -59,15 +59,12 @@ $plugin['textpack'] = <<<EOT
 smd_thumb_actions => Actions
 smd_thumb_all_sizes => All sizes
 smd_thumb_all_thumbs => Create
-smd_thumb_batch_legend => Create/recreate thumbnails
-smd_thumb_batch_preamble => For all active profiles:
+smd_thumb_batch_preamble => (Re)create thumbnails for all active profiles, based on
 smd_thumb_btn_pnl => Profiles
 smd_thumb_btn_tools => Tools
-smd_thumb_btn_tools_prefs => Tools/prefs
-smd_thumb_byall => All
-smd_thumb_bycat => By category
-smd_thumb_bysel => With selected
-smd_thumb_byusr => By author
+smd_thumb_btn_tools_prefs => Setup
+smd_thumb_byall => All images
+smd_thumb_bysel => Selected images
 smd_thumb_create => Creation
 smd_thumb_create_group_confirm => Really create thumbnails for ALL active profiles? Any existing thumbs will be overwritten.
 smd_thumb_delete => Deletion
@@ -79,7 +76,7 @@ smd_thumb_profile => Profile=
 smd_thumb_profile_deleted => Profile "{name}" deleted
 smd_thumb_profile_exists => Profile "{name}" already exists
 smd_thumb_profile_heading => Thumbnail profiles
-smd_thumb_profile_preftool_heading => Thumbnail tools and prefs
+smd_thumb_profile_preftool_heading => Thumbnail setup
 smd_thumb_profile_tool_heading => Thumbnail tools
 smd_thumb_quality => Quality (%)
 smd_thumb_sharpen => Sharpen
@@ -89,22 +86,19 @@ smd_thumb_txp_auto_replace => Recreate thumbnails on re-upload of main image:
 smd_thumb_txp_create_from => Create thumbnails from:
 smd_thumb_txp_create_from_full => Full size image
 smd_thumb_txp_create_from_thumb => Thumbnail
-smd_thumb_txp_default_sync => Keep Textpattern thumbnails in sync with default profile on:
+smd_thumb_txp_default_sync => Keep Txp thumbnails in sync with default profile on:
 smd_thumb_upload => Replace selected thumbnail
 #@smd_thumb
 #@language fr-fr
 smd_thumb_actions => Actions
 smd_thumb_all_sizes => Toutes les tailles
 smd_thumb_all_thumbs => Créer
-smd_thumb_batch_legend => Créer/recréer des vignettes
-smd_thumb_batch_preamble => Pour les profils actifs :
+smd_thumb_batch_preamble => (Re)créer des vignettes pour les profils actifs
 smd_thumb_btn_pnl => Profils
 smd_thumb_btn_tools => Outils
-smd_thumb_btn_tools_prefs => Outils/préf.
-smd_thumb_byall => Tous
-smd_thumb_bycat => Par catégorie
-smd_thumb_bysel => Sélectionnées
-smd_thumb_byusr => Par auteur
+smd_thumb_btn_tools_prefs => Configuration
+smd_thumb_byAll => Tous images
+smd_thumb_bySel => Sélectionnées
 smd_thumb_create => Création
 smd_thumb_create_group_confirm => Créer les vignettes pour TOUS les profils existant ? Les précédentes vignettes seront écrasées.
 smd_thumb_delete => Suppression
@@ -116,22 +110,23 @@ smd_thumb_profile => Profil=
 smd_thumb_profile_deleted => Le profil "{name}" a été supprimé.
 smd_thumb_profile_exists => Le profil "{name}" existe déjà.
 smd_thumb_profile_heading => Profils de vignettes
-smd_thumb_profile_preftool_heading => Outils et préférences du vignettage
+smd_thumb_profile_preftool_heading => Configuration du vignettage
 smd_thumb_profile_tool_heading => Outils de vignettage
 smd_thumb_quality => Qualité (%)
 smd_thumb_sharpen => Rendre net
 smd_thumb_tables_not_installed => Tables non installées : essayez de réinstaller le plugin.
 smd_thumb_thumbnail_heading => Vignettes
 smd_thumb_txp_auto_replace => Recréer les vignettes au téléchargement des images :
+smd_thumb_txp_create => Créer
 smd_thumb_txp_create_from => Créer les vignettes à partir de :
 smd_thumb_txp_create_from_full => l'image originale
 smd_thumb_txp_create_from_thumb => la vignette
-smd_thumb_txp_default_sync => Gardez vignettes Textpattern en synchronisation avec le profil par défaut sur:
+smd_thumb_txp_delete => Supprimer
 smd_thumb_upload => Remplacer les vignettes sélectionnées
 EOT;
 
 if (!defined('txpinterface'))
-	@include_once('zem_tpl.php');
+        @include_once('zem_tpl.php');
 
 # --- BEGIN PLUGIN CODE ---
 /**
@@ -149,408 +144,564 @@ if (!defined('txpinterface'))
  * TODO: Simplify AJAX response packets to speed things up
  * TODO: Interface elements for Profile creation don't get rendered if there are no images in pool
  */
-if (@txpinterface == 'admin') {
-	global $smd_thumb_event, $smd_thumb_prevs;
-
-	$smd_thumb_event = 'smd_thumbnail';
-	$smd_thumb_privs = '1,2,3'; // Plugin privs
-	$smd_thumb_prevs = array('1'); // Privs for prefs
-
-	add_privs($smd_thumb_event, $smd_thumb_privs);
-	add_privs('smd_thumb_profiles', $smd_thumb_privs);
-	register_callback('smd_thumb_welcome', 'plugin_lifecycle.'.$smd_thumb_event);
-	register_callback('smd_thumb_profiles', 'image_ui', 'extend_controls');
-	register_callback('smd_thumbs', 'image_ui', 'thumbnail');
-	register_callback('smd_thumb_edit', 'image_ui', 'thumbnail_edit');
-	register_callback('smd_thumb_empty', 'image_ui', 'thumbnail_image');
-	register_callback('smd_thumb_empty', 'image_ui', 'thumbnail_create');
-	register_callback('smd_thumb_generate', 'image_uploaded', 'image');
-	register_callback('smd_thumb_generate', 'image_uploaded', 'moderate');
-	register_callback('smd_thumb_delete', 'image_deleted', 'image');
-	register_callback('smd_thumb_create_one', 'image', 'smd_thumb_create_one');
-	register_callback('smd_thumb_switch_active', 'image', 'smd_thumb_switch_active');
-	register_callback('smd_thumb_switch_pref', 'image', 'smd_thumb_switch_pref');
-	register_callback('smd_thumb_insert', 'image', 'smd_thumbnail_insert', 1);
-	register_callback('smd_thumb_inject_css', 'admin_side', 'head_end');
-} else {
-	smd_thumb_set_impath();
-}
 if (!defined('SMD_THUMB')) {
-	define("SMD_THUMB", 'smd_thumbnail');
+    define("SMD_THUMB", 'smd_thumbnail');
 }
 if (!defined('SMD_THUMB_ACTIVE')) {
-	define("SMD_THUMB_ACTIVE", 1);
+    define("SMD_THUMB_ACTIVE", 1);
 }
 if (!defined('SMD_THUMB_CROP')) {
-	define("SMD_THUMB_CROP", 2);
+    define("SMD_THUMB_CROP", 2);
 }
 if (!defined('SMD_THUMB_SHARP')) {
-	define("SMD_THUMB_SHARP", 4);
+    define("SMD_THUMB_SHARP", 4);
 }
 
-// -------------------------------------------------------------
-// CSS definitions: hopefully kind to themers
-function smd_thumb_get_style_rules() {
-	$smd_thumb_styles = array(
-		'smd_thumb' =>'
+if (txpinterface === 'admin') {
+    global $smd_thumb_event, $smd_thumb_prevs;
+
+    $smd_thumb_event = 'smd_thumbnail';
+    $smd_thumb_privs = '1,2,3'; // Plugin privs
+    $smd_thumb_prevs = array('1'); // Privs for prefs
+
+    add_privs($smd_thumb_event, $smd_thumb_privs);
+    add_privs('smd_thumb_profiles', $smd_thumb_privs);
+    register_callback('smd_thumb_welcome', 'plugin_lifecycle.'.$smd_thumb_event);
+    register_callback('smd_thumb_profiles', 'image_ui', 'extend_controls');
+    register_callback('smd_thumbs', 'image_ui', 'thumbnail');
+    register_callback('smd_thumb_edit', 'image_ui', 'thumbnail_edit');
+    register_callback('smd_thumb_empty', 'image_ui', 'thumbnail_image');
+    register_callback('smd_thumb_empty', 'image_ui', 'thumbnail_create');
+    register_callback('smd_thumb_generate', 'image_uploaded', 'image');
+    register_callback('smd_thumb_generate', 'image_uploaded', 'moderate');
+    register_callback('smd_thumb_delete', 'image_deleted', 'image');
+    register_callback('smd_thumb_create_one', 'image', 'smd_thumb_create_one');
+    register_callback('smd_thumb_switch_active', 'image', 'smd_thumb_switch_active');
+    register_callback('smd_thumb_switch_pref', 'image', 'smd_thumb_switch_pref');
+    register_callback('smd_thumb_insert', 'image', 'smd_thumbnail_insert', 1);
+    register_callback('smd_thumb_inject_css', 'admin_side', 'head_end');
+} elseif (txpinterface === 'public') {
+    smd_thumb_set_impath();
+	if (class_exists('\Textpattern\Tag\Registry')) {
+		Txp::get('\Textpattern\Tag\Registry')
+			->register('smd_thumbnail')
+			->register('smd_if_thumbnail')
+			->register('smd_thumbnail_info');
+	}
+}
+
+/**
+ * CSS definitions: hopefully kind to themers.
+ */
+function smd_thumb_get_style_rules()
+{
+    $smd_thumb_styles = array(
+        'smd_thumb' =>'
 .smd_selected { border:1px solid red; background:red; }
 #smd_thumbs img { padding:2px; margin:1px; border:1px solid black; }
-.thumbnail-alter { display:none; }
 .smd_hidden { display:none; }
-#smd_thumb_profiles { max-width:700px; margin:0 auto 18px; }
+#smd_thumb_profiles { clear:both; margin:0 auto 1em; }
 #smd_thumb_profiles .txp-summary { text-align:left; }
 #smd_thumb_batch { float:right; }
 .smd_inactive { opacity:.3; }
 .smd_thumb_heading_active { cursor:pointer; }
 #smd_thumb_profile_form table { width:100% }
+.smd_thumb_switcher { float:right; }
 .pref-label { text-align: right!important; }
+#smd_thumb_profile_form th { display:none; }
+#smd_thumb_profile_form td { display:block; }
+#smd_thumb_profile_form td:first-child { padding-top:0.5em }
+#smd_thumb_profile_form td:last-child { padding-bottom:0.5em }
+#smd_thumb_profile_form td:before { content: attr(data-th) ": "; font-weight:bold; width:6.5em; display:inline-block; }
+#smd_thumb_profile_form tr { border-top:1px solid #ccc; }
+#smd_thumb_profile_form th, #smd_thumb_profile_form td { margin:0.3em 0.7em; }
+@media (min-width:480px) {
+  #smd_thumb_profile_form td:before { display:none; }
+  #smd_thumb_profile_form th, #smd_thumb_profile_form td { display:table-cell; padding:.1em .1em; vertical-align:baseline }
+  #smd_thumb_profile_form th:first-child, #smd_thumb_profile_form td:first-child { padding-left: 0; }
+  #smd_thumb_profile_form th:last-child, #smd_thumb_profile_form td:last-child { padding-right: 0; }
+}
 '
 );
 
-	return $smd_thumb_styles;
+    return $smd_thumb_styles;
 }
 
-// -------------------------------------------------------------
-function smd_thumb_inject_css($evt, $stp) {
-	global $event;
+/**
+ * Inject the stylesheet rules into the matching panel.
+ *
+ * @param  string $evt Textpattern event (panel)
+ * @param  string $stp Textpattern step (action)
+ */
+function smd_thumb_inject_css($evt, $stp)
+{
+    global $event;
 
-	if ($event == 'image') {
-		$smd_thumb_styles = smd_thumb_get_style_rules();
-		echo '<style type="text/css">', $smd_thumb_styles['smd_thumb'], '</style>';
-	}
+    if ($event === 'image') {
+        $smd_thumb_styles = smd_thumb_get_style_rules();
+        echo '<style type="text/css">', $smd_thumb_styles['smd_thumb'], '</style>';
+    }
 
-	return;
+    return;
 }
 
-// -------------------------------------------------------------
-function smd_thumb_welcome($evt, $stp) {
-	switch ($stp) {
-		case 'installed':
-			smd_thumb_table_install();
-			// Remove per-user prefs on upgrade from v0.1x to v0.20
-			safe_delete ('txp_prefs', "name IN ('smd_thumb_txp_create', 'smd_thumb_txp_delete', 'smd_thumb_auto_replace') AND user_name != ''");
-			break;
-		case 'deleted':
-			smd_thumb_table_remove();
-			break;
-	}
-	return;
+/**
+ * Kickstart the plugin after installation / activation / deletion.
+ *
+ * @param  string $evt Textpattern event (panel)
+ * @param  string $stp Textpattern step (action)
+ */
+function smd_thumb_welcome($evt, $stp)
+{
+    switch ($stp) {
+        case 'installed':
+            smd_thumb_table_install();
+            // Remove per-user prefs on upgrade from v0.1x to v0.20.
+            safe_delete ('txp_prefs', "name IN ('smd_thumb_txp_create', 'smd_thumb_txp_delete', 'smd_thumb_auto_replace') AND user_name != ''");
+            break;
+        case 'deleted':
+            smd_thumb_table_remove();
+            break;
+    }
+
+    return;
 }
 
-// ------------------------
-// Display the designated default thumbnail on the list page
-function smd_thumbs($evt, $stp, $dflt, $currimg) {
-	extract(gpsa(array('page', 'sort', 'dir', 'crit', 'search_method')));
+/**
+ * Display the designated default thumbnail on the list page.
+ */
+function smd_thumbs($evt, $stp, $dflt, $currimg)
+{
+    extract(gpsa(array('page', 'sort', 'dir', 'crit', 'search_method')));
 
-	if (smd_thumb_table_exist()) {
-		$default = get_pref('smd_thumb_default_profile', '', 1);
-		if ($default) {
-			$row = safe_row('*', SMD_THUMB, "name='".sanitizeForUrl($default)."'");
-			if ($row) {
-				$edit_url = '?event=image'.a.'step=image_edit'.a.'id='.$currimg['id'].a.'sort='.$sort.
-						a.'dir='.$dir.a.'page='.$page.a.'search_method='.$search_method.a.'crit='.$crit;
-				$out = smd_thumb_img($row, $currimg);
-				return ($out) ? href($out, $edit_url) : gTxt('no');
-			} else {
-				return gTxt('no');
-			}
-		} else {
-			return gTxt('no');
-		}
-	}
+    if (smd_thumb_table_exist()) {
+        $default = get_pref('smd_thumb_default_profile', '', 1);
+
+        if ($default) {
+            $row = safe_row('*', SMD_THUMB, "name='".sanitizeForUrl($default)."'");
+
+            if ($row) {
+                $edit_url = '?event=image'.a.'step=image_edit'.a.'id='.$currimg['id'].a.'sort='.$sort.
+                        a.'dir='.$dir.a.'page='.$page.a.'search_method='.$search_method.a.'crit='.$crit;
+                $out = smd_thumb_img($row, $currimg);
+
+                return ($out) ? href($out, $edit_url) : gTxt('no');
+            } else {
+                return gTxt('no');
+            }
+        } else {
+            return gTxt('no');
+        }
+    }
 }
 
-// ------------------------
-// Don't want the 'create' controls or thumbnail image as they're now both handled in the edit portion of the screen
-function smd_thumb_empty($evt, $stp, $dflt, $currimg) {
-	return ' ';
+/**
+ * Don't want the 'create' controls or thumbnail image as they're both handled in the edit portion of the screen.
+ */
+function smd_thumb_empty($evt, $stp, $dflt, $currimg)
+{
+    return ' ';
 }
 
-// ------------------------
-// With a lot of images in the database, doing it all in one hit would time out.
-// So it's done via ajax; one request per image
-function smd_thumb_create_group($type, $lst='') {
-	switch ($type) {
-		case 'all':
-			$where = '1=1';
-			break;
-		case 'sel':
-			$where = ($lst) ? 'id IN ('.doSlash($lst).')' : '1=0';
-			break;
-		case 'cat':
-			$where = "category in ('".doSlash($lst)."')";
-			break;
-		case 'usr':
-			$where = "author in ('".doSlash($lst)."')";
-			break;
-	}
+/**
+ * Create a bunch of thumbnails en masse.
+ *
+ * With a lot of images in the database, doing it all in one hit would time out.
+ * Thus it's done via ajax; one request per image.
+ *
+ * @param  string $type Flavour of thumbnail creation: by (usr), by (cat), by (sel)ection, or (all)
+ * @param  string $lst  List of images to operate upon
+ * @return [type]       [description]
+ */
+function smd_thumb_create_group($type, $lst = '')
+{
+    switch ($type) {
+        case 'all':
+            $where = '1=1';
+            break;
+        case 'sel':
+            $where = ($lst) ? 'id IN ('.doSlash($lst).')' : '1=0';
+            break;
+        case 'cat':
+            $where = "category in ('".doSlash($lst)."')";
+            break;
+        case 'usr':
+            $where = "author in ('".doSlash($lst)."')";
+            break;
+    }
 
-	$images = safe_column('id', 'txp_image', $where);
-	$count = count($images);
+    $images = safe_column('id', 'txp_image', $where);
+    $count = count($images);
 
-	echo '<script type="text/javascript">';
-	echo "var bctr = 0; var btot = {$count};";
-	echo 'jQuery(function() {';
-	echo 'jQuery("#smd_thumb_btot").text("/'.$count.'");';
-	foreach ($images as $img) {
-		echo <<<EOJS
-		sendAsyncEvent(
-		{
-			event: textpattern.event,
-			step: 'smd_thumb_create_one',
-			smd_thumb_imgid: {$img}
-		}, smd_create_group_feedback);
+    echo <<<EOJS
+<script type="text/javascript">
+var bctr = 0; var btot = {$count};
+jQuery(function() {
+    jQuery("#smd_thumb_btot").text("/'.$count.'");
 EOJS;
-	}
-	echo '});';
-	echo <<<EOJS
-	function smd_create_group_feedback() {
-		bctr++;
-		jQuery('#smd_thumb_bcurr').text(bctr);
-//		if (bctr >= btot) {
-//			jQuery('#smd_thumb_bcurr,#smd_thumb_btot').empty();
-//		}
-	}
+
+    foreach ($images as $img) {
+        echo <<<EOJS
+    sendAsyncEvent(
+    {
+        event: textpattern.event,
+        step: 'smd_thumb_create_one',
+        smd_thumb_imgid: {$img}
+    }, smd_create_group_feedback);
 EOJS;
-	echo '</script>';
+    }
+    echo '});';
+    echo <<<EOJS
+function smd_create_group_feedback() {
+    bctr++;
+    jQuery('#smd_thumb_bcurr').text(bctr);
+}
+EOJS;
+    echo '</script>';
 }
 
-// ------------------------
-function smd_thumb_create_one() {
-	$currimg = gps('smd_thumb_imgid');
-	assert_int($currimg);
+/**
+ * AJAX method to create one thumbnail for each active profile, from the passed id.
+ */
+function smd_thumb_create_one()
+{
+    $currimg = gps('smd_thumb_imgid');
+    assert_int($currimg);
 
-	$rs = safe_rows('*', SMD_THUMB, '1=1 AND flags & '.SMD_THUMB_ACTIVE);
-	$curr = safe_row('*', 'txp_image', "id=".doSlash($currimg));
-	if ($rs) {
-		smd_thumb_make($rs, $curr, 1);
-		send_xml_response();
-	}
+    $rs = safe_rows('*', SMD_THUMB, '1=1 AND flags & ' . SMD_THUMB_ACTIVE);
+    $curr = safe_row('*', 'txp_image', "id=" . doSlash($currimg));
+
+    if ($rs) {
+        smd_thumb_make($rs, $curr, 1);
+        send_xml_response();
+    }
 }
 
-// ------------------------
-function smd_thumb_switch_active() {
-	$name = doSlash(gps('smd_thumb_profile'));
-	if ($name) {
-		safe_update(SMD_THUMB, 'flags = flags ^ '.SMD_THUMB_ACTIVE, "name='$name'");
-		send_xml_response(array('smd_thumb_profile' => $name));
-	}
+/**
+ * AJAX method to set the active thumbnail profile.
+ *
+ * Requires GET/POST params:
+ *  -> smd_thumb_profile TName of the profile to set as active
+ */
+function smd_thumb_switch_active()
+{
+    $name = doSlash(gps('smd_thumb_profile'));
+
+    if ($name) {
+        safe_update(SMD_THUMB, 'flags = flags ^ ' . SMD_THUMB_ACTIVE, "name='$name'");
+        send_xml_response(array('smd_thumb_profile' => $name));
+    }
 }
 
-// ------------------------
-function smd_thumb_switch_pref() {
-	$name = doSlash(gps('smd_thumb_txptype'));
-	$state = doSlash(gps('smd_thumb_state'));
-	if ($name) {
-		set_pref('smd_thumb_'.$name, $state, 'smd_thumb', PREF_HIDDEN, 'text_input');
-		send_xml_response();
-	}
+/**
+ * AJAX method to toggle the given preference name to the given state.
+ *
+ * Requires GET/POST params:
+ *  -> smd_thumb_txptype Preference name (without plugin prefix)
+ *  -> smd_thumb_state   Preference value to store
+ */
+function smd_thumb_switch_pref()
+{
+    $name = doSlash(gps('smd_thumb_txptype'));
+    $state = doSlash(gps('smd_thumb_state'));
+
+    if ($name) {
+        set_pref('smd_thumb_'.$name, $state, 'smd_thumb', PREF_HIDDEN, 'text_input');
+        send_xml_response();
+    }
 }
 
-// ------------------------
-function smd_thumb_generate($evt, $stp, $id='') {
-	$id = ($id) ? $id : gps('id');
-	$id = ($id) ? $id : $GLOBALS['ID'];
-	$rs = safe_rows('*', SMD_THUMB, '1=1 AND flags & '.SMD_THUMB_ACTIVE);
+/**
+ * Wrapper to create thumbnail for active profiles from uploaded image.
+ *
+ * @param  string $evt Textpattern event (panel)
+ * @param  string $stp Textpattern step (action)
+ * @param  string $id  New image identifier. If omitted, will try GET/POST, then Txp's GLOBALS['ID']
+ */
+function smd_thumb_generate($evt, $stp, $id='')
+{
+    $id = ($id) ? $id : gps('id');
+    $id = ($id) ? $id : $GLOBALS['ID'];
+    $rs = safe_rows('*', SMD_THUMB, '1=1 AND flags & ' . SMD_THUMB_ACTIVE);
 
-	smd_thumb_make($rs, $id);
+    smd_thumb_make($rs, $id);
 }
 
-// ------------------------
-function smd_thumb_delete($evt, $stp) {
-	$ids = gps('selected');
-	$rs = safe_rows('*', SMD_THUMB, '1=1');
+/**
+ * Wrapper to delete a bunch of selected thumbnails.
+ *
+ * Uses GET/POST parameters:
+ *  -> selected Comma-separated list of selected image identifiers
+ *
+ * @param  string $evt Textpattern event (panel)
+ * @param  string $stp Textpattern step (action)
+ */
+function smd_thumb_delete($evt, $stp)
+{
+    $ids = gps('selected');
+    $rs = safe_rows('*', SMD_THUMB, '1=1');
 
-	$images = safe_rows('*', 'txp_image', 'id IN (' . join(',',quote_list($ids)) . ')');
-	foreach ($images as $img) {
-		smd_thumb_unmake($rs, $img);
-	}
+    $images = safe_rows('*', 'txp_image', 'id IN (' . join(',',quote_list($ids)) . ')');
+
+    foreach ($images as $img) {
+        smd_thumb_unmake($rs, $img);
+    }
 }
 
-// ------------------------
-function smd_thumb_make($rs, $currimg, $force=0) {
-	// Wrapper for wet_thumb to allow multiple thumbnails
-	$msg = '';
-	smd_thumb_set_impath();
+/**
+ * Create a thumbnail.
+ *
+ * @param  array  $rs       Record set containing image meta data
+ * @param  int    $currimg  Identifier for the current image being operated upon
+ * @param  bool   $force    Whether to always create the thumbnail, even if it exists
+ * @return string           Feedback message§
+ */
+function smd_thumb_make($rs, $currimg, $force = 0)
+{
+    // Wrapper for wet_thumb to allow multiple thumbnails.
+    $msg = '';
+    smd_thumb_set_impath();
 
-	if (!class_exists('smd_thumb')) {
-		class smd_thumb extends wet_thumb {
-			var $m_ext;
-			var $m_id;
-			var $m_dir;
-			var $m_dflt;
-			var $width;
-			var $height;
-			var $force;
+    if (!class_exists('smd_thumb')) {
+        class smd_thumb extends wet_thumb
+        {
+            var $m_ext;
+            var $m_id;
+            var $m_dir;
+            var $m_dflt;
+            var $width;
+            var $height;
+            var $force;
 
-			// Constructor
-			public function __construct ($id, $dir, $img_row, $is_default=false, $pro_w='', $pro_h='', $force=0) {
-				$id = assert_int($id);
-				if ($img_row) {
-					extract($img_row);
-					$this->m_id = $id;
-					$this->m_ext = $ext;
-					$this->m_dir = $dir;
-					$this->force = $force;
-					$this->width = $pro_w;
-					$this->height = $pro_h;
-					$this->m_dflt = $is_default;
+            /**
+             * Constructor.
+             *
+             * @param int     $id         Unique image identifier
+             * @param string  $dir        Subdirectory in which to store the image
+             * @param array   $img_row    Image meta data to store
+             * @param boolean $is_default Whether the thumbnail is to become the default
+             * @param string  $pro_w      Thumbnail width
+             * @param string  $pro_h      Thumbnail height
+             * @param boolean $force      Whether to overwrite any previous thumbnail
+             */
+            public function __construct ($id, $dir, $img_row, $is_default = false, $pro_w = '', $pro_h = '', $force = 0)
+            {
+                $id = assert_int($id);
+
+                if ($img_row) {
+                    extract($img_row);
+                    $this->m_id = $id;
+                    $this->m_ext = $ext;
+                    $this->m_dir = $dir;
+                    $this->force = $force;
+                    $this->width = $pro_w;
+                    $this->height = $pro_h;
+                    $this->m_dflt = $is_default;
+                }
+
+                parent::__construct();
+            }
+
+            /**
+             * Store the thumbnail image on disk.
+             *
+             * @return bool
+             */
+            public function write_image()
+            {
+                if (!isset($this->m_ext)) {
+                	return false;
 				}
-				parent::__construct();
-			}
 
-			public function write_image() {
-				if ( !isset($this->m_ext) ) return false;
+                $autor = get_pref('smd_thumb_auto_replace', '0');
+                $recfrom = get_pref('smd_thumb_create_from', 'full');
+                $src_sz = ($recfrom === 'full') ? '' : 't';
+                $infile = IMPATH . $this->m_id . $src_sz . $this->m_ext;
+                $outfile = IMPATH . $this->m_dir . DS . $this->m_id . $this->m_ext;
 
-				$autor = get_pref('smd_thumb_auto_replace', '0');
-				$recfrom = get_pref('smd_thumb_create_from', 'full');
-				$src_sz = ($recfrom == 'full') ? '' : 't';
-				$infile = IMPATH.$this->m_id.$src_sz.$this->m_ext;
-				$outfile = IMPATH.$this->m_dir.DS.$this->m_id.$this->m_ext;
+                if (!file_exists($outfile) || $autor || $this->force) {
+                    // If this is the default profile and the pref indicates, write a Txp thumb too.
+                    if (($this->m_dflt === true) && (get_pref('smd_thumb_txp_create', '0'))) {
+                        $txp_thumb = IMPATH . $this->m_id . 't' . $this->m_ext;
 
-				if (!file_exists($outfile) || $autor || $this->force) {
-					// If this is the default profile and the pref indicates, write a Txp thumb too
-					if (($this->m_dflt == true) && (get_pref('smd_thumb_txp_create', '0'))) {
-						$txp_thumb = IMPATH.$this->m_id.'t'.$this->m_ext;
-						if ( parent::write ( $infile, $txp_thumb ) ) {
-							safe_update('txp_image', "thumbnail = 1, thumb_w = $this->width, thumb_h = $this->height", 'id = '.$this->m_id);
-							@chmod($outfile, 0644);
-						}
-					}
+                        if (parent::write($infile, $txp_thumb)) {
+                            safe_update('txp_image', "thumbnail = 1, thumb_w = $this->width, thumb_h = $this->height", 'id = ' . $this->m_id);
+                            @chmod($outfile, 0644);
+                        }
+                    }
 
-					if ( parent::write ( $infile, $outfile ) ) {
-						@chmod($outfile, 0644);
-						return true;
-					}
-				}
-				return false;
-			}
+                    if (parent::write ($infile, $outfile)) {
+                        @chmod($outfile, 0644);
+
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        }
+    }
+
+    // If passed only an ID, look up the rest of the image data.
+    if (!is_array($currimg)) {
+        assert_int($currimg);
+        $currimg = safe_row('*', 'txp_image', 'id=' . $currimg);
+    }
+
+    // Create each thumbnail.
+    $pro_dflt = get_pref('smd_thumb_default_profile', '');
+
+    foreach ($rs as $row) {
+        // Sanitize a little.
+        $width = (int) $row['width'];
+        $height = (int) $row['height'];
+
+        if ($width === 0) {
+        	$width = '';
+        }
+
+        if ($height === 0) {
+        	$height = '';
+        }
+
+        if ($width === '' && $height === '') {
+        	continue;
 		}
-	}
 
-	// If passed only an ID, look up the rest of the image data
-	if (!is_array($currimg)) {
-		assert_int($currimg);
-		$currimg = safe_row('*', 'txp_image', 'id='.$currimg);
-	}
+        $crop = ($row['flags'] & SMD_THUMB_CROP) ? 1 : 0;
+        $sharpen = ($row['flags'] & SMD_THUMB_SHARP) ? 1 : 0;
+        $id = $currimg['id'];
+        $is_dflt = ($row['name'] === $pro_dflt) ? true : false;
 
-	// Create each thumbnail
-	$pro_dflt = get_pref('smd_thumb_default_profile', '');
-	foreach ($rs as $row) {
-		// Sanitize a little
-		$width = (int) $row['width'];
-		$height = (int) $row['height'];
-		if ($width == 0) $width = '';
-		if ($height == 0) $height = '';
-		if ($width === '' && $height === '') continue;
-		$crop = ($row['flags'] & SMD_THUMB_CROP) ? 1 : 0;
-		$sharpen = ($row['flags'] & SMD_THUMB_SHARP) ? 1 : 0;
-		$id = $currimg['id'];
-		$is_dflt = ($row['name'] == $pro_dflt) ? true : false;
+        $t = new smd_thumb($id, sanitizeForUrl($row['name']), $currimg, $is_dflt, $width, $height, $force);
+        $t->extrapolate = true; // Allow bigger thumbs than original image.
+        $t->crop = ($crop === 1);
+        $t->sharpen = ($sharpen === 1);
+        $t->hint = '0';
+        $t->width = $width;
+        $t->height = $height;
+        $t->quality = $row['quality'];
 
-		$t = new smd_thumb($id, sanitizeForUrl($row['name']), $currimg, $is_dflt, $width, $height, $force);
-		$t->extrapolate = true; // Allow bigger thumbs than original image
-		$t->crop = ($crop == '1');
-		$t->sharpen = ($sharpen == '1');
-		$t->hint = '0';
-		$t->width = $width;
-		$t->height = $height;
-		$t->quality = $row['quality'];
+        if ($t->write_image()) {
+            $msg = gTxt('thumbnail_saved', array('{id}' => $id));
+        } else {
+            $msg = array(gTxt('thumbnail_not_saved', array('{id}' => $id)), E_ERROR);
+        }
+    }
 
-		if ($t->write_image()) {
-			$msg = gTxt('thumbnail_saved', array('{id}' => $id));
-		} else {
-			$msg = array(gTxt('thumbnail_not_saved', array('{id}' => $id)), E_ERROR);
-		}
-	}
-	return $msg;
+    return $msg;
 }
 
-// ------------------------
-function smd_thumb_unmake($rs, $currimg) {
-	$id = $currimg['id'];
-	$ext = $currimg['ext'];
-	$pro_dflt = get_pref('smd_thumb_default_profile', '');
-	$txp_del = get_pref('smd_thumb_txp_delete', '0');
-	smd_thumb_set_impath();
+/**
+ * Delete the passed set of thumbnails.
+ *
+ * @param  array  $rs      Sert of image identifiers to delete
+ * @param  int    $currimg Current image being operated upon
+ */
+function smd_thumb_unmake($rs, $currimg)
+{
+    $id = $currimg['id'];
+    $ext = $currimg['ext'];
+    $pro_dflt = get_pref('smd_thumb_default_profile', '');
+    $txp_del = get_pref('smd_thumb_txp_delete', '0');
+    smd_thumb_set_impath();
 
-	foreach ($rs as $row) {
-		$path = IMPATH.sanitizeForUrl($row['name']).DS.$id.$ext;
-		if (file_exists($path)) {
-			unlink($path);
-		}
+    foreach ($rs as $row) {
+        $path = IMPATH . sanitizeForUrl($row['name']) . DS . $id . $ext;
 
-		// Also remove Txp's built-in thumb?
-		if (($row['name'] == $pro_dflt) && ($txp_del == '1')) {
-			$path = IMPATH.$id.'t'.$ext;
-			if (file_exists($path)) {
-				safe_update('txp_image', "thumbnail = 0, thumb_w = 0, thumb_h = 0", 'id = '.$id);
-				unlink($path);
-			}
-		}
-	}
-	return '';
+        if (file_exists($path)) {
+            unlink($path);
+        }
+
+        // Also remove Txp's built-in thumb?
+        if (($row['name'] === $pro_dflt) && ($txp_del == '1')) {
+            $path = IMPATH . $id . 't' . $ext;
+
+            if (file_exists($path)) {
+                safe_update('txp_image', "thumbnail = 0, thumb_w = 0, thumb_h = 0", 'id = ' . $id);
+                unlink($path);
+            }
+        }
+    }
+
+    return '';
 }
 
-// ------------------------
-function smd_thumb_insert() {
-	global $txpcfg, $txp_user, $page, $sort, $dir, $crit, $search_method;
+/**
+ * Insert a thumbnail when a new file is uploaded
+ */
+function smd_thumb_insert()
+{
+    global $txpcfg, $txp_user, $page, $sort, $dir, $crit, $search_method;
 
-	smd_thumb_set_impath();
-	extract(gpsa(array('page', 'sort', 'dir', 'crit', 'search_method')));
+    smd_thumb_set_impath();
+    extract(gpsa(array('page', 'sort', 'dir', 'crit', 'search_method')));
 
-	include_once txpath.'/lib/txplib_misc.php';
+    include_once txpath.'/lib/txplib_misc.php';
 
-	extract($txpcfg);
-	$id = assert_int(gps('id'));
-	$profile = gps('smd_thumb_profile');
-	$thumb_ext = gps('smd_thumb_ext');
+    extract($txpcfg);
+    $id = assert_int(gps('id'));
+    $profile = gps('smd_thumb_profile');
+    $thumb_ext = gps('smd_thumb_ext');
 
-	$author = fetch('author', 'txp_image', 'id', $id);
-	if (!has_privs('image.edit') && !($author == $txp_user && has_privs('image.edit.own'))) {
-		return;
-	}
+    $author = fetch('author', 'txp_image', 'id', $id);
 
-	$file = $_FILES['thefile']['tmp_name'];
-	$name = $_FILES['thefile']['name'];
+    if (!has_privs('image.edit') && !($author == $txp_user && has_privs('image.edit.own'))) {
+        return;
+    }
 
-	$file = get_uploaded_file($file);
+    $file = $_FILES['thefile']['tmp_name'];
+    $name = $_FILES['thefile']['name'];
 
-	if (empty($file))
-	{
-		return;
-	}
+    $file = get_uploaded_file($file);
 
-	list($w, $h, $extension) = getimagesize($file);
-	$valid_exts = array(
-		IMAGETYPE_GIF  => '.gif',
-		IMAGETYPE_JPEG => '.jpg',
-		IMAGETYPE_PNG  => '.png',
-		IMAGETYPE_SWF  => '.swf',
-	);
-	$ext = isset($valid_exts[$extension]) ? $valid_exts[$extension] : '';
+    if (empty($file)) {
+        return;
+    }
 
-	if (($file !== false) && $profile && $ext) {
-		$newpath = IMPATH.sanitizeForUrl($profile).DS.$id.$ext;
-		if (shift_uploaded_file($file, $newpath) == false) {
-		} else {
-			@chmod($newpath, 0644);
+    list($w, $h, $extension) = getimagesize($file);
 
-			// If the pref indicates, duplicate as a Txp thumb too
-			if (get_pref('smd_thumb_txp_create', '0') == 1) {
-				$txp_thumb = IMPATH.$id.'t'.$ext;
-				if ( copy ( $newpath, $txp_thumb ) ) {
-					safe_update('txp_image', "thumbnail = 1, thumb_w = $w, thumb_h = $h", 'id = '.$id);
-					@chmod($txp_thumb, 0644);
-				}
-			}
-			$message = gTxt('image_uploaded', array('{name}' => $name));
-		}
-	}
+    $valid_exts = array(
+        IMAGETYPE_GIF  => '.gif',
+        IMAGETYPE_JPEG => '.jpg',
+        IMAGETYPE_PNG  => '.png',
+        IMAGETYPE_SWF  => '.swf',
+    );
 
-	// Since the headers have been sent, resort to js to refresh the page
-	$url = '?event=image'.a.'step=image_edit'.a.'id='.$id.a.'sort='.$sort.a.'dir='.$dir.a.'page='.$page.a.'search_method='.$search_method.a.'crit='.$crit;
-	echo <<<EOS
+    $ext = isset($valid_exts[$extension]) ? $valid_exts[$extension] : '';
+
+    if (($file !== false) && $profile && $ext) {
+        $newpath = IMPATH . sanitizeForUrl($profile) . DS . $id . $ext;
+        if (shift_uploaded_file($file, $newpath) === false) {
+        	// Failed: do nothing.
+        } else {
+            @chmod($newpath, 0644);
+
+            // If the pref indicates, duplicate as a Txp thumb too.
+            if (get_pref('smd_thumb_txp_create', '0') == 1) {
+                $txp_thumb = IMPATH . $id . 't' . $ext;
+
+                if (copy($newpath, $txp_thumb)) {
+                    safe_update('txp_image', "thumbnail = 1, thumb_w = $w, thumb_h = $h", 'id = ' . $id);
+                    @chmod($txp_thumb, 0644);
+                }
+            }
+
+            $message = gTxt('image_uploaded', array('{name}' => $name));
+        }
+    }
+
+    // Since the headers have been sent, resort to js to refresh the page.
+    $url = '?event=image'
+    	. a . 'step=image_edit'
+    	. a . 'id=' . $id
+    	. a . 'sort=' . $sort
+    	. a . 'dir=' . $dir
+    	. a . 'page=' . $page
+    	. a . 'search_method=' . $search_method
+    	. a . 'crit=' . $crit;
+
+    echo <<<EOS
 <script type="text/javascript">
 window.location.href="{$url}";
 </script>
@@ -558,995 +709,1143 @@ window.location.href="{$url}";
 <meta http-equiv="refresh" content="0;url={$url}" />
 </noscript>
 EOS;
-	exit;
+    exit;
 }
 
-// ------------------------
-function smd_thumb_edit($evt, $stp, $dflt, $currimg) {
-	global $step, $file_max_upload_size, $txp_user;
+/**
+ * pluggable_ui callback to render the additions to the image edit panel.
+ *
+ * @param  string $evt     Textpattern event (panel)
+ * @param  string $stp     Textpattern step (action)
+ * @param  string $dflt    Default markup ready to render
+ * @param  array  $currimg Current image information
+ */
+function smd_thumb_edit($evt, $stp, $dflt, $currimg)
+{
+    global $step, $file_max_upload_size, $txp_user;
 
-	extract(gpsa(array(
-		'id',
-		'page',
-		'sort',
-		'dir',
-		'crit',
-		'search_method',
-		'smd_thumbnail_size',
-		'smd_thumbnail_chosen_size',
-		'smd_thumbnail_delete',
-		'smd_step'
-	)));
+    extract(gpsa(array(
+        'id',
+        'page',
+        'sort',
+        'dir',
+        'crit',
+        'search_method',
+        'smd_thumbnail_size',
+        'smd_thumbnail_chosen_size',
+        'smd_thumbnail_delete',
+        'smd_step'
+    )));
 
-	$id = ($id) ? $id : $GLOBALS['ID'];
+    $id = ($id) ? $id : $GLOBALS['ID'];
 
-	// Toggle profile panel
-	if ($step == 'save_pane_state') {
-		smd_thumbnail_save_pane_state();
-		return;
-	}
+    // Toggle profile panel.
+    if ($step === 'save_pane_state') {
+        smd_thumbnail_save_pane_state();
+        return;
+    }
 
-	// Create/delete the selected thumbs depending on the button pressed
-	if ($smd_step == 'smd_thumbnail_manage') {
-		// Validate user
-		$author = fetch('author', 'txp_image', 'id', $id);
-		if (!has_privs('image.edit') && !($author == $txp_user && has_privs('image.edit.own')))
-		{
-			image_list(gTxt('restricted_area'));
-			return;
-		}
+    // Create/delete the selected thumbs depending on the button pressed.
+    if ($smd_step === 'smd_thumbnail_manage') {
+        // Validate user
+        $author = fetch('author', 'txp_image', 'id', $id);
 
-		// Grab the thumbnails to work on
-		$where = ($smd_thumbnail_size=='all') ? '1=1 AND flags & '.SMD_THUMB_ACTIVE : "name='".doSlash($smd_thumbnail_chosen_size)."'";
-		$rs = safe_rows('*', SMD_THUMB, $where);
+        if (!has_privs('image.edit') && !($author == $txp_user && has_privs('image.edit.own'))) {
+            image_list(gTxt('restricted_area'));
 
-		// Do it
-		if($smd_thumbnail_delete) {
-			$msg = smd_thumb_unmake($rs, $currimg);
-		} else {
-			$msg = smd_thumb_make($rs, $currimg, 1);
-		}
-	}
+            return;
+        }
 
-	$ext = $currimg['ext'];
-	echo script_js(<<<EOC
+        // Grab the thumbnails to work on
+        $where = ($smd_thumbnail_size === 'all') ? '1=1 AND flags & ' . SMD_THUMB_ACTIVE : "name='" . doSlash($smd_thumbnail_chosen_size) . "'";
+        $rs = safe_rows('*', SMD_THUMB, $where);
+
+        // Do it.
+        if ($smd_thumbnail_delete) {
+            $msg = smd_thumb_unmake($rs, $currimg);
+        } else {
+            $msg = smd_thumb_make($rs, $currimg, 1);
+        }
+    }
+
+    $ext = $currimg['ext'];
+    echo script_js(<<<EOC
 function smd_thumb_selector(sel) {
-	var idx = 0;
-	jQuery("#smd_thumbs img").each(function() {
-		if (jQuery(this).hasClass(sel)) {
-			jQuery(this).toggleClass('smd_selected');
-			if (jQuery(this).hasClass('smd_selected')) {
-				jQuery("#smd_upload_thumbnail").attr('disabled', false);
-				jQuery("#smd_thumb_profile").val(sel);
-				idx = jQuery("#smd_thumbnail_size option[value='"+sel+"']").index();
-				jQuery("#smd_thumbnail_chosen_size").val(sel);
-			} else {
-				jQuery("#smd_upload_thumbnail").attr('disabled', true);
-				jQuery("#smd_thumb_profile").val('');
-				jQuery("#smd_thumbnail_chosen_size").val('');
-			}
-		} else {
-			jQuery(this).removeClass('smd_selected');
-		}
-	});
-	jQuery("#smd_thumbnail_size").prop("selectedIndex", idx);
+    var idx = 0;
+    jQuery("#smd_thumbs img").each(function() {
+        if (jQuery(this).hasClass(sel)) {
+            jQuery(this).toggleClass('smd_selected');
+            if (jQuery(this).hasClass('smd_selected')) {
+                jQuery("#smd_upload_thumbnail").attr('disabled', false);
+                jQuery("#smd_thumb_profile").val(sel);
+                idx = jQuery("#smd_thumbnail_size option[value='"+sel+"']").index();
+                jQuery("#smd_thumbnail_chosen_size").val(sel);
+            } else {
+                jQuery("#smd_upload_thumbnail").attr('disabled', true);
+                jQuery("#smd_thumb_profile").val('');
+                jQuery("#smd_thumbnail_chosen_size").val('');
+            }
+        } else {
+            jQuery(this).removeClass('smd_selected');
+        }
+    });
+    jQuery("#smd_thumbnail_size").prop("selectedIndex", idx);
 }
 function smd_thumb_select_changed() {
-	obj = jQuery("#smd_thumbnail_size");
-	if (obj.attr("selectedIndex") == 0) {
-		jQuery("#smd_upload_thumbnail").attr('disabled', true);
-		jQuery("#smd_thumb_profile").val('');
-		jQuery("#smd_thumbnail_chosen_size").val('');
-	} else {
-		jQuery("#smd_upload_thumbnail").attr('disabled', false);
-		jQuery("#smd_thumb_profile").val(obj.val());
-		jQuery("#smd_thumbnail_chosen_size").val(obj.val());
-	}
-	jQuery("#smd_thumbs img").each(function() {
-		if (jQuery(this).hasClass(obj.val())) {
-			jQuery(this).addClass('smd_selected');
-		} else {
-			jQuery(this).removeClass('smd_selected');
-		}
-	});
+    obj = jQuery("#smd_thumbnail_size");
+    if (obj.attr("selectedIndex") == 0) {
+        jQuery("#smd_upload_thumbnail").attr('disabled', true);
+        jQuery("#smd_thumb_profile").val('');
+        jQuery("#smd_thumbnail_chosen_size").val('');
+    } else {
+        jQuery("#smd_upload_thumbnail").attr('disabled', false);
+        jQuery("#smd_thumb_profile").val(obj.val());
+        jQuery("#smd_thumbnail_chosen_size").val(obj.val());
+    }
+    jQuery("#smd_thumbs img").each(function() {
+        if (jQuery(this).hasClass(obj.val())) {
+            jQuery(this).addClass('smd_selected');
+        } else {
+            jQuery(this).removeClass('smd_selected');
+        }
+    });
 }
 jQuery(function() {
-	jQuery("#smd_thumbs img").each(function() {
-		var cls = jQuery(this).attr('class');
-		jQuery(this).click(function() {
-			smd_thumb_selector(cls);
-		});
-	});
-	jQuery("#smd_upload_thumbnail").attr('disabled', true);
-	jQuery(".thumbnail-upload").prepend('<input type="hidden" name="smd_thumb_imgid" value="{$id}" /><input type="hidden" id="smd_thumb_profile" name="smd_thumb_profile" value="" /><input type="hidden" id="smd_thumb_ext" name="smd_thumb_ext" value="{$ext}" />');
+    jQuery("#smd_thumbs img").each(function() {
+        var cls = jQuery(this).attr('class');
+        jQuery(this).click(function() {
+            smd_thumb_selector(cls);
+        });
+    });
+    jQuery("#smd_upload_thumbnail").attr('disabled', true);
+    jQuery(".thumbnail-upload").prepend('<input type="hidden" name="smd_thumb_imgid" value="{$id}" /><input type="hidden" id="smd_thumb_profile" name="smd_thumb_profile" value="" /><input type="hidden" id="smd_thumb_ext" name="smd_thumb_ext" value="{$ext}" />');
 });
 EOC
-	);
+    );
 
-	// Add thumbnails and creation controls
-	if (smd_thumb_table_exist()) {
-		$rs = safe_rows('*', SMD_THUMB, '1=1 ORDER BY name');
-		if ($rs) {
-			$profiles = array('all' => gTxt('smd_thumb_all_sizes'));
-			$thumbs[] = '<div id="smd_thumbs">';
-			foreach ($rs as $row) {
-				if ($row['flags'] & SMD_THUMB_ACTIVE) {
-					$profiles[$row['name']] = $row['name'];
-				}
-				$thumbs[] = smd_thumb_img($row, $currimg);
-			}
-			$thumbs[] = '</div>';
-			$qs = array(
-				"event" => 'image',
-				"step" => 'image_edit',
-				"id" => $id,
-				"page" => $page,
-				"sort" => $sort,
-				"dir" => $dir,
-				"crit" => $crit,
-				"search_method" => $search_method,
-			);
+    // Add thumbnails and creation controls.
+    if (smd_thumb_table_exist()) {
+        $rs = safe_rows('*', SMD_THUMB, '1=1 ORDER BY name');
 
-			$out[] = '<div id="smd_thumbnail_control"><span class="txp-summary lever'.(get_pref('pane_smd_thumbnails_visible') ? ' expanded' : '').'"><a href="#smd_thumbnails">'.gTxt('smd_thumb_thumbnail_heading').'</a></span><div id="smd_thumbnails" class="toggle" style="display:'.(get_pref('pane_smd_thumbnails_visible') ? 'block' : 'none').'">';
-			$out[] = '<form name="smd_thumbnail_create" method="post" action="'.join_qs($qs).'">';
-			$out[] = fInput('hidden', 'smd_step', 'smd_thumbnail_manage');
-			$out[] = fInput('hidden', 'smd_thumbnail_chosen_size', '', '', '', '', '', '', 'smd_thumbnail_chosen_size');
-			$out[] = selectInput('smd_thumbnail_size', $profiles, '', '', ' onchange="return smd_thumb_select_changed()";', 'smd_thumbnail_size');
-			$out[] = fInput('submit', '', gTxt('create'));
-			$out[] = fInput('submit', 'smd_thumbnail_delete', gTxt('delete'));
-			$out[] = join('', $thumbs);
-			$out[] = '</form>';
-			$out[] = upload_form(gTxt('smd_thumb_upload'), 'upload_thumbnail', 'smd_thumbnail_insert', 'image', $id, $file_max_upload_size, 'smd_upload_thumbnail', 'thumbnail-upload');
-			$out[] = '</div>';
-			return join('', $out);
-		}
-	}
-	return ' ';
+        if ($rs) {
+            $profiles = array('all' => gTxt('smd_thumb_all_sizes'));
+            $thumbs[] = '<div id="smd_thumbs">';
+
+            foreach ($rs as $row) {
+                if ($row['flags'] & SMD_THUMB_ACTIVE) {
+                    $profiles[$row['name']] = $row['name'];
+                }
+
+                $thumbs[] = smd_thumb_img($row, $currimg);
+            }
+
+            $thumbs[] = '</div>';
+
+            $qs = array(
+                "event"         => 'image',
+                "step"          => 'image_edit',
+                "id"            => $id,
+                "page"          => $page,
+                "sort"          => $sort,
+                "dir"           => $dir,
+                "crit"          => $crit,
+                "search_method" => $search_method,
+            );
+
+            $out[] = '<div id="smd_thumbnail_control"><span class="txp-summary lever'.(get_pref('pane_smd_thumbnails_visible') ? ' expanded' : '').'"><a href="#smd_thumbnails">'.gTxt('smd_thumb_thumbnail_heading').'</a></span><div id="smd_thumbnails" class="toggle" style="display:'.(get_pref('pane_smd_thumbnails_visible') ? 'block' : 'none').'">';
+            $out[] = '<form name="smd_thumbnail_create" method="post" action="'.join_qs($qs).'">';
+            $out[] = fInput('hidden', 'smd_step', 'smd_thumbnail_manage');
+            $out[] = fInput('hidden', 'smd_thumbnail_chosen_size', '', '', '', '', '', '', 'smd_thumbnail_chosen_size');
+            $out[] = selectInput('smd_thumbnail_size', $profiles, '', '', ' onchange="return smd_thumb_select_changed()";', 'smd_thumbnail_size');
+            $out[] = fInput('submit', '', gTxt('create'));
+            $out[] = fInput('submit', 'smd_thumbnail_delete', gTxt('delete'));
+            $out[] = join('', $thumbs);
+            $out[] = '</form>';
+            $out[] = upload_form(gTxt('smd_thumb_upload'), 'upload_thumbnail', 'smd_thumbnail_insert', 'image', $id, $file_max_upload_size, 'smd_upload_thumbnail', 'thumbnail-upload');
+            $out[] = '</div>';
+
+            return join(n, $out);
+        }
+    }
+
+    return ' ';
 }
 
-// ------------------------
-function smd_thumb_img($row, $currimg, $meta=array(), $dsp='') {
-	global $img_dir, $smd_thumb_data;
+/**
+ * Create an &ltimg&gt tag to a thumbnail.
+ *
+ * @param  array  $row     Thumbnail information
+ * @param  array  $currimg Corresponding image information
+ * @param  array  $meta    Thumbnail meta info
+ * @param  string $dsp     Textpattern Form that contains rendering information
+ * @return string
+ */
+function smd_thumb_img($row, $currimg, $meta = array(), $dsp = '')
+{
+    global $img_dir, $smd_thumb_data;
 
-	smd_thumb_set_impath();
+    smd_thumb_set_impath();
 
-	$dir = sanitizeForUrl($row['name']);
-	$id = $currimg['id'];
-	$ext = $currimg['ext'];
-	// alt is a mandatory attribute so make sure it exists (even if it ="")
-	if (!isset($meta['alt'])) {
-		$meta['alt'] = $currimg['alt'];
-	}
+    $dir = sanitizeForUrl($row['name']);
+    $id = $currimg['id'];
+    $ext = $currimg['ext'];
 
-	$path = IMPATH.$dir.DS.$id.$ext;
+    // alt is a mandatory attribute so make sure it exists (even if it's "").
+    if (!isset($meta['alt'])) {
+        $meta['alt'] = $currimg['alt'];
+    }
 
-	if (file_exists($path)) {
-		$extras = '';
-		if (isset($meta['forcew']) || isset($meta['forceh'])) {
-			$dims = getimagesize($path);
-			if (isset($meta['forcew']) && !$row['width']) {
-				$row['width'] = $dims[0];
-			}
-			if (isset($meta['forceh']) && !$row['height']) {
-				$row['height'] = $dims[1];
-			}
-			unset($meta['forcew']);
-			unset($meta['forceh']);
-		}
+    $path = IMPATH . $dir . DS . $id . $ext;
 
-		if (isset($meta['width']) && $meta['width'] !== '') {
-			$row['width'] = $meta['width'];
-		}
-		if (isset($meta['height']) && $meta['height'] !== '') {
-			$row['height'] = $meta['height'];
-		}
-		unset($meta['width']);
-		unset($meta['height']);
+    if (file_exists($path)) {
+        $extras = '';
 
-		// 'empty' includes zero dimensions which omits the attribute and allows the browser to scale
-		$w = (!empty($row['width'])) ? ' width="'.$row['width'].'"': '';
-		$h = (!empty($row['height'])) ? ' height="'.$row['height'].'"': '';
+        if (isset($meta['forcew']) || isset($meta['forceh'])) {
+            $dims = getimagesize($path);
 
-		$uDate = '';
-		if (!isset($meta['stamp'])) {
-			$uDate = '?'.filemtime($path);
-		}
-		unset($meta['stamp']);
+            if (isset($meta['forcew']) && !$row['width']) {
+                $row['width'] = $dims[0];
+            }
 
-		if (!isset($meta['class'])) {
-			$meta['class'] = $dir;
-		}
+            if (isset($meta['forceh']) && !$row['height']) {
+                $row['height'] = $dims[1];
+            }
 
-		foreach ($meta as $key => $val) {
-			// We need all atts for container tags, but only valid HTML atts should appear in the default <img> tag
-			if (in_array($key, array('alt', 'class', 'title'))) {
-				$extras .= ' '.$key.'="'.$val.'"';
-			}
-		}
+            unset($meta['forcew']);
+            unset($meta['forceh']);
+        }
 
-		if ($dsp) {
-			// Hand off to the form/container for formatting advice
-			$smd_thumb_data = $meta;
-			$smd_thumb_data['id'] = $id;
-			$smd_thumb_data['ext'] = $ext;
-			$smd_thumb_data['alt'] = $alt;
-			$smd_thumb_data['w'] = $row['width'];
-			$smd_thumb_data['h'] = $row['height'];
-			$smd_thumb_data['html_w'] = $w;
-			$smd_thumb_data['html_h'] = $h;
-			return parse($dsp);
-		} else {
-			return '<img src="'.ihu.$img_dir.'/'.$dir.'/'.$id.$ext.$uDate.'"'.$w.$h.$extras.' />';
-		}
-	}
+        if (isset($meta['width']) && $meta['width'] !== '') {
+            $row['width'] = $meta['width'];
+        }
 
-	return '';
+        if (isset($meta['height']) && $meta['height'] !== '') {
+            $row['height'] = $meta['height'];
+        }
+
+        unset($meta['width']);
+        unset($meta['height']);
+
+        // 'empty' includes zero dimensions which omits the attribute and allows the browser to scale.
+        $w = (!empty($row['width'])) ? ' width="'.$row['width'].'"': '';
+        $h = (!empty($row['height'])) ? ' height="'.$row['height'].'"': '';
+
+        $uDate = '';
+
+        if (!isset($meta['stamp'])) {
+            $uDate = '?' . filemtime($path);
+        }
+
+        unset($meta['stamp']);
+
+        if (!isset($meta['class'])) {
+            $meta['class'] = $dir;
+        }
+
+        foreach ($meta as $key => $val) {
+            // We need all atts for container tags, but only valid HTML atts should appear in the default <img> tag.
+            if (in_array($key, array('alt', 'class', 'title'))) {
+                $extras .= ' ' . $key . '="' . $val . '"';
+            }
+        }
+
+        if ($dsp) {
+            // Hand off to the form/container for formatting advice
+            $smd_thumb_data = $meta;
+            $smd_thumb_data['id'] = $id;
+            $smd_thumb_data['ext'] = $ext;
+            $smd_thumb_data['alt'] = $alt;
+            $smd_thumb_data['w'] = $row['width'];
+            $smd_thumb_data['h'] = $row['height'];
+            $smd_thumb_data['html_w'] = $w;
+            $smd_thumb_data['html_h'] = $h;
+            return parse($dsp);
+        } else {
+            return '<img src="' . ihu . $img_dir . '/' . $dir . '/' . $id . $ext . $uDate . '"' . $w . $h . $extras . ' />';
+        }
+    }
+
+    return '';
 }
 
-// ------------------------
-function smd_thumb_profiles($evt, $stp, $dflt, $imglist) {
-	global $smd_thumb_event, $step, $smd_thumb_prevs, $txp_user;
+/**
+ * Callback to render profiles control area on Images panel.
+ *
+ * @param  string $evt     Textpattern event (panel)
+ * @param  string $stp     Texpattern step (action)
+ * @param  string $dflt    Default content HTML
+ * @param  array  $imglist Record set of all images in the list
+ * @return string          HTML
+ */
+function smd_thumb_profiles($evt, $stp, $dflt, $imglist)
+{
+    global $smd_thumb_event, $step, $smd_thumb_prevs, $txp_user;
 
-	if (!has_privs(__FUNCTION__)) {
-		return;
-	}
+    if (!has_privs(__FUNCTION__)) {
+        return;
+    }
 
-	extract(gpsa(array(
-		'page',
-		'sort',
-		'dir',
-		'crit',
-		'search_method',
-		'smd_thumb_add',
-		'smd_thumb_cancel',
-		'smd_thumb_save',
-		'smd_thumb_name',
-		'smd_thumb_newname',
-		'smd_thumb_width',
-		'smd_thumb_height',
-		'smd_thumb_quality',
-		'smd_thumb_active',
-		'smd_thumb_active_new',
-		'smd_thumb_crop',
-		'smd_thumb_sharpen',
-		'smd_thumb_default',
-		'smd_thumb_selected',
-		'smd_thumb_cat_selected',
-		'smd_thumb_usr_selected',
-		'smd_thumb_group_type',
-	)));
+    extract(gpsa(array(
+        'page',
+        'sort',
+        'dir',
+        'crit',
+        'search_method',
+        'smd_thumb_add',
+        'smd_thumb_cancel',
+        'smd_thumb_save',
+        'smd_thumb_name',
+        'smd_thumb_newname',
+        'smd_thumb_width',
+        'smd_thumb_height',
+        'smd_thumb_quality',
+        'smd_thumb_active',
+        'smd_thumb_active_new',
+        'smd_thumb_crop',
+        'smd_thumb_sharpen',
+        'smd_thumb_default',
+        'smd_thumb_selected',
+        'smd_thumb_cat_selected',
+        'smd_thumb_usr_selected',
+        'smd_thumb_group_type',
+    )));
 
-	// Sanitize
-	$quality = (is_numeric($smd_thumb_quality)) ? (($smd_thumb_quality < 0) ? 75 : (($smd_thumb_quality > 100) ? 75 : $smd_thumb_quality) ) : 75;
-	$width = (is_numeric($smd_thumb_width)) ? $smd_thumb_width : 0;
-	$height = (is_numeric($smd_thumb_height)) ? $smd_thumb_height : 0;
-	$newname = sanitizeForUrl($smd_thumb_newname);
-	$msg = '';
+    // Sanitize.
+    $quality = (is_numeric($smd_thumb_quality)) ? (($smd_thumb_quality < 0) ? 75 : (($smd_thumb_quality > 100) ? 75 : $smd_thumb_quality) ) : 75;
+    $width = (is_numeric($smd_thumb_width)) ? $smd_thumb_width : 0;
+    $height = (is_numeric($smd_thumb_height)) ? $smd_thumb_height : 0;
+    $newname = sanitizeForUrl($smd_thumb_newname);
+    $msg = '';
 
-	smd_thumb_set_impath();
+    smd_thumb_set_impath();
 
-	// Table control
-	if (gps('remove')) {
-		smd_thumb_table_remove();
-	} else {
-		if (!smd_thumb_table_exist()) {
-			smd_thumb_table_install();
-		}
-	}
+    // Table control.
+    if (gps('remove')) {
+        smd_thumb_table_remove();
+    } else {
+        if (!smd_thumb_table_exist()) {
+            smd_thumb_table_install();
+        }
+    }
 
-	// Toggle profile panel
-	if ($step == 'save_pane_state') {
-		smd_thumbnail_save_pane_state();
-		return;
-	}
+    // Action to toggle profile panel.
+    if ($step === 'save_pane_state') {
+        smd_thumbnail_save_pane_state();
+        return;
+    }
 
-	if ($step == 'smd_thumb_create_group') {
-		switch ($smd_thumb_group_type) {
-			case 'all':
-				smd_thumb_create_group('all');
-				break;
-			case 'sel':
-				smd_thumb_create_group('sel', rtrim($smd_thumb_selected, ','));
-				break;
-			case 'cat':
-				smd_thumb_create_group('cat', $smd_thumb_cat_selected);
-				break;
-			case 'usr':
-				smd_thumb_create_group('usr', $smd_thumb_usr_selected);
-				break;
-		}
-		set_pref('pane_smd_thumb_group_type', $smd_thumb_group_type, 'smd_thumb', PREF_HIDDEN, 'text_input', 0, PREF_PRIVATE);
-		$step = 'smd_thumb_prefs';
-	}
+    // Action to create thumbnails.
+    if ($step === 'smd_thumb_create_group') {
+        switch ($smd_thumb_group_type) {
+            case 'all':
+                smd_thumb_create_group('all');
+                break;
+            case 'sel':
+                smd_thumb_create_group('sel', rtrim($smd_thumb_selected, ','));
+                break;
+            case 'cat':
+                smd_thumb_create_group('cat', $smd_thumb_cat_selected);
+                break;
+            case 'usr':
+                smd_thumb_create_group('usr', $smd_thumb_usr_selected);
+                break;
+        }
 
-	// Save profile
-	if ($step == 'smd_thumb_profile_save') {
-		if (smd_thumb_table_exist()) {
-			if ($smd_thumb_cancel) {
-				// Do nothing
-			} else if ($smd_thumb_add) {
-				// Create new profile
-				$exists = safe_row('*', SMD_THUMB, "name='".doSlash($newname)."'");
-				if ($exists) {
-					$msg = gTxt('smd_thumb_profile_exists', array('{name}' => doSlash($newname)));
-				} else {
-					if ($newname) {
-						$flags = 0;
-						$flags = ($smd_thumb_active_new) ? $flags | SMD_THUMB_ACTIVE : $flags;
-						$flags = ($smd_thumb_crop) ? $flags | SMD_THUMB_CROP : $flags;
-						$flags = ($smd_thumb_sharpen) ? $flags | SMD_THUMB_SHARP : $flags;
+        set_pref('pane_smd_thumb_group_type', $smd_thumb_group_type, 'smd_thumb', PREF_HIDDEN, 'text_input', 0, PREF_PRIVATE);
+        $step = 'smd_thumb_prefs';
+    }
 
-						safe_insert(SMD_THUMB,
-							"name='".doSlash($newname)."'".
-							", width='".doSlash($width)."'".
-							", height='".doSlash($height)."'".
-							", quality='".doSlash($quality)."'".
-							", flags='".doSlash($flags)."'"
-						);
+    // Action to save profile.
+    if ($step === 'smd_thumb_profile_save') {
+        if (smd_thumb_table_exist()) {
+            if ($smd_thumb_cancel) {
+                // Do nothing.
+            } elseif ($smd_thumb_add) {
+                // Create new profile.
+                $exists = safe_row('*', SMD_THUMB, "name='" . doSlash($newname) . "'");
 
-						// Alter the default thumbnail
-						if ($smd_thumb_default) {
-							set_pref('smd_thumb_default_profile', $newname, 'smd_thumb', PREF_HIDDEN);
-						}
+                if ($exists) {
+                    $msg = gTxt('smd_thumb_profile_exists', array('{name}' => doSlash($newname)));
+                } else {
+                    if ($newname) {
+                        $flags = 0;
+                        $flags = ($smd_thumb_active_new) ? $flags | SMD_THUMB_ACTIVE : $flags;
+                        $flags = ($smd_thumb_crop) ? $flags | SMD_THUMB_CROP : $flags;
+                        $flags = ($smd_thumb_sharpen) ? $flags | SMD_THUMB_SHARP : $flags;
 
-						// Create the thumbnail directory
-						@mkdir(IMPATH.$newname);
-					}
-				}
-			} else {
-				// Update existing profile
-				$name = sanitizeForUrl($smd_thumb_name);
-				$exists = safe_row('*', SMD_THUMB, "name='".doSlash($newname)."'");
-				if ($exists && strtolower($newname) != strtolower($name)) {
-					$msg = gTxt('smd_thumb_profile_exists', array('{name}' => doSlash($newname)));
-				} else {
-					if ($newname) {
-						$flags = 0;
-						$flags = ($smd_thumb_active) ? $flags | SMD_THUMB_ACTIVE : $flags;
-						$flags = ($smd_thumb_crop) ? $flags | SMD_THUMB_CROP : $flags;
-						$flags = ($smd_thumb_sharpen) ? $flags | SMD_THUMB_SHARP : $flags;
+                        safe_insert(
+                            SMD_THUMB,
+                            "name='" . doSlash($newname) . "'"
+                            . ", width='" . doSlash($width) . "'"
+                            . ", height='" . doSlash($height) . "'"
+                            . ", quality='" . doSlash($quality) . "'"
+                            . ", flags='" . doSlash($flags) . "'"
+                        );
 
-						safe_update(
-							SMD_THUMB,
-							"name='".doSlash($newname)."'"
-								.", width='".doSlash($width)."'"
-								.", height='".doSlash($height)."'"
-								.", quality='".doSlash($quality)."'"
-								.", flags='".doSlash($flags)."'"
-							, "name='".doSlash($name)."'"
-						);
+                        // Alter the default thumbnail.
+                        if ($smd_thumb_default) {
+                            set_pref('smd_thumb_default_profile', $newname, 'smd_thumb', PREF_HIDDEN);
+                        }
 
-						// Alter the default thumbnail
-						if ($smd_thumb_default) {
-							set_pref('smd_thumb_default_profile', $newname, 'smd_thumb', PREF_HIDDEN);
-						} else {
-							// Remove the default flag if this used to be the default
-							if (get_pref('smd_thumb_default_profile') == doSlash($name)) {
-								set_pref('smd_thumb_default_profile', '', 'smd_thumb', PREF_HIDDEN);
-							}
-						}
+                        // Create the thumbnail directory
+                        @mkdir(IMPATH.$newname);
+                    }
+                }
+            } else {
+                // Update existing profile.
+                $name = sanitizeForUrl($smd_thumb_name);
+                $exists = safe_row('*', SMD_THUMB, "name='" . doSlash($newname) . "'");
 
-						// Adjust the thumbnail directory if the name has changed
-						if ($newname != $name) {
-							rename(IMPATH.$name, IMPATH.$newname);
-						}
-					}
-				}
-			}
-		} else {
-			$msg = gTxt('smd_thumb_tables_not_installed');
-		}
-		$step = 'smd_thumb_profile';
-	}
+                if ($exists && strtolower($newname) !== strtolower($name)) {
+                    $msg = gTxt('smd_thumb_profile_exists', array('{name}' => doSlash($newname)));
+                } else {
+                    if ($newname) {
+                        $flags = 0;
+                        $flags = ($smd_thumb_active) ? $flags | SMD_THUMB_ACTIVE : $flags;
+                        $flags = ($smd_thumb_crop) ? $flags | SMD_THUMB_CROP : $flags;
+                        $flags = ($smd_thumb_sharpen) ? $flags | SMD_THUMB_SHARP : $flags;
 
-	// Delete profile
-	if ($step == 'smd_thumb_profile_delete') {
-		if (smd_thumb_table_exist()) {
-			$txp_del = get_pref('smd_thumb_txp_delete');
-			$the_dflt = get_pref('smd_thumb_default_profile', '', 1);
+                        safe_update(
+                            SMD_THUMB,
+                            "name='" . doSlash($newname) . "'"
+                            . ", width='" . doSlash($width) . "'"
+                            . ", height='" . doSlash($height) . "'"
+                            . ", quality='" . doSlash($quality) . "'"
+                            . ", flags='" . doSlash($flags) . "'"
+                            , "name='" . doSlash($name) . "'"
+                        );
 
-			if (!empty($smd_thumb_name)) {
-				$name = sanitizeForUrl($smd_thumb_name);
-				$ret = safe_delete(SMD_THUMB, "name='".doSlash($name)."'");
-				if ($ret) {
-					smd_thumb_rmdir(IMPATH.$name);
+                        // Alter the default thumbnail.
+                        if ($smd_thumb_default) {
+                            set_pref('smd_thumb_default_profile', $newname, 'smd_thumb', PREF_HIDDEN);
+                        } else {
+                            // Remove the default flag if this used to be the default.
+                            if (get_pref('smd_thumb_default_profile') === doSlash($name)) {
+                                set_pref('smd_thumb_default_profile', '', 'smd_thumb', PREF_HIDDEN);
+                            }
+                        }
 
-					// Delete all Txp thumbs too?
-					if (($name == $the_dflt) && ($txp_del == '1')) {
-						$rs = safe_rows('id, ext', 'txp_image', 'thumbnail = 1');
-						foreach ($rs as $row) {
-							$path = IMPATH.$row['id'].'t'.$row['ext'];
-							if (file_exists($path)) {
-								unlink($path);
-							}
-						}
-						safe_update('txp_image', 'thumbnail = 0, thumb_w = 0, thumb_h = 0', 'thumbnail = 1');
-					}
+                        // Adjust the thumbnail directory if the name has changed
+                        if ($newname != $name) {
+                            rename(IMPATH.$name, IMPATH.$newname);
+                        }
+                    }
+                }
+            }
+        } else {
+            $msg = gTxt('smd_thumb_tables_not_installed');
+        }
 
-					// Remove the default flag if this used to be the default
-					if (get_pref('smd_thumb_default_profile') == doSlash($name)) {
-						set_pref('smd_thumb_default_profile', '', 'smd_thumb', PREF_HIDDEN);
-					}
+        $step = 'smd_thumb_profile';
+    }
 
-					$msg = gTxt('smd_thumb_profile_deleted', array('{name}' => doSlash($name)));
-				}
-			}
-		}
-		$step = 'smd_thumb_profile';
-	}
+    // Action to delete a profile.
+    if ($step === 'smd_thumb_profile_delete') {
+        if (smd_thumb_table_exist()) {
+            $txp_del = get_pref('smd_thumb_txp_delete');
+            $the_dflt = get_pref('smd_thumb_default_profile', '', 1);
 
-	$qs = array(
-		"event" => 'image',
-		"page" => $page,
-		"sort" => $sort,
-		"dir" => $dir,
-		"crit" => $crit,
-		"search_method" => $search_method,
-	);
+            if (!empty($smd_thumb_name)) {
+                $name = sanitizeForUrl($smd_thumb_name);
+                $ret = safe_delete(SMD_THUMB, "name='" . doSlash($name) . "'");
+                if ($ret) {
+                    smd_thumb_rmdir(IMPATH.$name);
 
-	$privs = safe_field('privs', 'txp_users', "name = '".doSlash($txp_user)."'");
-	$rights = in_array($privs, $smd_thumb_prevs) ? true : false;
+                    // Delete all Txp thumbs too?
+                    if (($name == $the_dflt) && ($txp_del == '1')) {
+                        $rs = safe_rows('id, ext', 'txp_image', 'thumbnail = 1');
 
-	if ($step == 'smd_thumb_prefs') {
+                        foreach ($rs as $row) {
+                            $path = IMPATH . $row['id'] . 't' . $row['ext'];
 
-		// ** THUMBNAIL PREFS **
+                            if (file_exists($path)) {
+                                unlink($path);
+                            }
+                        }
 
-		if (smd_thumb_table_exist()) {
-			$pro_dflt = get_pref('smd_thumb_default_profile', '', 1);
+                        safe_update('txp_image', 'thumbnail = 0, thumb_w = 0, thumb_h = 0', 'thumbnail = 1');
+                    }
 
-			// Subselect lists for type 'cat' and 'usr'
-			$rs = getTree('root', 'image');
-			$allCats = $rs ? treeSelectInput('smd_thumb_cat_selected', $rs, '') : '';
-			$allCats = "<span>".str_replace(array("\n", '-'), array('', '&#45;'), str_replace('</', '<\/', addslashes($allCats)))."<\/span>";
-			$rs = safe_column('name', 'txp_users', "privs not in(0,6) order by name asc");
-			$allUsrs = $rs ? selectInput('smd_thumb_usr_selected', $rs, '', true) : '';
-			$allUsrs = "<span>".str_replace(array("\n", '-'), array('', '&#45;'), str_replace('</', '<\/', addslashes($allUsrs)))."<\/span>";
+                    // Remove the default flag if this used to be the default
+                    if (get_pref('smd_thumb_default_profile') === doSlash($name)) {
+                        set_pref('smd_thumb_default_profile', '', 'smd_thumb', PREF_HIDDEN);
+                    }
 
-			echo script_js(<<<EOC
+                    $msg = gTxt('smd_thumb_profile_deleted', array('{name}' => doSlash($name)));
+                }
+            }
+        }
+
+        $step = 'smd_thumb_profile';
+    }
+
+    $qs = array(
+        "event"         => 'image',
+        "page"          => $page,
+        "sort"          => $sort,
+        "dir"           => $dir,
+        "crit"          => $crit,
+        "search_method" => $search_method,
+    );
+
+    $privs = safe_field('privs', 'txp_users', "name = '" . doSlash($txp_user) . "'");
+    $rights = in_array($privs, $smd_thumb_prevs) ? true : false;
+
+    // Action to show thumbnail prefs.
+    if ($step === 'smd_thumb_prefs') {
+        if (smd_thumb_table_exist()) {
+            $pro_dflt = get_pref('smd_thumb_default_profile', '', 1);
+
+            // Subselect lists for type 'cat' and 'usr'.
+            $rs = getTree('root', 'image');
+            $allCats = $rs ? treeSelectInput('smd_thumb_cat_selected', $rs, '') : '';
+            $allCats = "<span>".str_replace(array("\n", '-'), array('', '&#45;'), str_replace('</', '<\/', addslashes($allCats)))."<\/span>";
+            $rs = safe_column('name', 'txp_users', "privs not in(0,6) order by name asc");
+            $allUsrs = $rs ? selectInput('smd_thumb_usr_selected', $rs, '', true) : '';
+            $allUsrs = "<span>".str_replace(array("\n", '-'), array('', '&#45;'), str_replace('</', '<\/', addslashes($allUsrs)))."<\/span>";
+
+            echo script_js(<<<EOC
 function smd_thumb_switch_pref(obj, name) {
-	if (name == 'create_from') {
-		state = jQuery(obj).val();
-	} else {
-		state = (jQuery(obj).prop('checked')) ? 1 : 0;
-	}
-	sendAsyncEvent(
-	{
-		event: textpattern.event,
-		step: 'smd_thumb_switch_pref',
-		smd_thumb_txptype: name,
-		smd_thumb_state: state
-	});
+    if (name == 'create_from') {
+        state = jQuery(obj).val();
+    } else {
+        state = (jQuery(obj).prop('checked')) ? 1 : 0;
+    }
+    sendAsyncEvent(
+    {
+        event: textpattern.event,
+        step: 'smd_thumb_switch_pref',
+        smd_thumb_txptype: name,
+        smd_thumb_state: state
+    });
 }
 function smd_thumb_copy_selected() {
-	jQuery("#images_form tbody .multi-edit input:checked, #images_form tbody .txp-list-col-multi-edit input:checked").each(function() {
-		jQuery("#smd_thumb_selected").val(jQuery("#smd_thumb_selected").val() + jQuery(this).val() + ',');
-	});
+    jQuery("#images_form tbody .multi-edit input:checked, #images_form tbody .txp-list-col-multi-edit input:checked").each(function() {
+        jQuery("#smd_thumb_selected").val(jQuery("#smd_thumb_selected").val() + jQuery(this).val() + ',');
+    });
 }
 function smd_thumb_subsel(obj) {
-	obj = jQuery(obj);
-	dest = jQuery('#smd_thumb_subsel');
-	item = obj.val();
-	switch (item) {
-		case 'all':
-		case 'sel':
-			dest.empty();
-			break;
-		case 'cat':
-			dest.empty().prepend('{$allCats}');
-			break;
-		case 'usr':
-			dest.empty().prepend('{$allUsrs}');
-			break;
-	}
+    obj = jQuery(obj);
+    dest = jQuery('#smd_thumb_subsel');
+    item = obj.val();
+    switch (item) {
+        case 'all':
+        case 'sel':
+            dest.empty();
+            break;
+        case 'cat':
+            dest.empty().prepend('{$allCats}');
+            break;
+        case 'usr':
+            dest.empty().prepend('{$allUsrs}');
+            break;
+    }
 }
 jQuery(function() {
-	jQuery('#smd_thumb_group_type').change();
+    jQuery('#smd_thumb_group_type').change();
 });
 EOC
-		);
+        );
 
-			$pnlbtn = '<a class="navlink" href="?event=image'.a.'sort='.$sort.a.'dir='.$dir.a.'page='.$page.a.'search_method='.$search_method.a.'crit='.$crit.'">'.gTxt('smd_thumb_btn_pnl').'</a>';
-			$grpbtn = '<button class="navlink" type="submit" onclick="smd_thumb_copy_selected(); return confirm(\''.gTxt('smd_thumb_create_group_confirm').'\');">'.gTxt('smd_thumb_all_thumbs').'</button>';
-			$grpTypes = array(
-				'sel' => gTxt('smd_thumb_bysel'),
-				'cat' => gTxt('smd_thumb_bycat'),
-				'usr' => gTxt('smd_thumb_byusr'),
-				'all' => gTxt('smd_thumb_byall'),
-			);
+            $btnPnl = '<a class="smd_thumb_switcher" href="?event=image'.a.'sort='.$sort.a.'dir='.$dir.a.'page='.$page.a.'search_method='.$search_method.a.'crit='.$crit.'">'.gTxt('smd_thumb_btn_pnl').'</a>';
+            $btnGrp = '<button class="navlink" type="submit" onclick="smd_thumb_copy_selected(); return confirm(\''.gTxt('smd_thumb_create_group_confirm').'\');">'.gTxt('smd_thumb_all_thumbs').'</button>';
+            $grpTypes = array(
+                'sel' => gTxt('smd_thumb_bysel'),
+                'cat' => gTxt('category'),
+                'usr' => gTxt('author'),
+                'all' => gTxt('smd_thumb_byall'),
+            );
 
-			$grpOpts = selectInput('smd_thumb_group_type', $grpTypes, get_pref('pane_smd_thumb_group_type', 'all', 1), '', ' onchange="smd_thumb_subsel(this);"', 'smd_thumb_group_type').'<span id="smd_thumb_subsel"></span>';
+            $grpOpts = selectInput('smd_thumb_group_type', $grpTypes, get_pref('pane_smd_thumb_group_type', 'all', 1), '', ' onchange="smd_thumb_subsel(this);"', 'smd_thumb_group_type').'<span id="smd_thumb_subsel"></span>';
 
-			$out[] = '<div id="smd_thumb_profiles"><div class="txp-summary lever'.(get_pref('pane_smd_thumbnail_profiles_visible') ? ' expanded' : '').'"><a href="#smd_thumbnail_profiles">'.(($rights) ? gTxt('smd_thumb_profile_preftool_heading') : gTxt('smd_thumb_profile_tool_heading')).'</a></div><div id="smd_thumbnail_profiles" class="toggle" style="display:'.(get_pref('pane_smd_thumbnail_profiles_visible') ? 'block' : 'none').'">';
-			$out[] = '<div class="txp-buttons">'.$pnlbtn.'</div>';
+            $out[] = '<div id="smd_thumb_profiles"><h3 class="txp-summary lever'.(get_pref('pane_smd_thumbnail_profiles_visible') ? ' expanded' : '').'"><a href="#smd_thumbnail_profiles">'.(($rights) ? gTxt('smd_thumb_profile_preftool_heading') : gTxt('smd_thumb_profile_tool_heading')).'</a></h3><div id="smd_thumbnail_profiles" class="toggle" style="display:'.(get_pref('pane_smd_thumbnail_profiles_visible') ? 'block' : 'none').'">';
+            $out[] = '<div class="txp-buttons">'.$btnPnl.'</div>';
 
-			$out[] = '<div><div>'.gTxt('smd_thumb_batch_legend').'</div>';
-			$out[] = '<div id="smd_thumb_batch"><span id="smd_thumb_bcurr"></span><span id="smd_thumb_btot"></span></div>';
-			$out[] = '<form method="post" name="smd_thumb_multi_edit" id="smd_thumb_multi_edit" action="'.join_qs($qs).'">';
-			$out[] = startTable();
-			$out[] = tr(td(gTxt('smd_thumb_batch_preamble').$grpbtn.$grpOpts));
-			$out[] = endTable();
-			$out[] = fInput('hidden', 'smd_thumb_selected', '', '', '', '', '', '', 'smd_thumb_selected');
-			$out[] = eInput($smd_thumb_event);
-			$out[] = sInput('smd_thumb_create_group');
-			$out[] = '</form>';
-			$out[] = '</div>';
+            $out[] = '<div id="smd_thumb_batch"><span id="smd_thumb_bcurr"></span><span id="smd_thumb_btot"></span></div>';
+            $out[] = '<form method="post" name="smd_thumb_multi_edit" id="smd_thumb_multi_edit" action="'.join_qs($qs).'">';
+            $out[] = startTable();
+            $out[] = tr(td(gTxt('smd_thumb_batch_preamble') . $grpOpts . $btnGrp));
+            $out[] = endTable();
+            $out[] = fInput('hidden', 'smd_thumb_selected', '', '', '', '', '', '', 'smd_thumb_selected');
+            $out[] = eInput($smd_thumb_event);
+            $out[] = sInput('smd_thumb_create_group');
+            $out[] = '</form>';
 
-			if ($rights) {
-				$out[] = '<div><div>'.gTxt('smd_thumb_prefs').'</div>';
-				$out[] = '<form method="post" name="smd_thumb_prefs" id="smd_thumb_prefs_form" action="'.join_qs($qs).'">';
-				$out[] = startTable();
+            if ($rights) {
+                $out[] = '<div><h4>'.gTxt('smd_thumb_prefs').'</h4>';
+                $out[] = '<form method="post" name="smd_thumb_prefs" id="smd_thumb_prefs_form" action="'.join_qs($qs).'">';
 
-				$txp_rf = get_pref('smd_thumb_create_from', 'full');
-				$out[] = tr(
-					tda(gTxt('smd_thumb_txp_create_from'), ' class="pref-label"') .
-					tda(
-						'<input type="radio" name="smd_thumb_create_from" value="full"'.(($txp_rf=='full') ? ' checked="checked"' : ''). ' class="radio" onchange="smd_thumb_switch_pref(this, \'create_from\');" />'.gTxt('smd_thumb_txp_create_from_full')
-						.'<input type="radio" name="smd_thumb_create_from" value="thumb"'.(($txp_rf=='thumb') ? ' checked="checked"' : ''). ' class="radio" onchange="smd_thumb_switch_pref(this, \'create_from\');" />'.gTxt('smd_thumb_txp_create_from_thumb')
-					));
+                $txp_rf = get_pref('smd_thumb_create_from', 'full');
+                $out[] = '<div class="txp-prefs-group">';
+                $out[] = '<div class="txp-form-field">';
+                $out[] = '<div class="txp-form-field-label"><label>' . gTxt('smd_thumb_txp_create_from') . '</label></div>';
+                $out[] = '<div class="txp-form-field-value">
+                        <label>
+                            <input type="radio"
+                                name="smd_thumb_create_from"
+                                value="full"'
+                                . (($txp_rf=='full') ? ' checked="checked"' : '')
+                                . ' class="radio"
+                                onchange="smd_thumb_switch_pref(this, \'create_from\');" />'
+                                . n . gTxt('smd_thumb_txp_create_from_full')
+                        . '</label>'
+                        . n . '<label>
+                            <input type="radio"
+                                name="smd_thumb_create_from"
+                                value="thumb"'
+                                . (($txp_rf=='thumb') ? ' checked="checked"' : '')
+                                . ' class="radio"
+                                onchange="smd_thumb_switch_pref(this, \'create_from\');" />'
+                                . n . gTxt('smd_thumb_txp_create_from_thumb')
+                        .'</label>';
+                $out[] = '</div></div>';
 
-				if ($pro_dflt) {
-					$txp_c = get_pref('smd_thumb_txp_create');
-					$txp_d = get_pref('smd_thumb_txp_delete');
-					$out[] = tr(
-						tda(gTxt('smd_thumb_txp_default_sync'), ' class="pref-label"') .
-						tda(
-							'<input type="checkbox" name="smd_thumb_txp_create" value="1"'.(($txp_c) ? ' checked="checked"' : ''). ' class="checkbox" onchange="smd_thumb_switch_pref(this, \'txp_create\');" />'.
-							gTxt('smd_thumb_create').
-							'<input type="checkbox" name="smd_thumb_txp_delete" value="1"'.(($txp_d) ? ' checked="checked"' : ''). ' class="checkbox" onchange="smd_thumb_switch_pref(this, \'txp_delete\');" />'.
-							gTxt('smd_thumb_delete')
-						));
-				}
+                if ($pro_dflt) {
+                    $txp_c = get_pref('smd_thumb_txp_create');
+                    $txp_d = get_pref('smd_thumb_txp_delete');
+                    $out[] = '<div class="txp-form-field">';
+                    $out[] = '<div class="txp-form-field-label"><label>' . gTxt('smd_thumb_txp_default_sync') . '</label></div>';
+                    $out[] = '<div class="txp-form-field-value">
+                            <label>
+                                <input type="checkbox"
+                                    name="smd_thumb_txp_create"
+                                    value="1"'
+                                    . (($txp_c) ? ' checked="checked"' : '')
+                                    . ' class="checkbox"
+                                    onchange="smd_thumb_switch_pref(this, \'txp_create\');" />'
+                                    . n . gTxt('smd_thumb_create')
+                            . '</label>'
+                            . n . '<label>
+                                <input type="checkbox"
+                                    name="smd_thumb_txp_delete"
+                                    value="1"'
+                                    . (($txp_d) ? ' checked="checked"' : '')
+                                    . ' class="checkbox"
+                                    onchange="smd_thumb_switch_pref(this, \'txp_delete\');" />'
+                                    . n . gTxt('smd_thumb_delete')
+                            . '</label>';
+                    $out[] = '</div></div>';
+                }
 
-				$txp_ar = get_pref('smd_thumb_auto_replace');
-				$out[] = tr(
-					tda(gTxt('smd_thumb_txp_auto_replace'), ' class="pref-label noline"') .
-					tda(
-						'<input type="checkbox" name="smd_thumb_auto_replace" value="1"'.(($txp_ar) ? ' checked="checked"' : ''). ' class="checkbox" onchange="smd_thumb_switch_pref(this, \'auto_replace\');" />'
-					, ' class="noline"'));
+                $txp_ar = get_pref('smd_thumb_auto_replace');
+                $out[] = '<div class="txp-form-field">';
+                $out[] = '<div class="txp-form-field-label"><label>' . gTxt('smd_thumb_txp_auto_replace') . '</label></div>';
+                $out[] = '<div class="txp-form-field-value">
+                        <label>
+                            <input type="checkbox"
+                                name="smd_thumb_auto_replace"
+                                value="1"'
+                                . (($txp_ar) ? ' checked="checked"' : '')
+                                . ' class="checkbox"
+                                onchange="smd_thumb_switch_pref(this, \'auto_replace\');" />'
+                                . n . gTxt('yes')
+                        . '</label>';
+                $out[] = '</div></div>';
+                $out[] = '</div></form></div>';
+            }
+            $out[] = '</div></div> ';
+        }
+    // Action to show thumbnail profile list.
+    } else {
+        $editFocus = ($step === 'smd_thumb_profile_edit') ? 'jQuery("#smd_thumb_profile_edited input[name=\'smd_thumb_newname\']").focus();' : '';
 
-				$out[] = endTable();
-				$out[] = '</form></div>';
-			}
-			$out[] = '</div></div>';
-		}
-	} else {
-
-		// ** THUMBNAIL PROFILES **
-
-		$editFocus = ($step == 'smd_thumb_profile_edit') ? 'jQuery("#smd_thumb_profile_edited input[name=\'smd_thumb_newname\']").focus();' : '';
-
-		echo script_js(<<<EOC
+        echo script_js(<<<EOC
 function smd_thumb_togglenew() {
-	box = jQuery("#smd_thumb_profile_create");
-	if (box.css("display") == "none") {
-		box.show();
-	} else {
-		box.hide();
-	}
-	jQuery("input.smd_focus").focus();
-	return false;
+    box = jQuery("#smd_thumb_profile_create");
+    if (box.css("display") == "none") {
+        box.show();
+    } else {
+        box.hide();
+    }
+    jQuery("input.smd_focus").focus();
+    return false;
 }
 function smd_thumb_switch_active(name) {
-	sendAsyncEvent(
-	{
-		event: textpattern.event,
-		step: 'smd_thumb_switch_active',
-		smd_thumb_profile: name
-	}, smd_thumb_switch_active_done);
+    sendAsyncEvent(
+    {
+        event: textpattern.event,
+        step: 'smd_thumb_switch_active',
+        smd_thumb_profile: name
+    }, smd_thumb_switch_active_done);
 }
 function smd_thumb_switch_active_done(data) {
-	var smd_thumb_profile = jQuery('#smd_thumb_profile_'+jQuery(data).find('smd_thumb_profile').attr('value'));
-	smd_thumb_profile.toggleClass('smd_inactive');
-	if (smd_thumb_profile.hasClass('smd_inactive')) {
-		smd_thumb_profile.find('input:checkbox').removeAttr('checked');
-	} else {
-		smd_thumb_profile.find('input:checkbox').attr('checked', 'checked');
-	}
+    var smd_thumb_profile = jQuery('#smd_thumb_profile_'+jQuery(data).find('smd_thumb_profile').attr('value'));
+    smd_thumb_profile.toggleClass('smd_inactive');
+    if (smd_thumb_profile.hasClass('smd_inactive')) {
+        smd_thumb_profile.find('input:checkbox').removeAttr('checked');
+    } else {
+        smd_thumb_profile.find('input:checkbox').attr('checked', 'checked');
+    }
 }
 
 jQuery(function() {
-	jQuery('.smd_thumb_heading_active').click(function() {
-		jQuery('.smd_thumb_row input:checkbox').each(function() {
-			smd_thumb_switch_active(jQuery(this).parent().attr('class'));
-		});
-	});
-	{$editFocus}
+    jQuery('.smd_thumb_heading_active').click(function() {
+        jQuery('.smd_thumb_row input:checkbox').each(function() {
+            smd_thumb_switch_active(jQuery(this).parent().attr('class'));
+        });
+    });
+    {$editFocus}
 });
 EOC
-		);
+        );
 
-		$newbtn = '<a class="navlink" href="#" onclick="return smd_thumb_togglenew();">'.gTxt('smd_thumb_new').'</a>';
-		$prefbtn = '<a class="navlink" href="?event=image'.a.'step=smd_thumb_prefs'.a.'sort='.$sort.a.'dir='.$dir.a.'page='.$page.a.'search_method='.$search_method.a.'crit='.$crit.'">'.(($rights) ? gTxt('smd_thumb_btn_tools_prefs') : gTxt('smd_thumb_btn_tools')).'</a>';
+        $btnNew = '<a href="#" onclick="return smd_thumb_togglenew();">'.gTxt('smd_thumb_new').'</a>';
+        $btnPref = '<a class="smd_thumb_switcher" href="?event=image'.a.'step=smd_thumb_prefs'.a.'sort='.$sort.a.'dir='.$dir.a.'page='.$page.a.'search_method='.$search_method.a.'crit='.$crit.'">'.(($rights) ? gTxt('smd_thumb_btn_tools_prefs') : gTxt('smd_thumb_btn_tools')).'</a>';
+        $btnCancel = fInput('submit', 'smd_thumb_cancel', gTxt('Cancel'));
 
-		$headings = n.'<thead>'.tr(
-			n.column_head('name', 'name', 'image', false, 'asc').
-			column_head('thumb_width', 'width', 'image', false).
-			column_head('thumb_height', 'height', 'image', false).
-			column_head(gTxt('smd_thumb_quality'), 'quality', 'image', false).
-			column_head('keep_square_pixels', 'crop', 'image', false).
-			column_head(gTxt('smd_thumb_sharpen'), 'sharpen', 'image', false).
-			column_head('active', 'active', 'image', false, '', '', '', 'smd_thumb_heading_active').
-			column_head('default', 'default', 'image', false).
-			column_head(gTxt('smd_thumb_actions'), 'actions', 'image', false)
-		).'</thead>';
+        $headings = n.'<thead>'.tr(
+            n.column_head('name', 'name', 'image', false, 'asc').
+            column_head('thumb_width', 'width', 'image', false).
+            column_head('thumb_height', 'height', 'image', false).
+            column_head(gTxt('smd_thumb_quality'), 'quality', 'image', false).
+            column_head('keep_square_pixels', 'crop', 'image', false).
+            column_head(gTxt('smd_thumb_sharpen'), 'sharpen', 'image', false).
+            column_head('active', 'active', 'image', false, '', '', '', 'smd_thumb_heading_active').
+            column_head('default', 'default', 'image', false).
+            column_head(gTxt('smd_thumb_actions'), 'actions', 'image', false)
+        ).'</thead>';
 
-		$out[] = '<div id="smd_thumb_profiles"><div class="txp-summary lever'.(get_pref('pane_smd_thumbnail_profiles_visible') ? ' expanded' : '').'"><a href="#smd_thumbnail_profiles">'.gTxt('smd_thumb_profile_heading').'</a></div><div id="smd_thumbnail_profiles" class="toggle" style="display:'.(get_pref('pane_smd_thumbnail_profiles_visible') ? 'block' : 'none').'">';
-		$out[] = '<div class="txp-buttons">'.$newbtn.n.$prefbtn.'</div>';
+        $out[] = '<div id="smd_thumb_profiles"><h3 class="txp-summary lever'.(get_pref('pane_smd_thumbnail_profiles_visible') ? ' expanded' : '').'"><a href="#smd_thumbnail_profiles" class="smd_thumbnail_heading">'.gTxt('smd_thumb_profile_heading').'</a></h3><div id="smd_thumbnail_profiles" class="toggle" style="display:'.(get_pref('pane_smd_thumbnail_profiles_visible') ? 'block' : 'none').'">';
+        $out[] = '<div class="txp-buttons">'.n.$btnPref.'</div>';
 
-		// Main list of profiles
-		$out[] = '<form method="post" name="smd_thumb_profile_form" id="smd_thumb_profile_form" action="'.join_qs($qs).'">';
-		$out[] = startTable();
-		$out[] = $headings;
+        // Main list of profiles.
+        $out[] = '<form method="post" name="smd_thumb_profile_form" id="smd_thumb_profile_form" action="'.join_qs($qs).'">';
+        $out[] = startTable();
+        $out[] = $headings;
 
-		if (smd_thumb_table_exist()) {
-			$rs = safe_rows('*', SMD_THUMB, '1=1 ORDER BY name');
-			$pro_dflt = get_pref('smd_thumb_default_profile', '', 1);
+        if (smd_thumb_table_exist()) {
+            $rs = safe_rows('*', SMD_THUMB, '1=1 ORDER BY name');
+            $pro_dflt = get_pref('smd_thumb_default_profile', '', 1);
 
-			// New Profile row
-			$out[]= '<tr id="smd_thumb_profile_create" class="smd_hidden">';
-			$out[] = td(sInput('smd_thumb_profile_save').fInput('text', 'smd_thumb_newname', (($step=='smd_thumb_profile_save') ? $smd_thumb_name : ''), 'smd_focus'))
-				.td(fInput('text', 'smd_thumb_width', (($step=='smd_thumb_profile_save') ? $width : ''), '', '', '', '4'))
-				.td(fInput('text', 'smd_thumb_height', (($step=='smd_thumb_profile_save') ? $height : ''), '', '', '', '4'))
-				.td(fInput('text', 'smd_thumb_quality', (($step=='smd_thumb_profile_save') ? $quality : ''), '', '', '', '4'))
-				.td(checkbox('smd_thumb_crop', '1', (($step=='smd_thumb_profile_save') ? $smd_thumb_crop : 0)))
-				.td(checkbox('smd_thumb_sharpen', '1', (($step=='smd_thumb_profile_save') ? $smd_thumb_sharpen : 0)))
-				.td(checkbox('smd_thumb_active_new', '1', 1))
-				.td(checkbox('smd_thumb_default', '1', 0))
-				.td(fInput('submit', 'smd_thumb_add', gTxt('add')));
-			$out[]= '</tr>';
+            // Row for each currently-defined profile.
+            foreach ($rs as $row) {
+                $link_edt = join_qs($qs).a.'step=smd_thumb_profile_edit'.a.'smd_thumb_name='.$row['name'];
+                $link_del = join_qs($qs).a.'step=smd_thumb_profile_delete'.a.'smd_thumb_name='.$row['name'];
+                $btnEdt = '<a href="'.$link_edt.'">[' . gTxt('edit') . ']</a>';
+                $btnDel = '<a href="'.$link_del.'" onclick="return confirm(\''.gTxt('smd_thumb_delete_confirm', array("{name}" => $row['name'])).'\');">[' . gTxt('delete') . ']</a>';
+                $active = ($row['flags'] & SMD_THUMB_ACTIVE) ? 1 : 0;
+                $crop = ($row['flags'] & SMD_THUMB_CROP) ? 1 : 0;
+                $sharpen = ($row['flags'] & SMD_THUMB_SHARP) ? 1 : 0;
 
-			// Remaining rows
-			foreach ($rs as $row) {
-				$link_edt = join_qs($qs).a.'step=smd_thumb_profile_edit'.a.'smd_thumb_name='.$row['name'];
-				$link_del = join_qs($qs).a.'step=smd_thumb_profile_delete'.a.'smd_thumb_name='.$row['name'];
-				$btnEdt = '<a href="'.$link_edt.'">[' . gTxt('edit') . ']</a>';
-				$btnDel = '<a href="'.$link_del.'" onclick="return confirm(\''.gTxt('smd_thumb_delete_confirm', array("{name}" => $row['name'])).'\');">[' . gTxt('delete') . ']</a>';
-				$active = ($row['flags'] & SMD_THUMB_ACTIVE) ? 1 : 0;
-				$crop = ($row['flags'] & SMD_THUMB_CROP) ? 1 : 0;
-				$sharpen = ($row['flags'] & SMD_THUMB_SHARP) ? 1 : 0;
+                if ($step == 'smd_thumb_profile_edit' && $row['name'] == $smd_thumb_name) {
+                    $btnSave = fInput('submit', 'smd_thumb_save', gTxt('Save'), 'publish');
+                    $out[] = tr(
+                        tda(hInput('smd_thumb_name', $row['name']).fInput('text', 'smd_thumb_newname', $row['name']), array('data-th' => gTxt('name')))
+                        .tda(fInput('text', 'smd_thumb_width', $row['width'], '', '', '', '4'), array('data-th' => gTxt('thumb_width')))
+                        .tda(fInput('text', 'smd_thumb_height', $row['height'], '', '', '', '4'), array('data-th' => gTxt('thumb_height')))
+                        .tda(fInput('text', 'smd_thumb_quality', $row['quality'], '', '', '', '4'), array('data-th' => gTxt('smd_thumb_quality')))
+                        .tda(checkbox('smd_thumb_crop', '1', $crop), array('data-th' => gTxt('keep_square_pixels')))
+                        .tda(checkbox('smd_thumb_sharpen', '1', $sharpen), array('data-th' => gTxt('smd_thumb_sharpen')))
+                        .tda(checkbox('smd_thumb_active', '1', $active), array('data-th' => gTxt('active'), 'class' => $row['name']))
+                        .tda(checkbox('smd_thumb_default', '1', (($row['name'] == $pro_dflt) ? 1 : 0)), array('data-th' => gTxt('default')))
+                        .tda($btnSave.$btnCancel, array('data-th' => gTxt('smd_thumb_actions')))
+                    , ' id="smd_thumb_profile_edited"');
+                } else {
+                    $out[] = tr(
+                        tda(href($row['name'], $link_edt), array('data-th' => gTxt('name'))).
+                        tda($row['width'], array('data-th' => gTxt('thumb_width'))).
+                        tda($row['height'], array('data-th' => gTxt('thumb_height'))).
+                        tda($row['quality'], array('data-th' => gTxt('smd_thumb_quality'))).
+                        tda(($crop) ? gTxt('yes') : gTxt('no'), array('data-th' => gTxt('keep_square_pixels'))).
+                        tda(($sharpen) ? gTxt('yes') : gTxt('no'), array('data-th' => gTxt('smd_thumb_sharpen'))).
+                        tda('<input type="checkbox" name="smd_thumb_active_'.$row['name'].'" value="1"'.(($active) ? ' checked="checked"' : ''). ' class="checkbox" onchange="smd_thumb_switch_active(\''.$row['name'].'\');" />', array('data-th' => gTxt('active'), 'class' => $row['name'])).
+                        tda(($row['name'] == $pro_dflt) ? gTxt('yes') : gTxt('no'), array('data-th' => gTxt('default'))).
+                        tda($btnDel, array('data-th' => gTxt('smd_thumb_actions')))
+                    , ' id="smd_thumb_profile_'.$row['name'].'" class="smd_thumb_row' . (($active) ? '' : ' smd_inactive').'"');
+                }
+            }
 
-				if ($step == 'smd_thumb_profile_edit' && $row['name'] == $smd_thumb_name) {
-					$btnSave = fInput('submit', 'smd_thumb_save', gTxt('Save'));
-					$btnCancel = fInput('submit', 'smd_thumb_cancel', gTxt('Cancel'));
-					$out[] = tr(
-						td(hInput('smd_thumb_name', $row['name']).fInput('text', 'smd_thumb_newname', $row['name']))
-						.td(fInput('text', 'smd_thumb_width', $row['width'], '', '', '', '4'))
-						.td(fInput('text', 'smd_thumb_height', $row['height'], '', '', '', '4'))
-						.td(fInput('text', 'smd_thumb_quality', $row['quality'], '', '', '', '4'))
-						.td(checkbox('smd_thumb_crop', '1', $crop))
-						.td(checkbox('smd_thumb_sharpen', '1', $sharpen))
-						.td(checkbox('smd_thumb_active', '1', $active), '', $row['name'])
-						.td(checkbox('smd_thumb_default', '1', (($row['name'] == $pro_dflt) ? 1 : 0)))
-						.td($btnSave.$btnCancel)
-					, ' id="smd_thumb_profile_edited"');
-				} else {
-					$out[] = tr(
-						td(href($row['name'], $link_edt)).
-						td($row['width']).
-						td($row['height']).
-						td($row['quality']).
-						td(($crop) ? gTxt('yes') : gTxt('no')).
-						td(($sharpen) ? gTxt('yes') : gTxt('no')).
-						td('<input type="checkbox" name="smd_thumb_active_'.$row['name'].'" value="1"'.(($active) ? ' checked="checked"' : ''). ' class="checkbox" onchange="smd_thumb_switch_active(\''.$row['name'].'\');" />', '', $row['name']).
-						td(($row['name'] == $pro_dflt) ? gTxt('yes') : gTxt('no')).
-						td($btnDel)
-					, ' id="smd_thumb_profile_'.$row['name'].'" class="smd_thumb_row' . (($active) ? '' : ' smd_inactive').'"');
-				}
-			}
-		}
+            // New Profile row.
+            $out[]= '<tr id="smd_thumb_profile_create" class="smd_hidden">';
+            $out[] = tda(sInput('smd_thumb_profile_save').fInput('text', 'smd_thumb_newname', (($step === 'smd_thumb_profile_save') ? $smd_thumb_name : ''), 'smd_focus'), array('data-th' => gTxt('name')))
+                .tda(fInput('text', 'smd_thumb_width', (($step === 'smd_thumb_profile_save') ? $width : ''), '', '', '', INPUT_XSMALL), array('data-th' => gTxt('thumb_width')))
+                .tda(fInput('text', 'smd_thumb_height', (($step === 'smd_thumb_profile_save') ? $height : ''), '', '', '', INPUT_XSMALL), array('data-th' => gTxt('thumb_height')))
+                .tda(fInput('text', 'smd_thumb_quality', (($step === 'smd_thumb_profile_save') ? $quality : ''), '', '', '', INPUT_XSMALL), array('data-th' => gTxt('smd_thumb_quality')))
+                .tda(checkbox('smd_thumb_crop', '1', (($step === 'smd_thumb_profile_save') ? $smd_thumb_crop : 0)), array('data-th' => gTxt('keep_square_pixels')))
+                .tda(checkbox('smd_thumb_sharpen', '1', (($step === 'smd_thumb_profile_save') ? $smd_thumb_sharpen : 0)), array('data-th' => gTxt('smd_thumb_sharpen')))
+                .tda(checkbox('smd_thumb_active_new', '1', 1), array('data-th' => gTxt('active')))
+                .tda(checkbox('smd_thumb_default', '1', 0), array('data-th' => gTxt('default')))
+                .tda(fInput('submit', 'smd_thumb_add', gTxt('add'), 'publish').$btnCancel, array('data-th' => gTxt('smd_thumb_actions')));
+            $out[]= '</tr>';
 
-		$out[] = endTable();
-		$out[] = '</form></div></div>';
-	}
+        }
 
-	return join('', $out);
+        $out[] = endTable().n.$btnNew;
+        $out[] = '</form></div></div>';
+    }
+
+    return join(n, $out);
 }
 
-// ------------------------
-// Useful function for other plugins to use to retrieve a list of current profiles
-function smd_thumb_get_profiles($active=1, $order='name') {
-	$allowedOrders = array('name', 'width', 'height','quality');
-	$order = in_array($order, $allowedOrders) ? $order : 'name';
+/**
+ * Useful function for other plugins to use to retrieve a list of current profiles.
+ *
+ * @param  integer $active Whether to only return active profiles (1) or all of them (0)
+ * @param  string  $order  The order in which to return the list
+ * @return array
+ */
+function smd_thumb_get_profiles($active = 1, $order = 'name')
+{
+    $allowedOrders = array('name', 'width', 'height','quality');
+    $order = in_array($order, $allowedOrders) ? $order : 'name';
+    $where[] = '1=1';
 
-	$where[] = '1=1';
-	if ($active) {
-		$where[] = 'flags & '.SMD_THUMB_ACTIVE;
-	}
+    if ($active) {
+        $where[] = 'flags & ' . SMD_THUMB_ACTIVE;
+    }
 
-	$rs = safe_rows('*', SMD_THUMB, join(' AND ', $where) . ' ORDER BY '.$order);
+    $rs = safe_rows('*', SMD_THUMB, join(' AND ', $where) . ' ORDER BY '.$order);
 
-	return $rs;
+    return $rs;
 }
 
-// ------------------------
-// Delete a thumbnail directory and its contents
-function smd_thumb_rmdir($dir) {
-	if (is_dir($dir)) {
-		$objects = scandir($dir);
-		foreach ($objects as $object) {
-			if ($object != "." && $object != "..") {
-				if (filetype($dir.DS.$object) == "dir") smd_thumb_rmdir($dir.DS.$object); else unlink($dir.DS.$object);
-			}
-		}
-		reset($objects);
-		rmdir($dir);
-	}
+/**
+ * Delete a thumbnail directory and its contents.
+ *
+ * @param  string $dir Directory to remove.
+ */
+function smd_thumb_rmdir($dir)
+{
+    if (is_dir($dir)) {
+        $objects = scandir($dir);
+
+        foreach ($objects as $object) {
+            if ($object != "." && $object != "..") {
+                if (filetype($dir.DS.$object) == "dir") smd_thumb_rmdir($dir.DS.$object); else unlink($dir.DS.$object);
+            }
+        }
+
+        reset($objects);
+        rmdir($dir);
+    }
 }
 
-// ------------------------
-function smd_thumb_set_impath() {
-	global $path_to_site, $img_dir;
-	if (!defined('IMPATH')) {
-		define('IMPATH', $path_to_site.DS.$img_dir.DS);
-	}
+/**
+ * Set the global image path if not already set.
+ */
+function smd_thumb_set_impath()
+{
+    global $path_to_site, $img_dir;
+
+    if (!defined('IMPATH')) {
+        define('IMPATH', $path_to_site . DS . $img_dir . DS);
+    }
 }
 
-// ------------------------
-// Add thumbnail table if not already installed
-// Flags: Bit 0=Active / 1=Crop / 2 = Sharpen
-function smd_thumb_table_install() {
-	$GLOBALS['txp_err_count'] = 0;
-	$ret = '';
-	$sql = array();
-	$sql[] = "CREATE TABLE IF NOT EXISTS `".PFX.SMD_THUMB."` (
-		`name` varchar(32) NOT NULL default '',
-		`width` int(4) NOT NULL default '0',
-		`height` int(4) NOT NULL default '0',
-		`quality` tinyint(2) NULL default '75',
-		`flags` tinyint(2) NOT NULL default '0',
-		PRIMARY KEY (`name`)
-	) ENGINE=MyISAM";
+/**
+ * Add thumbnail table if not already installed.
+ *
+ * Flags: Bit 0=Active / 1=Crop / 2=Sharpen
+ */
+function smd_thumb_table_install()
+{
+    global $DB;
 
-	if(gps('debug')) {
-		dmp($sql);
-	}
-	foreach ($sql as $qry) {
-		$ret = safe_query($qry);
-		if ($ret===false) {
-			$GLOBALS['txp_err_count']++;
-			echo "<b>".$GLOBALS['txp_err_count'].".</b> ".mysql_error()."<br />\n";
-			echo "<!--\n $qry \n-->\n";
-		}
-	}
+    $tableDef = "
+        name    VARCHAR(32) NOT NULL DEFAULT '',
+        width   INT(4)      NOT NULL DEFAULT '0',
+        height  INT(4)      NOT NULL DEFAULT '0',
+        quality TINYINT(2)  NULL     DEFAULT '75',
+        flags   TINYINT(2)  NOT NULL DEFAULT '0',
+        PRIMARY KEY (name)
+    ";
 
-	// Backup the current thumb prefs
-	$exists = safe_row('*', 'txp_prefs', "name='smd_thumb_backup_w'");
-	if (!$exists) {
-		set_pref('smd_thumb_backup_w', get_pref('thumb_w'), 'smd_thumb', PREF_HIDDEN, 'text_input', 0);
-		set_pref('smd_thumb_backup_h', get_pref('thumb_h'), 'smd_thumb', PREF_HIDDEN, 'text_input', 1);
-		set_pref('smd_thumb_backup_c', get_pref('thumb_crop'), 'smd_thumb', PREF_HIDDEN, 'text_input', 2);
+    if (!safe_create(SMD_THUMB, $tableDef)) {
+        echo mysqli_error($DB->link);
+    }
 
-		// Erase the current thumb prefs
-		set_pref('thumb_w', '', 'image', PREF_HIDDEN);
-		set_pref('thumb_h', '', 'image', PREF_HIDDEN);
-		set_pref('thumb_crop', '', 'image', PREF_HIDDEN);
-	}
+    // Backup the current thumb prefs.
+    $exists = safe_row('*', 'txp_prefs', "name='smd_thumb_backup_w'");
+
+    if (!$exists) {
+        set_pref('smd_thumb_backup_w', get_pref('thumb_w'), 'smd_thumb', PREF_HIDDEN, 'text_input', 0);
+        set_pref('smd_thumb_backup_h', get_pref('thumb_h'), 'smd_thumb', PREF_HIDDEN, 'text_input', 1);
+        set_pref('smd_thumb_backup_c', get_pref('thumb_crop'), 'smd_thumb', PREF_HIDDEN, 'text_input', 2);
+
+        // Erase the current thumb prefs
+        set_pref('thumb_w', '', 'image', PREF_HIDDEN);
+        set_pref('thumb_h', '', 'image', PREF_HIDDEN);
+        set_pref('thumb_crop', '', 'image', PREF_HIDDEN);
+    }
 }
 
-// ------------------------
-// Drop table if in database
-function smd_thumb_table_remove() {
-	$ret = '';
-	$sql = array();
-	$GLOBALS['txp_err_count'] = 0;
-	if (smd_thumb_table_exist()) {
-		$sql[] = "DROP TABLE IF EXISTS " .PFX.SMD_THUMB. "; ";
-		if(gps('debug')) {
-			dmp($sql);
-		}
-		foreach ($sql as $qry) {
-			$ret = safe_query($qry);
-			if ($ret===false) {
-				$GLOBALS['txp_err_count']++;
-				echo "<b>".$GLOBALS['txp_err_count'].".</b> ".mysql_error()."<br />\n";
-				echo "<!--\n $qry \n-->\n";
-			}
-		}
-	}
+/**
+ * Drop thumbnail table if in database.
+ */
+function smd_thumb_table_remove()
+{
+    global $DB;
 
-	// Restore the original thumb prefs
-	$exists = safe_row('*', 'txp_prefs', "name='smd_thumb_backup_w'");
-	if ($exists) {
-		set_pref('thumb_w', get_pref('smd_thumb_backup_w'), 'image', PREF_HIDDEN);
-		set_pref('thumb_h', get_pref('smd_thumb_backup_h'), 'image', PREF_HIDDEN);
-		set_pref('thumb_crop', get_pref('smd_thumb_backup_c'), 'image', PREF_HIDDEN);
+    if (!safe_drop(SMD_THUMB)) {
+        echo mysqli_error($DB->link);
+    }
 
-	}
-	// Erase the backup thumb prefs
-	safe_delete('txp_prefs', "name IN('smd_thumb_backup_w', 'smd_thumb_backup_h', 'smd_thumb_backup_c', 'smd_thumb_default_profile', 'pane_smd_thumbnail_profiles_visible', 'pane_smd_thumbnails_visible')");
+    // Restore the original thumb prefs.
+    $exists = safe_row('*', 'txp_prefs', "name='smd_thumb_backup_w'");
+
+    if ($exists) {
+        set_pref('thumb_w', get_pref('smd_thumb_backup_w'), 'image', PREF_HIDDEN);
+        set_pref('thumb_h', get_pref('smd_thumb_backup_h'), 'image', PREF_HIDDEN);
+        set_pref('thumb_crop', get_pref('smd_thumb_backup_c'), 'image', PREF_HIDDEN);
+
+    }
+
+    // Erase the backup thumb prefs.
+    safe_delete('txp_prefs',
+        "name IN('smd_thumb_backup_w', 'smd_thumb_backup_h', 'smd_thumb_backup_c', 'smd_thumb_default_profile', 'pane_smd_thumbnail_profiles_visible', 'pane_smd_thumbnails_visible')");
 }
 
-// ------------------------
-function smd_thumb_table_exist($all='') {
-	if ($all) {
-		$tbls = array(SMD_THUMB => 5);
-		$out = count($tbls);
-		foreach ($tbls as $tbl => $cols) {
-			if (gps('debug')) {
-				echo "++ TABLE ".$tbl." HAS ".count(@safe_show('columns', $tbl))." COLUMNS; REQUIRES ".$cols." ++".br;
-			}
-			if (count(@safe_show('columns', $tbl)) == $cols) {
-				$out--;
-			}
-		}
-		return ($out===0) ? 1 : 0;
-	} else {
-		if (gps('debug')) {
-			echo "++ TABLE ".SMD_THUMB." HAS ".count(@safe_show('columns', SMD_THUMB))." COLUMNS;";
-		}
-		return(@safe_show('columns', SMD_THUMB));
-	}
+/**
+ * Determine if the thumbnail table exists.
+ *
+ * @param  string $all [description]
+ */
+function smd_thumb_table_exist($all='')
+{
+    if ($all) {
+        $tbls = array(SMD_THUMB => 5);
+        $out = count($tbls);
+        foreach ($tbls as $tbl => $cols) {
+            if (gps('debug')) {
+                echo "++ TABLE ".$tbl." HAS ".count(@safe_show('columns', $tbl))." COLUMNS; REQUIRES ".$cols." ++".br;
+            }
+            if (count(@safe_show('columns', $tbl)) == $cols) {
+                $out--;
+            }
+        }
+        return ($out===0) ? 1 : 0;
+    } else {
+        if (gps('debug')) {
+            echo "++ TABLE ".SMD_THUMB." HAS ".count(@safe_show('columns', SMD_THUMB))." COLUMNS;";
+        }
+        return(@safe_show('columns', SMD_THUMB));
+    }
 }
 
-// -------------------------------------------------------------
-function smd_thumbnail_save_pane_state() {
-	$panes = array('smd_thumbnail_profiles', 'smd_thumbnails');
-	$pane = gps('pane');
-	if (in_array($pane, $panes))
-	{
-		set_pref("pane_{$pane}_visible", (gps('visible') == 'true' ? '1' : '0'), 'smd_thumb', PREF_HIDDEN, 'yesnoradio', 0, PREF_PRIVATE);
-		send_xml_response();
-	} else {
-		send_xml_response(array('http-status' => '400 Bad Request'));
-	}
+/**
+ * AJAX function to store the state of the current UI elements (which pane is visible).
+ */
+function smd_thumbnail_save_pane_state()
+{
+    $panes = array('smd_thumbnail_profiles', 'smd_thumbnails');
+    $pane = gps('pane');
+
+    if (in_array($pane, $panes)) {
+        set_pref("pane_{$pane}_visible", (gps('visible') == 'true' ? '1' : '0'), 'smd_thumb', PREF_HIDDEN, 'yesnoradio', 0, PREF_PRIVATE);
+        send_xml_response();
+    } else {
+        send_xml_response(array('http-status' => '400 Bad Request'));
+    }
 }
 
-//*****************
-// PUBLIC SIDE TAGS
-//*****************
-// ------------------------
-function smd_thumbnail($atts, $thing=NULL) {
-	global $thisimage, $img_dir;
+/**
+ * Public tag: show a thumbnail.
+ *
+ * @param  array  $atts  Tag attributes
+ * @param  string $thing Container
+ * @return string        HTML
+ */
+function smd_thumbnail($atts, $thing = NULL)
+{
+    global $thisimage, $img_dir;
 
-	extract(lAtts(array(
-		'type'       => get_pref('smd_thumb_default_profile', ''),
-		'id'         => '',
-		'name'       => '',
-		'escape'     => 'html',
-		'wraptag'    => '',
-		'class'      => '',
-		'html_id'    => '',
-		'style'      => '',
-		'link'       => '',
-		'link_rel'   => '',
-		'poplink'    => 0,
-		'add_stamp'  => 0,
-		'width'      => '',
-		'height'     => '',
-		'force_size' => '',
-		'display'    => 'thumbnail', // thumbnail (full img tag) or url
-		'form'       => '',
-	),$atts));
+    extract(lAtts(array(
+        'type'       => get_pref('smd_thumb_default_profile', ''),
+        'id'         => '',
+        'name'       => '',
+        'escape'     => 'html',
+        'wraptag'    => '',
+        'class'      => '',
+        'html_id'    => '',
+        'style'      => '',
+        'link'       => '',
+        'link_rel'   => '',
+        'poplink'    => 0,
+        'add_stamp'  => 0,
+        'width'      => '',
+        'height'     => '',
+        'force_size' => '',
+        'display'    => 'thumbnail', // thumbnail (full img tag) or url
+        'form'       => '',
+    ), $atts));
 
-	$thing = (empty($form)) ? $thing : fetch_form($form);
+    $thing = (empty($form)) ? $thing : fetch_form($form);
 
-	if ($name) {
-		$name = doSlash($name);
-		$rs = safe_row('*', 'txp_image', "name = '$name' limit 1");
-	} elseif ($id) {
-		$id = (int) $id;
-		$rs = safe_row('*', 'txp_image', "id = $id limit 1");
-	} elseif ($thisimage) {
-		$id = (int) $thisimage['id'];
-		$rs = $thisimage;
-	} else {
-		trigger_error(gTxt('unknown_image'));
-		return;
-	}
+    if ($name) {
+        $name = doSlash($name);
+        $rs = safe_row('*', 'txp_image', "name = '$name' limit 1");
+    } elseif ($id) {
+        $id = (int) $id;
+        $rs = safe_row('*', 'txp_image', "id = $id limit 1");
+    } elseif ($thisimage) {
+        $id = (int) $thisimage['id'];
+        $rs = $thisimage;
+    } else {
+        trigger_error(gTxt('unknown_image'));
+        return;
+    }
 
-	smd_thumb_set_impath();
+    smd_thumb_set_impath();
 
-	if ($rs) {
-		extract($rs);
-		$thumbinfo = safe_row('*', SMD_THUMB, "name='".doSlash($type)."'");
-		if ($thumbinfo) {
-			$dir = sanitizeForUrl($thumbinfo['name']);
-			$path = IMPATH.$dir.DS.$id.$ext;
-			if (file_exists($path)) {
-				// Drop out if all we need to display is the thumb's URL
-				if ($display == 'url') {
-					return ihu.$img_dir.'/'.$dir.'/'.$id.$ext;
-				}
-				if ($escape == 'html') {
-					$alt = htmlspecialchars($alt);
-					$caption = htmlspecialchars($caption);
-				}
+    if ($rs) {
+        extract($rs);
+        $thumbinfo = safe_row('*', SMD_THUMB, "name='".doSlash($type)."'");
 
-				$meta['url'] = ihu.$img_dir.'/'.$dir.'/'.$id.$ext;
-				$meta['alt'] = $alt;
-				$meta['type'] = $type;
-				$meta['width'] = $width;
-				$meta['height'] = $height;
-				$force_size = do_list($force_size);
-				if (in_array('width', $force_size)) {
-					$meta['forcew'] = 1;
-				}
-				if (in_array('height', $force_size)) {
-					$meta['forceh'] = 1;
-				}
-				if ($add_stamp == 0) { $meta['stamp'] = 1; } // Negative logic since we want the stamp on by default for the admin side
-				if ($name) { $meta['name'] = $name; }
-				if ($caption) { $meta['title'] = $caption; }
+        if ($thumbinfo) {
+            $dir = sanitizeForUrl($thumbinfo['name']);
+            $path = IMPATH . $dir . DS . $id . $ext;
+
+            if (file_exists($path)) {
+                // Drop out if all we need to display is the thumb's URL.
+                if ($display === 'url') {
+                    return ihu . $img_dir . '/' . $dir . '/' . $id . $ext;
+                }
+
+                if ($escape === 'html') {
+                    $alt = htmlspecialchars($alt);
+                    $caption = htmlspecialchars($caption);
+                }
+
+                $meta['url'] = ihu . $img_dir . '/' . $dir . '/' . $id . $ext;
+                $meta['alt'] = $alt;
+                $meta['type'] = $type;
+                $meta['width'] = $width;
+                $meta['height'] = $height;
+                $force_size = do_list($force_size);
+
+                if (in_array('width', $force_size)) {
+                    $meta['forcew'] = 1;
+                }
+
+                if (in_array('height', $force_size)) {
+                    $meta['forceh'] = 1;
+                }
+
+                // Negative logic since we want the stamp on by default for the admin side.
+                if ($add_stamp == 0) {
+                    $meta['stamp'] = 1;
+                }
+
+                if ($name) {
+                    $meta['name'] = $name;
+                }
+
+                if ($caption) {
+                    $meta['title'] = $caption;
+                }
 // $meta['title'] = gTxt('smd_thumb_image') . $rs['w'] . " &#215; " . $rs['h'] . sp .  gTxt('smd_thumb_profile') . $thumbinfo['width'] . " &#215; " . $thumbinfo['height'];
 
-				if ($category) {
-					$meta['category'] = $category;
-					$meta['category_title'] = fetch_category_title($category, 'image');
-				}
-				if ($author) { $meta['author'] = $author; }
-				if ($date) { $meta['date'] = $date; }
-				if ($html_id && !$wraptag) { $meta['id'] = $html_id; }
-				if ($class && !$wraptag) { $meta['class'] = $class; } else { $class=$type; }
-				if ($style) { $meta['style'] = $style; }
+                if ($category) {
+                    $meta['category'] = $category;
+                    $meta['category_title'] = fetch_category_title($category, 'image');
+                }
 
-				$out = smd_thumb_img($thumbinfo, $rs, $meta, $thing);
+                if ($author) {
+                    $meta['author'] = $author;
+                }
 
-				if ($link) {
-					$out = href($out, imagesrcurl($id, $ext), (!empty($link_rel) ? ' rel="'.$link_rel.'"' : '').' title="'.$caption.'"');
-				} elseif ($poplink) {
-					$out = '<a href="'.imagesrcurl($id, $ext).'"'.
-						' onclick="window.open(this.href, \'popupwindow\', '.
-						'\'width='.$w.', height='.$h.', scrollbars, resizable\'); return false;">'.$out.'</a>';
-				}
+                if ($date) {
+                    $meta['date'] = $date;
+                }
 
-				return ($wraptag) ? doTag($out, $wraptag, $class, '', $html_id) : $out;
-			}
-		}
-	}
+                if ($html_id && !$wraptag) {
+                    $meta['id'] = $html_id;
+                }
 
-	trigger_error(gTxt('unknown_image'));
+                if ($class && !$wraptag) {
+                    $meta['class'] = $class;
+                } else {
+                    $class = $type;
+                }
+
+                if ($style) {
+                    $meta['style'] = $style;
+                }
+
+                $out = smd_thumb_img($thumbinfo, $rs, $meta, $thing);
+
+                if ($link) {
+                    $out = href($out, imagesrcurl($id, $ext), (!empty($link_rel) ? ' rel="' . $link_rel . '"' : '') . ' title="' . $caption . '"');
+                } elseif ($poplink) {
+                    $out = '<a href="' . imagesrcurl($id, $ext) . '"' .
+                        ' onclick="window.open(this.href, \'popupwindow\', '.
+                        '\'width=' . $w . ', height=' . $h . ', scrollbars, resizable\'); return false;">' . $out . '</a>';
+                }
+
+                return ($wraptag) ? doTag($out, $wraptag, $class, '', $html_id) : $out;
+            }
+        }
+    }
+
+    trigger_error(gTxt('unknown_image'));
 }
 
-// ------------------------
-function smd_if_thumbnail($atts, $thing) {
-	global $thisimage;
-	assert_image();
+/**
+ * Public tag: check thumbnail exists.
+ *
+ * @param  array  $atts  Tag attributes
+ * @param  string $thing Container
+ */
+function smd_if_thumbnail($atts, $thing)
+{
+    global $thisimage;
 
-	smd_thumb_set_impath();
+    assert_image();
 
-	extract(lAtts(array(
-		'type' => @get_pref('smd_thumb_default_profile'),
-	),$atts));
+    smd_thumb_set_impath();
 
-	$thumbinfo = safe_row('*', SMD_THUMB, "name='".doSlash($type)."'");
-	$ret = false;
-	if ($thumbinfo) {
-		$path = IMPATH.sanitizeForUrl($thumbinfo['name']).DS.$thisimage['id'].$thisimage['ext'];
-		$ret = file_exists($path);
-	}
-	return parse(EvalElse($thing, $ret));
+    extract(lAtts(array(
+        'type' => get_pref('smd_thumb_default_profile'),
+    ), $atts));
+
+    $thumbinfo = safe_row('*', SMD_THUMB, "name='".doSlash($type)."'");
+    $ret = false;
+
+    if ($thumbinfo) {
+        $path = IMPATH . sanitizeForUrl($thumbinfo['name']) . DS . $thisimage['id'] . $thisimage['ext'];
+        $ret = file_exists($path);
+    }
+
+    return parse(EvalElse($thing, $ret));
 }
 
-// Display data for form/container usage
-function smd_thumbnail_info($atts, $thing=NULL) {
-	global $smd_thumb_data;
+/**
+ * Public tag: display selected thumbnail meta data.
+ *
+ * @param  array  $atts  Tag attributes
+ * @param  string $thing Container
+ * @return string        HTML
+ */
+function smd_thumbnail_info($atts, $thing = NULL)
+{
+    global $smd_thumb_data;
 
-	extract(lAtts(array(
-		'item'    => '',
-		'wraptag' => '',
-		'break'   => '',
-		'class'   => '',
-		'debug'   => 0,
-	), $atts));
+    extract(lAtts(array(
+        'item'    => '',
+        'wraptag' => '',
+        'break'   => '',
+        'class'   => '',
+        'debug'   => 0,
+    ), $atts));
 
-	$tdata = is_array($smd_thumb_data) ? $smd_thumb_data : array();
+    $tdata = is_array($smd_thumb_data) ? $smd_thumb_data : array();
 
-	if ($debug) {
-		echo '++ AVAILABLE INFO ++';
-		dmp($tdata);
-	}
+    if ($debug) {
+        echo '++ AVAILABLE INFO ++';
+        dmp($tdata);
+    }
 
-	$items = do_list($item);
-	$out = array();
-	foreach ($items as $it) {
-		if (isset($tdata[$it])) {
-			$out[] = $tdata[$it];
-		}
-	}
+    $items = do_list($item);
+    $out = array();
 
-	return doWrap($out, $wraptag, $break, $class);
+    foreach ($items as $it) {
+        if (isset($tdata[$it])) {
+            $out[] = $tdata[$it];
+        }
+    }
+
+    return doWrap($out, $wraptag, $break, $class);
 }
-
 # --- END PLUGIN CODE ---
 if (0) {
 ?>
