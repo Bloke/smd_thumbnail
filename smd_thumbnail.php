@@ -996,19 +996,38 @@ function smd_thumb_profiles($evt, $stp, $dflt, $imglist)
         'smd_thumb_save',
         'smd_thumb_name',
         'smd_thumb_newname',
+        'smd_thumb_add_newname',
         'smd_thumb_width',
+        'smd_thumb_add_width',
         'smd_thumb_height',
+        'smd_thumb_add_height',
         'smd_thumb_quality',
+        'smd_thumb_add_quality',
         'smd_thumb_active',
         'smd_thumb_active_new',
+        'smd_thumb_add_active_new',
         'smd_thumb_crop',
+        'smd_thumb_add_crop',
         'smd_thumb_sharpen',
+        'smd_thumb_add_sharpen',
         'smd_thumb_default',
+        'smd_thumb_add_default',
         'smd_thumb_selected',
         'smd_thumb_cat_selected',
         'smd_thumb_usr_selected',
         'smd_thumb_group_type',
     )));
+
+    if ($smd_thumb_add) {
+        $smd_thumb_newname = $smd_thumb_add_newname;
+        $smd_thumb_width = $smd_thumb_add_width;
+        $smd_thumb_height = $smd_thumb_add_height;
+        $smd_thumb_quality = $smd_thumb_add_quality;
+        $smd_thumb_active_new = $smd_thumb_add_active_new;
+        $smd_thumb_crop = $smd_thumb_add_crop;
+        $smd_thumb_sharpen = $smd_thumb_add_sharpen;
+        $smd_thumb_default = $smd_thumb_add_default;
+    }
 
     // Sanitize.
     $quality = (is_numeric($smd_thumb_quality)) ? (($smd_thumb_quality < 0) ? 75 : (($smd_thumb_quality > 100) ? 75 : $smd_thumb_quality) ) : 75;
@@ -1457,14 +1476,14 @@ EOC
 
             // New Profile row.
             $out[]= '<tr id="smd_thumb_profile_create" class="smd_hidden">';
-            $out[] = tda(sInput('smd_thumb_profile_save').fInput('text', 'smd_thumb_newname', (($step === 'smd_thumb_profile_save') ? $smd_thumb_name : ''), 'smd_focus'), array('data-th' => gTxt('name')))
-                .tda(fInput('text', 'smd_thumb_width', (($step === 'smd_thumb_profile_save') ? $width : ''), '', '', '', INPUT_XSMALL), array('data-th' => gTxt('thumb_width')))
-                .tda(fInput('text', 'smd_thumb_height', (($step === 'smd_thumb_profile_save') ? $height : ''), '', '', '', INPUT_XSMALL), array('data-th' => gTxt('thumb_height')))
-                .tda(fInput('text', 'smd_thumb_quality', (($step === 'smd_thumb_profile_save') ? $quality : ''), '', '', '', INPUT_XSMALL), array('data-th' => gTxt('smd_thumb_quality')))
-                .tda(checkbox('smd_thumb_crop', '1', (($step === 'smd_thumb_profile_save') ? $smd_thumb_crop : 0)), array('data-th' => gTxt('keep_square_pixels')))
-                .tda(checkbox('smd_thumb_sharpen', '1', (($step === 'smd_thumb_profile_save') ? $smd_thumb_sharpen : 0)), array('data-th' => gTxt('smd_thumb_sharpen')))
-                .tda(checkbox('smd_thumb_active_new', '1', 1), array('data-th' => gTxt('active')))
-                .tda(checkbox('smd_thumb_default', '1', 0), array('data-th' => gTxt('default')))
+            $out[] = tda(sInput('smd_thumb_profile_save').fInput('text', 'smd_thumb_add_newname', (($step === 'smd_thumb_profile_save') ? $smd_thumb_name : ''), 'smd_focus'), array('data-th' => gTxt('name')))
+                .tda(fInput('text', 'smd_thumb_add_width', (($step === 'smd_thumb_profile_save') ? $width : ''), '', '', '', INPUT_XSMALL), array('data-th' => gTxt('thumb_width')))
+                .tda(fInput('text', 'smd_thumb_add_height', (($step === 'smd_thumb_profile_save') ? $height : ''), '', '', '', INPUT_XSMALL), array('data-th' => gTxt('thumb_height')))
+                .tda(fInput('text', 'smd_thumb_add_quality', (($step === 'smd_thumb_profile_save') ? $quality : ''), '', '', '', INPUT_XSMALL), array('data-th' => gTxt('smd_thumb_quality')))
+                .tda(checkbox('smd_thumb_add_crop', '1', (($step === 'smd_thumb_profile_save') ? $smd_thumb_crop : 0)), array('data-th' => gTxt('keep_square_pixels')))
+                .tda(checkbox('smd_thumb_add_sharpen', '1', (($step === 'smd_thumb_profile_save') ? $smd_thumb_sharpen : 0)), array('data-th' => gTxt('smd_thumb_sharpen')))
+                .tda(checkbox('smd_thumb_add_active_new', '1', 1), array('data-th' => gTxt('active')))
+                .tda(checkbox('smd_thumb_add_default', '1', 0), array('data-th' => gTxt('default')))
                 .tda(fInput('submit', 'smd_thumb_add', gTxt('add'), 'publish').$btnCancel, array('data-th' => gTxt('smd_thumb_actions')));
             $out[]= '</tr>';
 
