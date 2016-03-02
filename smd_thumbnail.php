@@ -853,6 +853,7 @@ EOC
             );
 
             $out[] = '<div id="smd_thumbnail_control"><span class="txp-summary lever'.(get_pref('pane_smd_thumbnails_visible') ? ' expanded' : '').'"><a href="#smd_thumbnails">'.gTxt('smd_thumb_thumbnail_heading').'</a></span><div id="smd_thumbnails" class="toggle" style="display:'.(get_pref('pane_smd_thumbnails_visible') ? 'block' : 'none').'">';
+            $out[] = upload_form(gTxt('smd_thumb_upload'), 'upload_thumbnail', 'smd_thumbnail_insert', 'image', $id, $file_max_upload_size, 'smd_upload_thumbnail', 'thumbnail-upload');
             $out[] = '<form name="smd_thumbnail_create" method="post" action="'.join_qs($qs).'">';
             $out[] = fInput('hidden', 'smd_step', 'smd_thumbnail_manage');
             $out[] = fInput('hidden', 'smd_thumbnail_chosen_size', '', '', '', '', '', '', 'smd_thumbnail_chosen_size');
@@ -861,7 +862,6 @@ EOC
             $out[] = fInput('submit', 'smd_thumbnail_delete', gTxt('delete'));
             $out[] = join('', $thumbs);
             $out[] = '</form>';
-            $out[] = upload_form(gTxt('smd_thumb_upload'), 'upload_thumbnail', 'smd_thumbnail_insert', 'image', $id, $file_max_upload_size, 'smd_upload_thumbnail', 'thumbnail-upload');
             $out[] = '</div>';
 
             return join(n, $out);
