@@ -1,5 +1,13 @@
 h1. Changelog
 
+h2. 0.32 - 2016-03-04
+
+* For Textpattern 4.6.0.
+* Improved profile table layout: it's also responsive.
+* Fixed stay on Edit panel after thumbnail uploaded.
+* Uses core APIs where available.
+* Improved code documentation and layout to PSR-2.
+
 h2. 0.31 - 2014-09-26
 
 * Selected thumbnail creation for 4.6.x (thanks jpdupont).
