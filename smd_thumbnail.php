@@ -196,32 +196,32 @@ if (txpinterface === 'admin') {
 function smd_thumb_get_style_rules()
 {
     $smd_thumb_styles = array(
-        'smd_thumb' =>'
-.smd_selected { border:1px solid red; background:red; }
-#smd_thumbs img { padding:2px; margin:1px; border:1px solid black; }
-.smd_hidden { display:none; }
-#smd_thumb_profiles { clear:both; margin:0 auto 1em; }
-#smd_thumb_profiles .txp-summary { text-align:left; }
-#smd_thumb_batch { float:right; }
-.smd_inactive { opacity:.3; }
-.smd_thumb_heading_active { cursor:pointer; }
-#smd_thumb_profile_form table { width:100% }
-.smd_thumb_switcher { float:right; }
-.pref-label { text-align: right!important; }
-#smd_thumb_profile_form th { display:none; }
-#smd_thumb_profile_form td { display:block; }
-#smd_thumb_profile_form td:first-child { padding-top:0.5em }
-#smd_thumb_profile_form td:last-child { padding-bottom:0.5em }
-#smd_thumb_profile_form td:before { content: attr(data-th) ": "; font-weight:bold; width:6.5em; display:inline-block; }
-#smd_thumb_profile_form tr { border-top:1px solid #ccc; }
-#smd_thumb_profile_form th, #smd_thumb_profile_form td { margin:0.3em 0.7em; }
-@media (min-width:480px) {
-  #smd_thumb_profile_form td:before { display:none; }
-  #smd_thumb_profile_form th, #smd_thumb_profile_form td { display:table-cell; padding:.1em .1em; vertical-align:baseline }
-  #smd_thumb_profile_form th:first-child, #smd_thumb_profile_form td:first-child { padding-left: 0; }
-  #smd_thumb_profile_form th:last-child, #smd_thumb_profile_form td:last-child { padding-right: 0; }
-}
-'
+//        'smd_thumb' =>'
+//.smd_selected { border:1px solid red; background:red; }
+//#smd_thumbs img { padding:2px; margin:1px; border:1px solid black; }
+//.smd_hidden { display:none; }
+//#smd_thumb_profiles { clear:both; margin:0 auto 1em; }
+//#smd_thumb_profiles .txp-summary { text-align:left; }
+//#smd_thumb_batch { float:right; }
+//.smd_inactive { opacity:.3; }
+//.smd_thumb_heading_active { cursor:pointer; }
+//#smd_thumb_profile_form table { width:100% }
+//.smd_thumb_switcher { float:right; }
+//.pref-label { text-align: right!important; }
+//#smd_thumb_profile_form th { display:none; }
+//#smd_thumb_profile_form td { display:block; }
+//#smd_thumb_profile_form td:first-child { padding-top:0.5em }
+//#smd_thumb_profile_form td:last-child { padding-bottom:0.5em }
+//#smd_thumb_profile_form td:before { content: attr(data-th) ": "; font-weight:bold; width:6.5em; display:inline-block; }
+//#smd_thumb_profile_form tr { border-top:1px solid #ccc; }
+//#smd_thumb_profile_form th, #smd_thumb_profile_form td { margin:0.3em 0.7em; }
+//@media (min-width:480px) {
+//  #smd_thumb_profile_form td:before { display:none; }
+//  #smd_thumb_profile_form th, #smd_thumb_profile_form td { display:table-cell; padding:.1em .1em; vertical-align:baseline }
+//  #smd_thumb_profile_form th:first-child, #smd_thumb_profile_form td:first-child { padding-left: 0; }
+//  #smd_thumb_profile_form th:last-child, #smd_thumb_profile_form td:last-child { padding-right: 0; }
+//}
+//'
 );
 
     return $smd_thumb_styles;
@@ -996,7 +996,6 @@ function smd_thumb_profiles($evt, $stp, $dflt, $imglist)
         'crit',
         'search_method',
         'smd_thumb_add',
-        'smd_thumb_cancel',
         'smd_thumb_save',
         'smd_thumb_name',
         'smd_thumb_newname',
@@ -1081,9 +1080,7 @@ function smd_thumb_profiles($evt, $stp, $dflt, $imglist)
     // Action to save profile.
     if ($step === 'smd_thumb_profile_save') {
         if (smd_thumb_table_exist()) {
-            if ($smd_thumb_cancel) {
-                // Do nothing.
-            } elseif ($smd_thumb_add) {
+            if ($smd_thumb_add) {
                 // Create new profile.
                 $exists = safe_row('*', SMD_THUMB, "name='" . doSlash($newname) . "'");
 
@@ -1414,26 +1411,45 @@ EOC
 
         $btnNew = '<a href="#" onclick="return smd_thumb_togglenew();">'.gTxt('smd_thumb_new').'</a>';
         $btnPref = '<a class="smd_thumb_switcher" href="?event=image'.a.'step=smd_thumb_prefs'.a.'sort='.$sort.a.'dir='.$dir.a.'page='.$page.a.'search_method='.$search_method.a.'crit='.$crit.'">'.(($rights) ? gTxt('smd_thumb_btn_tools_prefs') : gTxt('smd_thumb_btn_tools')).'</a>';
-        $btnCancel = fInput('submit', 'smd_thumb_cancel', gTxt('Cancel'));
-
-        $headings = n.'<thead>'.tr(
-            n.column_head('name', 'name', 'image', false, 'asc').
-            column_head('thumb_width', 'width', 'image', false).
-            column_head('thumb_height', 'height', 'image', false).
-            column_head(gTxt('smd_thumb_quality'), 'quality', 'image', false).
-            column_head('keep_square_pixels', 'crop', 'image', false).
-            column_head(gTxt('smd_thumb_sharpen'), 'sharpen', 'image', false).
-            column_head('active', 'active', 'image', false, '', '', '', 'smd_thumb_heading_active').
-            column_head('default', 'default', 'image', false).
-            column_head(gTxt('smd_thumb_actions'), 'actions', 'image', false)
-        ).'</thead>';
+        $headings = n.tag_start('thead').
+            tr(
+                column_head(
+                    'name', 'name', 'image', false, 'asc'
+                ).
+                column_head(
+                    'thumb_width', 'width', 'image', false
+                ).
+                column_head(
+                    'thumb_height', 'height', 'image', false
+                ).
+                column_head(
+                    gTxt('smd_thumb_quality'), 'quality', 'image', false
+                ).
+                column_head(
+                    'keep_square_pixels', 'crop', 'image', false
+                ).
+                column_head(
+                    gTxt('smd_thumb_sharpen'), 'sharpen', 'image', false
+                ).
+                column_head(
+                    'active', 'active', 'image', false, '', '', '', 'smd_thumb_heading_active'
+                ).
+                column_head(
+                    'default', 'default', 'image', false
+                ).
+                column_head(
+                    gTxt('smd_thumb_actions'), 'actions', 'image', false
+                )
+            ).
+            n.tag_end('thead');
 
         $out[] = '<div id="smd_thumb_profiles"><h3 class="txp-summary lever'.(get_pref('pane_smd_thumbnail_profiles_visible') ? ' expanded' : '').'"><a href="#smd_thumbnail_profiles" class="smd_thumbnail_heading">'.gTxt('smd_thumb_profile_heading').'</a></h3><div id="smd_thumbnail_profiles" class="toggle" style="display:'.(get_pref('pane_smd_thumbnail_profiles_visible') ? 'block' : 'none').'">';
         $out[] = '<div class="txp-buttons">'.n.$btnPref.'</div>';
 
         // Main list of profiles.
         $out[] = '<form method="post" name="smd_thumb_profile_form" id="smd_thumb_profile_form" action="'.join_qs($qs).'">';
-        $out[] = startTable();
+        $out[] = n.tag_start('div', array('class' => 'txp-listtables'));
+        $out[] = n.tag_start('table', array('class' => 'txp-list'));
         $out[] = $headings;
 
         if (smd_thumb_table_exist()) {
@@ -1444,8 +1460,8 @@ EOC
             foreach ($rs as $row) {
                 $link_edt = join_qs($qs).a.'step=smd_thumb_profile_edit'.a.'smd_thumb_name='.$row['name'];
                 $link_del = join_qs($qs).a.'step=smd_thumb_profile_delete'.a.'smd_thumb_name='.$row['name'];
-                $btnEdt = '<a href="'.$link_edt.'">[' . gTxt('edit') . ']</a>';
-                $btnDel = '<a href="'.$link_del.'" onclick="return confirm(\''.gTxt('smd_thumb_delete_confirm', array("{name}" => $row['name'])).'\');">[' . gTxt('delete') . ']</a>';
+                $btnEdt = '<a href="'.$link_edt.'">'.gTxt('edit').'</a>';
+                $btnDel = '<a href="'.$link_del.'" onclick="return confirm(\''.gTxt('smd_thumb_delete_confirm', array("{name}" => $row['name'])).'\');">'.gTxt('delete').'</a>';
                 $active = ($row['flags'] & SMD_THUMB_ACTIVE) ? 1 : 0;
                 $crop = ($row['flags'] & SMD_THUMB_CROP) ? 1 : 0;
                 $sharpen = ($row['flags'] & SMD_THUMB_SHARP) ? 1 : 0;
@@ -1461,7 +1477,7 @@ EOC
                         .tda(checkbox('smd_thumb_sharpen', '1', $sharpen), array('data-th' => gTxt('smd_thumb_sharpen')))
                         .tda(checkbox('smd_thumb_active', '1', $active), array('data-th' => gTxt('active'), 'class' => $row['name']))
                         .tda(checkbox('smd_thumb_default', '1', (($row['name'] == $pro_dflt) ? 1 : 0)), array('data-th' => gTxt('default')))
-                        .tda($btnSave.$btnCancel, array('data-th' => gTxt('smd_thumb_actions')))
+                        .tda($btnSave, array('data-th' => gTxt('smd_thumb_actions')))
                     , ' id="smd_thumb_profile_edited"');
                 } else {
                     $out[] = tr(
@@ -1488,12 +1504,14 @@ EOC
                 .tda(checkbox('smd_thumb_add_sharpen', '1', (($step === 'smd_thumb_profile_save') ? $smd_thumb_sharpen : 0)), array('data-th' => gTxt('smd_thumb_sharpen')))
                 .tda(checkbox('smd_thumb_add_active_new', '1', 1), array('data-th' => gTxt('active')))
                 .tda(checkbox('smd_thumb_add_default', '1', 0), array('data-th' => gTxt('default')))
-                .tda(fInput('submit', 'smd_thumb_add', gTxt('add'), 'publish').$btnCancel, array('data-th' => gTxt('smd_thumb_actions')));
+                .tda(fInput('submit', 'smd_thumb_add', gTxt('add'), 'publish'), array('data-th' => gTxt('smd_thumb_actions')));
             $out[]= '</tr>';
 
         }
 
-        $out[] = endTable().n.$btnNew;
+        $out[] = n.tag_end('table');
+        $out[] = n.tag_end('div');
+        $out[] = n.$btnNew;
         $out[] = '</form></div></div>';
     }
 
