@@ -1460,8 +1460,8 @@ EOC
             foreach ($rs as $row) {
                 $link_edt = join_qs($qs).a.'step=smd_thumb_profile_edit'.a.'smd_thumb_name='.$row['name'];
                 $link_del = join_qs($qs).a.'step=smd_thumb_profile_delete'.a.'smd_thumb_name='.$row['name'];
-                $btnEdt = '<a href="'.$link_edt.'">[' . gTxt('edit') . ']</a>';
-                $btnDel = '<a href="'.$link_del.'" onclick="return confirm(\''.gTxt('smd_thumb_delete_confirm', array("{name}" => $row['name'])).'\');">[' . gTxt('delete') . ']</a>';
+                $btnEdt = '<a href="'.$link_edt.'">'.gTxt('edit').'</a>';
+                $btnDel = '<a href="'.$link_del.'" onclick="return confirm(\''.gTxt('smd_thumb_delete_confirm', array("{name}" => $row['name'])).'\');">'.gTxt('delete').'</a>';
                 $active = ($row['flags'] & SMD_THUMB_ACTIVE) ? 1 : 0;
                 $crop = ($row['flags'] & SMD_THUMB_CROP) ? 1 : 0;
                 $sharpen = ($row['flags'] & SMD_THUMB_SHARP) ? 1 : 0;
