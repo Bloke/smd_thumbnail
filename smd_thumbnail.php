@@ -182,12 +182,12 @@ if (txpinterface === 'admin') {
     register_callback('smd_thumb_inject_css', 'admin_side', 'head_end');
 } elseif (txpinterface === 'public') {
     smd_thumb_set_impath();
-	if (class_exists('\Textpattern\Tag\Registry')) {
-		Txp::get('\Textpattern\Tag\Registry')
-			->register('smd_thumbnail')
-			->register('smd_if_thumbnail')
-			->register('smd_thumbnail_info');
-	}
+    if (class_exists('\Textpattern\Tag\Registry')) {
+        Txp::get('\Textpattern\Tag\Registry')
+            ->register('smd_thumbnail')
+            ->register('smd_if_thumbnail')
+            ->register('smd_thumbnail_info');
+    }
 }
 
 /**
@@ -510,8 +510,8 @@ function smd_thumb_make($rs, $currimg, $force = 0)
             public function write_image()
             {
                 if (!isset($this->m_ext)) {
-                	return false;
-				}
+                    return false;
+                }
 
                 $autor = get_pref('smd_thumb_auto_replace', '0');
                 $recfrom = get_pref('smd_thumb_create_from', 'full');
@@ -557,16 +557,16 @@ function smd_thumb_make($rs, $currimg, $force = 0)
         $height = (int) $row['height'];
 
         if ($width === 0) {
-        	$width = '';
+            $width = '';
         }
 
         if ($height === 0) {
-        	$height = '';
+            $height = '';
         }
 
         if ($width === '' && $height === '') {
-        	continue;
-		}
+            continue;
+        }
 
         $crop = ($row['flags'] & SMD_THUMB_CROP) ? 1 : 0;
         $sharpen = ($row['flags'] & SMD_THUMB_SHARP) ? 1 : 0;
@@ -673,7 +673,7 @@ function smd_thumb_insert()
     if (($file !== false) && $profile && $ext) {
         $newpath = IMPATH . sanitizeForUrl($profile) . DS . $id . $ext;
         if (shift_uploaded_file($file, $newpath) === false) {
-        	// Failed: do nothing.
+            // Failed: do nothing.
         } else {
             @chmod($newpath, 0644);
 
@@ -692,14 +692,18 @@ function smd_thumb_insert()
     }
 
     // Since the headers have been sent, resort to js to refresh the page.
-    $url = '?event=image'
-    	. a . 'step=image_edit'
-    	. a . 'id=' . $id
-    	. a . 'sort=' . $sort
-    	. a . 'dir=' . $dir
-    	. a . 'page=' . $page
-    	. a . 'search_method=' . $search_method
-    	. a . 'crit=' . $crit;
+    $urlPieces = array(
+        'event'         => 'image',
+        'step'          => 'image_edit',
+        'id'            => $id,
+        'sort'          => $sort,
+        'dir'           => $dir,
+        'page'          => $page,
+        'search_method' => $search_method,
+        'crit'          => $crit,
+    );
+
+    $url = html_entity_decode(join_qs($urlPieces));
 
     echo <<<EOS
 <script type="text/javascript">
