@@ -17,6 +17,8 @@ h2. Features
 
 h2. Installation, upgrading and uninstallation
 
+Requires Textpattern 4.6.0 or higher.
+
 Download the plugin from either "textpattern.org":http://textpattern.org/plugins/1186/smd_thumbnail, or the "software page":http://stefdawson.com/sw, paste the code into the Textpattern Admin → Plugins pane, install and enable the plugin. Visit the "forum thread":http://forum.textpattern.com/viewtopic.php?id=34367 for more info or to report on the success or otherwise of the plugin.
 
 *When upgrading from v0.1x to v0.20, your preferences for 'Keep Textpattern thumbnails in sync with default profile' will be removed. Please visit the 'Tools/Prefs' area to reinstate the behaviour you desire.*

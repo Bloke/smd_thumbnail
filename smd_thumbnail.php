@@ -182,12 +182,12 @@ if (txpinterface === 'admin') {
     register_callback('smd_thumb_inject_css', 'admin_side', 'head_end');
 } elseif (txpinterface === 'public') {
     smd_thumb_set_impath();
-	if (class_exists('\Textpattern\Tag\Registry')) {
-		Txp::get('\Textpattern\Tag\Registry')
-			->register('smd_thumbnail')
-			->register('smd_if_thumbnail')
-			->register('smd_thumbnail_info');
-	}
+    if (class_exists('\Textpattern\Tag\Registry')) {
+        Txp::get('\Textpattern\Tag\Registry')
+            ->register('smd_thumbnail')
+            ->register('smd_if_thumbnail')
+            ->register('smd_thumbnail_info');
+    }
 }
 
 /**
@@ -510,8 +510,8 @@ function smd_thumb_make($rs, $currimg, $force = 0)
             public function write_image()
             {
                 if (!isset($this->m_ext)) {
-                	return false;
-				}
+                    return false;
+                }
 
                 $autor = get_pref('smd_thumb_auto_replace', '0');
                 $recfrom = get_pref('smd_thumb_create_from', 'full');
@@ -557,16 +557,16 @@ function smd_thumb_make($rs, $currimg, $force = 0)
         $height = (int) $row['height'];
 
         if ($width === 0) {
-        	$width = '';
+            $width = '';
         }
 
         if ($height === 0) {
-        	$height = '';
+            $height = '';
         }
 
         if ($width === '' && $height === '') {
-        	continue;
-		}
+            continue;
+        }
 
         $crop = ($row['flags'] & SMD_THUMB_CROP) ? 1 : 0;
         $sharpen = ($row['flags'] & SMD_THUMB_SHARP) ? 1 : 0;
@@ -673,7 +673,7 @@ function smd_thumb_insert()
     if (($file !== false) && $profile && $ext) {
         $newpath = IMPATH . sanitizeForUrl($profile) . DS . $id . $ext;
         if (shift_uploaded_file($file, $newpath) === false) {
-        	// Failed: do nothing.
+            // Failed: do nothing.
         } else {
             @chmod($newpath, 0644);
 
@@ -692,14 +692,18 @@ function smd_thumb_insert()
     }
 
     // Since the headers have been sent, resort to js to refresh the page.
-    $url = '?event=image'
-    	. a . 'step=image_edit'
-    	. a . 'id=' . $id
-    	. a . 'sort=' . $sort
-    	. a . 'dir=' . $dir
-    	. a . 'page=' . $page
-    	. a . 'search_method=' . $search_method
-    	. a . 'crit=' . $crit;
+    $urlPieces = array(
+        'event'         => 'image',
+        'step'          => 'image_edit',
+        'id'            => $id,
+        'sort'          => $sort,
+        'dir'           => $dir,
+        'page'          => $page,
+        'search_method' => $search_method,
+        'crit'          => $crit,
+    );
+
+    $url = html_entity_decode(join_qs($urlPieces));
 
     echo <<<EOS
 <script type="text/javascript">
@@ -853,6 +857,7 @@ EOC
             );
 
             $out[] = '<div id="smd_thumbnail_control"><span class="txp-summary lever'.(get_pref('pane_smd_thumbnails_visible') ? ' expanded' : '').'"><a href="#smd_thumbnails">'.gTxt('smd_thumb_thumbnail_heading').'</a></span><div id="smd_thumbnails" class="toggle" style="display:'.(get_pref('pane_smd_thumbnails_visible') ? 'block' : 'none').'">';
+            $out[] = upload_form(gTxt('smd_thumb_upload'), 'upload_thumbnail', 'smd_thumbnail_insert', 'image', $id, $file_max_upload_size, 'smd_upload_thumbnail', 'thumbnail-upload');
             $out[] = '<form name="smd_thumbnail_create" method="post" action="'.join_qs($qs).'">';
             $out[] = fInput('hidden', 'smd_step', 'smd_thumbnail_manage');
             $out[] = fInput('hidden', 'smd_thumbnail_chosen_size', '', '', '', '', '', '', 'smd_thumbnail_chosen_size');
@@ -861,7 +866,6 @@ EOC
             $out[] = fInput('submit', 'smd_thumbnail_delete', gTxt('delete'));
             $out[] = join('', $thumbs);
             $out[] = '</form>';
-            $out[] = upload_form(gTxt('smd_thumb_upload'), 'upload_thumbnail', 'smd_thumbnail_insert', 'image', $id, $file_max_upload_size, 'smd_upload_thumbnail', 'thumbnail-upload');
             $out[] = '</div>';
 
             return join(n, $out);
@@ -996,19 +1000,38 @@ function smd_thumb_profiles($evt, $stp, $dflt, $imglist)
         'smd_thumb_save',
         'smd_thumb_name',
         'smd_thumb_newname',
+        'smd_thumb_add_newname',
         'smd_thumb_width',
+        'smd_thumb_add_width',
         'smd_thumb_height',
+        'smd_thumb_add_height',
         'smd_thumb_quality',
+        'smd_thumb_add_quality',
         'smd_thumb_active',
         'smd_thumb_active_new',
+        'smd_thumb_add_active_new',
         'smd_thumb_crop',
+        'smd_thumb_add_crop',
         'smd_thumb_sharpen',
+        'smd_thumb_add_sharpen',
         'smd_thumb_default',
+        'smd_thumb_add_default',
         'smd_thumb_selected',
         'smd_thumb_cat_selected',
         'smd_thumb_usr_selected',
         'smd_thumb_group_type',
     )));
+
+    if ($smd_thumb_add) {
+        $smd_thumb_newname = $smd_thumb_add_newname;
+        $smd_thumb_width = $smd_thumb_add_width;
+        $smd_thumb_height = $smd_thumb_add_height;
+        $smd_thumb_quality = $smd_thumb_add_quality;
+        $smd_thumb_active_new = $smd_thumb_add_active_new;
+        $smd_thumb_crop = $smd_thumb_add_crop;
+        $smd_thumb_sharpen = $smd_thumb_add_sharpen;
+        $smd_thumb_default = $smd_thumb_add_default;
+    }
 
     // Sanitize.
     $quality = (is_numeric($smd_thumb_quality)) ? (($smd_thumb_quality < 0) ? 75 : (($smd_thumb_quality > 100) ? 75 : $smd_thumb_quality) ) : 75;
@@ -1457,14 +1480,14 @@ EOC
 
             // New Profile row.
             $out[]= '<tr id="smd_thumb_profile_create" class="smd_hidden">';
-            $out[] = tda(sInput('smd_thumb_profile_save').fInput('text', 'smd_thumb_newname', (($step === 'smd_thumb_profile_save') ? $smd_thumb_name : ''), 'smd_focus'), array('data-th' => gTxt('name')))
-                .tda(fInput('text', 'smd_thumb_width', (($step === 'smd_thumb_profile_save') ? $width : ''), '', '', '', INPUT_XSMALL), array('data-th' => gTxt('thumb_width')))
-                .tda(fInput('text', 'smd_thumb_height', (($step === 'smd_thumb_profile_save') ? $height : ''), '', '', '', INPUT_XSMALL), array('data-th' => gTxt('thumb_height')))
-                .tda(fInput('text', 'smd_thumb_quality', (($step === 'smd_thumb_profile_save') ? $quality : ''), '', '', '', INPUT_XSMALL), array('data-th' => gTxt('smd_thumb_quality')))
-                .tda(checkbox('smd_thumb_crop', '1', (($step === 'smd_thumb_profile_save') ? $smd_thumb_crop : 0)), array('data-th' => gTxt('keep_square_pixels')))
-                .tda(checkbox('smd_thumb_sharpen', '1', (($step === 'smd_thumb_profile_save') ? $smd_thumb_sharpen : 0)), array('data-th' => gTxt('smd_thumb_sharpen')))
-                .tda(checkbox('smd_thumb_active_new', '1', 1), array('data-th' => gTxt('active')))
-                .tda(checkbox('smd_thumb_default', '1', 0), array('data-th' => gTxt('default')))
+            $out[] = tda(sInput('smd_thumb_profile_save').fInput('text', 'smd_thumb_add_newname', (($step === 'smd_thumb_profile_save') ? $smd_thumb_name : ''), 'smd_focus'), array('data-th' => gTxt('name')))
+                .tda(fInput('text', 'smd_thumb_add_width', (($step === 'smd_thumb_profile_save') ? $width : ''), '', '', '', INPUT_XSMALL), array('data-th' => gTxt('thumb_width')))
+                .tda(fInput('text', 'smd_thumb_add_height', (($step === 'smd_thumb_profile_save') ? $height : ''), '', '', '', INPUT_XSMALL), array('data-th' => gTxt('thumb_height')))
+                .tda(fInput('text', 'smd_thumb_add_quality', (($step === 'smd_thumb_profile_save') ? $quality : ''), '', '', '', INPUT_XSMALL), array('data-th' => gTxt('smd_thumb_quality')))
+                .tda(checkbox('smd_thumb_add_crop', '1', (($step === 'smd_thumb_profile_save') ? $smd_thumb_crop : 0)), array('data-th' => gTxt('keep_square_pixels')))
+                .tda(checkbox('smd_thumb_add_sharpen', '1', (($step === 'smd_thumb_profile_save') ? $smd_thumb_sharpen : 0)), array('data-th' => gTxt('smd_thumb_sharpen')))
+                .tda(checkbox('smd_thumb_add_active_new', '1', 1), array('data-th' => gTxt('active')))
+                .tda(checkbox('smd_thumb_add_default', '1', 0), array('data-th' => gTxt('default')))
                 .tda(fInput('submit', 'smd_thumb_add', gTxt('add'), 'publish').$btnCancel, array('data-th' => gTxt('smd_thumb_actions')));
             $out[]= '</tr>';
 
@@ -1879,6 +1902,8 @@ h2(#features). Features
 * Conditional thumbnail check available.
 
 h2(#install). Upgrading and uninstallation
+
+Requires Textpattern 4.6.0 or higher.
 
 Download the plugin from either "textpattern.org":http://textpattern.org/plugins/1186/smd_thumbnail, or the "software page":http://stefdawson.com/sw, paste the code into the Textpattern Admin → Plugins pane, install and enable the plugin. Visit the "forum thread":http://forum.textpattern.com/viewtopic.php?id=34367 for more info or to report on the success or otherwise of the plugin.
 
