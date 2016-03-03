@@ -996,7 +996,6 @@ function smd_thumb_profiles($evt, $stp, $dflt, $imglist)
         'crit',
         'search_method',
         'smd_thumb_add',
-        'smd_thumb_cancel',
         'smd_thumb_save',
         'smd_thumb_name',
         'smd_thumb_newname',
@@ -1081,9 +1080,7 @@ function smd_thumb_profiles($evt, $stp, $dflt, $imglist)
     // Action to save profile.
     if ($step === 'smd_thumb_profile_save') {
         if (smd_thumb_table_exist()) {
-            if ($smd_thumb_cancel) {
-                // Do nothing.
-            } elseif ($smd_thumb_add) {
+            if ($smd_thumb_add) {
                 // Create new profile.
                 $exists = safe_row('*', SMD_THUMB, "name='" . doSlash($newname) . "'");
 
@@ -1414,8 +1411,6 @@ EOC
 
         $btnNew = '<a href="#" onclick="return smd_thumb_togglenew();">'.gTxt('smd_thumb_new').'</a>';
         $btnPref = '<a class="smd_thumb_switcher" href="?event=image'.a.'step=smd_thumb_prefs'.a.'sort='.$sort.a.'dir='.$dir.a.'page='.$page.a.'search_method='.$search_method.a.'crit='.$crit.'">'.(($rights) ? gTxt('smd_thumb_btn_tools_prefs') : gTxt('smd_thumb_btn_tools')).'</a>';
-        $btnCancel = fInput('submit', 'smd_thumb_cancel', gTxt('Cancel'));
-
         $headings = n.tag_start('thead').
             tr(
                 column_head(
@@ -1482,7 +1477,7 @@ EOC
                         .tda(checkbox('smd_thumb_sharpen', '1', $sharpen), array('data-th' => gTxt('smd_thumb_sharpen')))
                         .tda(checkbox('smd_thumb_active', '1', $active), array('data-th' => gTxt('active'), 'class' => $row['name']))
                         .tda(checkbox('smd_thumb_default', '1', (($row['name'] == $pro_dflt) ? 1 : 0)), array('data-th' => gTxt('default')))
-                        .tda($btnSave.$btnCancel, array('data-th' => gTxt('smd_thumb_actions')))
+                        .tda($btnSave, array('data-th' => gTxt('smd_thumb_actions')))
                     , ' id="smd_thumb_profile_edited"');
                 } else {
                     $out[] = tr(
@@ -1509,7 +1504,7 @@ EOC
                 .tda(checkbox('smd_thumb_add_sharpen', '1', (($step === 'smd_thumb_profile_save') ? $smd_thumb_sharpen : 0)), array('data-th' => gTxt('smd_thumb_sharpen')))
                 .tda(checkbox('smd_thumb_add_active_new', '1', 1), array('data-th' => gTxt('active')))
                 .tda(checkbox('smd_thumb_add_default', '1', 0), array('data-th' => gTxt('default')))
-                .tda(fInput('submit', 'smd_thumb_add', gTxt('add'), 'publish').$btnCancel, array('data-th' => gTxt('smd_thumb_actions')));
+                .tda(fInput('submit', 'smd_thumb_add', gTxt('add'), 'publish'), array('data-th' => gTxt('smd_thumb_actions')));
             $out[]= '</tr>';
 
         }
