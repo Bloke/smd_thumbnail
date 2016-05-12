@@ -274,6 +274,8 @@ function smd_thumbs($evt, $stp, $dflt, $currimg)
 {
     extract(gpsa(array('page', 'sort', 'dir', 'crit', 'search_method')));
 
+    $search_method = (is_array($search_method)) ? implode(',', $search_method) : $search_method;
+
     if (smd_thumb_table_exist()) {
         $default = get_pref('smd_thumb_default_profile', '', 1);
 
@@ -282,7 +284,7 @@ function smd_thumbs($evt, $stp, $dflt, $currimg)
 
             if ($row) {
                 $edit_url = '?event=image'.a.'step=image_edit'.a.'id='.$currimg['id'].a.'sort='.$sort.
-                        a.'dir='.$dir.a.'page='.$page.a.'search_method='.$search_method.a.'crit='.$crit;
+                        a.'dir='.$dir.a.'page='.$page.a.'search_method[]='.$search_method.a.'crit='.$crit;
                 $out = smd_thumb_img($row, $currimg);
 
                 return ($out) ? href($out, $edit_url) : gTxt('no');
@@ -636,6 +638,8 @@ function smd_thumb_insert()
 
     smd_thumb_set_impath();
     extract(gpsa(array('page', 'sort', 'dir', 'crit', 'search_method')));
+
+    $search_method = (is_array($search_method)) ? implode(',', $search_method) : $search_method;
 
     include_once txpath.'/lib/txplib_misc.php';
 
@@ -1034,6 +1038,7 @@ function smd_thumb_profiles($evt, $stp, $dflt, $imglist)
     }
 
     // Sanitize.
+    $search_method = (is_array($search_method)) ? implode(',', $search_method) : $search_method;
     $quality = (is_numeric($smd_thumb_quality)) ? (($smd_thumb_quality < 0) ? 75 : (($smd_thumb_quality > 100) ? 75 : $smd_thumb_quality) ) : 75;
     $width = (is_numeric($smd_thumb_width)) ? $smd_thumb_width : 0;
     $height = (is_numeric($smd_thumb_height)) ? $smd_thumb_height : 0;
@@ -1270,7 +1275,7 @@ jQuery(function() {
 EOC
         );
 
-            $btnPnl = '<a class="smd_thumb_switcher" href="?event=image'.a.'sort='.$sort.a.'dir='.$dir.a.'page='.$page.a.'search_method='.$search_method.a.'crit='.$crit.'">'.gTxt('smd_thumb_btn_pnl').'</a>';
+            $btnPnl = '<a class="smd_thumb_switcher" href="?event=image'.a.'sort='.$sort.a.'dir='.$dir.a.'page='.$page.a.'search_method[]='.$search_method.a.'crit='.$crit.'">'.gTxt('smd_thumb_btn_pnl').'</a>';
             $btnGrp = '<button class="navlink" type="submit" onclick="smd_thumb_copy_selected(); return confirm(\''.gTxt('smd_thumb_create_group_confirm').'\');">'.gTxt('smd_thumb_all_thumbs').'</button>';
             $grpTypes = array(
                 'sel' => gTxt('smd_thumb_bysel'),
@@ -1413,7 +1418,7 @@ EOC
         );
 
         $btnNew = '<a href="#" onclick="return smd_thumb_togglenew();">'.gTxt('smd_thumb_new').'</a>';
-        $btnPref = '<a class="smd_thumb_switcher" href="?event=image'.a.'step=smd_thumb_prefs'.a.'sort='.$sort.a.'dir='.$dir.a.'page='.$page.a.'search_method='.$search_method.a.'crit='.$crit.'">'.(($rights) ? gTxt('smd_thumb_btn_tools_prefs') : gTxt('smd_thumb_btn_tools')).'</a>';
+        $btnPref = '<a class="smd_thumb_switcher" href="?event=image'.a.'step=smd_thumb_prefs'.a.'sort='.$sort.a.'dir='.$dir.a.'page='.$page.a.'search_method[]='.$search_method.a.'crit='.$crit.'">'.(($rights) ? gTxt('smd_thumb_btn_tools_prefs') : gTxt('smd_thumb_btn_tools')).'</a>';
         $btnCancel = fInput('submit', 'smd_thumb_cancel', gTxt('Cancel'));
 
         $headings = n.'<thead>'.tr(
