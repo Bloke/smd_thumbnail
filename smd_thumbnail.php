@@ -200,6 +200,7 @@ function smd_thumb_get_style_rules()
 .smd_selected { border:1px solid red; background:red; }
 #smd_thumbs img { padding:2px; margin:1px; border:1px solid black; }
 .smd_hidden { display:none; }
+.smd_thumb_new_profile { display:table-row; }
 #smd_thumb_profiles { clear:both; margin:0 auto 1em; }
 #smd_thumb_profiles .txp-summary { text-align:left; }
 #smd_thumb_batch { float:right; }
@@ -1380,11 +1381,7 @@ EOC
         echo script_js(<<<EOC
 function smd_thumb_togglenew() {
     box = jQuery("#smd_thumb_profile_create");
-    if (box.css("display") == "none") {
-        box.show();
-    } else {
-        box.hide();
-    }
+    box.toggleClass("smd_hidden smd_thumb_new_profile");
     jQuery("input.smd_focus").focus();
     return false;
 }
