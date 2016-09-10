@@ -197,7 +197,7 @@ function smd_thumb_get_style_rules()
 {
     $smd_thumb_styles = array(
         'smd_thumb' =>'
-.smd_selected { border:1px solid red; background:red; }
+.smd_selected { border:1px solid #1b3eb7; background:#1b3eb7; }
 #smd_thumbs img { padding:2px; margin:1px; border:1px solid black; }
 .smd_hidden { display:none; }
 .smd_thumb_new_profile { display:table-row; }
@@ -286,7 +286,7 @@ function smd_thumbs($evt, $stp, $dflt, $currimg)
             if ($row) {
                 $edit_url = '?event=image'.a.'step=image_edit'.a.'id='.$currimg['id'].a.'sort='.$sort.
                         a.'dir='.$dir.a.'page='.$page.a.'search_method[]='.$search_method.a.'crit='.$crit;
-                $out = smd_thumb_img($row, $currimg);
+                $out = smd_thumb_img($row, $currimg, array('class' => 'content-image '.$default));
 
                 return ($out) ? href($out, $edit_url) : gTxt('no');
             } else {
@@ -747,6 +747,7 @@ function smd_thumb_edit($evt, $stp, $dflt, $currimg)
     )));
 
     $id = ($id) ? $id : $GLOBALS['ID'];
+    $search_method = (is_array($search_method)) ? implode(',', $search_method) : $search_method;
 
     // Toggle profile panel.
     if ($step === 'save_pane_state') {
@@ -781,9 +782,10 @@ function smd_thumb_edit($evt, $stp, $dflt, $currimg)
     echo script_js(<<<EOC
 function smd_thumb_selector(sel) {
     var idx = 0;
+console.log(sel);
     jQuery("#smd_thumbs img").each(function() {
         if (jQuery(this).hasClass(sel)) {
-            jQuery(this).toggleClass('smd_selected');
+            jQuery(this).toggleClass('smd_selected active');
             if (jQuery(this).hasClass('smd_selected')) {
                 jQuery("#smd_upload_thumbnail").attr('disabled', false);
                 jQuery("#smd_thumb_profile").val(sel);
@@ -795,7 +797,7 @@ function smd_thumb_selector(sel) {
                 jQuery("#smd_thumbnail_chosen_size").val('');
             }
         } else {
-            jQuery(this).removeClass('smd_selected');
+            jQuery(this).removeClass('smd_selected active');
         }
     });
     jQuery("#smd_thumbnail_size").prop("selectedIndex", idx);
@@ -813,17 +815,17 @@ function smd_thumb_select_changed() {
     }
     jQuery("#smd_thumbs img").each(function() {
         if (jQuery(this).hasClass(obj.val())) {
-            jQuery(this).addClass('smd_selected');
+            jQuery(this).addClass('smd_selected active');
         } else {
-            jQuery(this).removeClass('smd_selected');
+            jQuery(this).removeClass('smd_selected active');
         }
     });
 }
 jQuery(function() {
     jQuery("#smd_thumbs img").each(function() {
-        var cls = jQuery(this).attr('class');
+        var prf = jQuery(this).data('profile');
         jQuery(this).click(function() {
-            smd_thumb_selector(cls);
+            smd_thumb_selector(prf);
         });
     });
     jQuery("#smd_upload_thumbnail").attr('disabled', true);
@@ -845,7 +847,10 @@ EOC
                     $profiles[$row['name']] = $row['name'];
                 }
 
-                $thumbs[] = smd_thumb_img($row, $currimg);
+                $thumbs[] = smd_thumb_img($row, $currimg, array(
+                    'class' => 'content-image ' . $row['name'],
+                    'data-profile' => $row['name'],
+                    ));
             }
 
             $thumbs[] = '</div>';
@@ -953,7 +958,7 @@ function smd_thumb_img($row, $currimg, $meta = array(), $dsp = '')
 
         foreach ($meta as $key => $val) {
             // We need all atts for container tags, but only valid HTML atts should appear in the default <img> tag.
-            if (in_array($key, array('alt', 'class', 'title'))) {
+            if (in_array($key, array('alt', 'class', 'title')) || strpos($key, 'data-') === 0) {
                 $extras .= ' ' . $key . '="' . $val . '"';
             }
         }
