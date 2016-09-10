@@ -1914,7 +1914,7 @@ Requires Textpattern 4.6.0 or higher.
 
 Download the plugin from either "textpattern.org":http://textpattern.org/plugins/1186/smd_thumbnail, or the "software page":http://stefdawson.com/sw, paste the code into the Textpattern Admin → Plugins pane, install and enable the plugin. Visit the "forum thread":http://forum.textpattern.com/viewtopic.php?id=34367 for more info or to report on the success or otherwise of the plugin.
 
-*When upgrading from v0.1x to v0.20, your preferences for 'Keep Textpattern thumbnails in sync with default profile' will be removed. Please visit the 'Tools/Prefs' area to reinstate the behaviour you desire.*
+*When upgrading from v0.1x to v0.20, your preferences for 'Keep Textpattern thumbnails in sync with default profile' will be removed. Please visit the 'Setup' area to reinstate the behaviour you desire.*
 
 To uninstall, delete from the Admin → Plugins page.
 
@@ -1964,7 +1964,7 @@ At any time you can click one of the thumbnails (or select a size from the dropd
 
 h3. Batch thumbnail creation
 
-You can also create thumbnails en-masse. Click the 'Tools' button (labelled 'Tools/Prefs' if you have sufficient rights) in the top-right hand corner of the smd_thumbnail control panel. From there you will see an area that allows you to create thumbnails for:
+You can also create thumbnails en-masse. Click the 'Tools' button (labelled 'Setup' if you have sufficient rights) in the top-right hand corner of the smd_thumbnail control panel. From there you will see an area that allows you to create thumbnails for:
 
 # Only the selected images (the checkboxes next to each image).
 # All images of a particular category.
@@ -1977,7 +1977,7 @@ Because of the nature of this tool - especially with large image pools - the pro
 
 h3. Preferences
 
-If you have sufficient privileges, in the lower portion of the 'Tools' panel are some options that govern how thumbnails are created for all users. There is no 'Save' action here: the checkmarks are stored in real-time and always reflect the current state.
+If you have sufficient privileges, in the lower portion of the 'Setup' panel are some options that govern how thumbnails are created for all users. There is no 'Save' action here: the checkmarks are stored in real-time and always reflect the current state.
 
 h4. Create smd_thumbnails from
 
@@ -2045,9 +2045,9 @@ bc. <txp:images>
 
 Show all images that have been generated with the 'big-size' smd_thumbnail profile.
 
-h5. Example 2
+h5. Example 2: responsive images
 
-TODO
+See "responsive images post":http://forum.textpattern.com/viewtopic.php?pid=288361#p288361 in the Textpattern forum.
 
 h3(#st_info). smd_thumbnail_info tag
 
