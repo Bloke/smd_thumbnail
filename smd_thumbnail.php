@@ -17,7 +17,7 @@ $plugin['name'] = 'smd_thumbnail';
 // 1 = Plugin help is in raw HTML.  Not recommended.
 # $plugin['allow_html_help'] = 1;
 
-$plugin['version'] = '0.32';
+$plugin['version'] = '0.33';
 $plugin['author'] = 'Stef Dawson';
 $plugin['author_uri'] = 'http://stefdawson.com/';
 $plugin['description'] = 'Multiple image thumbnails of arbitrary dimensions';
@@ -200,6 +200,7 @@ function smd_thumb_get_style_rules()
 .smd_selected { border:1px solid #1b3eb7; background:#1b3eb7; }
 #smd_thumbs img { padding:2px; margin:1px; border:1px solid black; }
 .smd_hidden { display:none; }
+.smd_thumb_new { display:inline-block; margin: 0.6rem; }
 .smd_thumb_new_profile { display:table-row; }
 #smd_thumb_profiles { clear:both; margin:0 auto 1em; }
 #smd_thumb_profiles .txp-summary { text-align:left; }
@@ -207,7 +208,7 @@ function smd_thumb_get_style_rules()
 .smd_inactive { opacity:.3; }
 .smd_thumb_heading_active { cursor:pointer; }
 #smd_thumb_profile_form table { width:100% }
-.smd_thumb_switcher { float:right; }
+.smd_thumb_switcher { float:right; margin: 0.8rem 0.6rem; 0.5rem}
 .pref-label { text-align: right!important; }
 #smd_thumb_profile_form th { display:none; }
 #smd_thumb_profile_form td { display:block; }
@@ -219,8 +220,8 @@ function smd_thumb_get_style_rules()
 @media (min-width:480px) {
   #smd_thumb_profile_form td:before { display:none; }
   #smd_thumb_profile_form th, #smd_thumb_profile_form td { display:table-cell; padding:.1em .1em; vertical-align:baseline }
-  #smd_thumb_profile_form th:first-child, #smd_thumb_profile_form td:first-child { padding-left: 0; }
-  #smd_thumb_profile_form th:last-child, #smd_thumb_profile_form td:last-child { padding-right: 0; }
+  #smd_thumb_profile_form th:first-child, #smd_thumb_profile_form td:first-child { padding-left: 0.6rem; }
+  #smd_thumb_profile_form th:last-child, #smd_thumb_profile_form td:last-child { padding-right: 0.6rem; }
 }
 '
 );
@@ -1419,7 +1420,7 @@ jQuery(function() {
 EOC
         );
 
-        $btnNew = '<a href="#" onclick="return smd_thumb_togglenew();">'.gTxt('smd_thumb_new').'</a>';
+        $btnNew = '<a href="#" onclick="return smd_thumb_togglenew();" class="smd_thumb_new">'.gTxt('smd_thumb_new').'</a>';
         $btnPref = '<a class="smd_thumb_switcher" href="?event=image'.a.'step=smd_thumb_prefs'.a.'sort='.$sort.a.'dir='.$dir.a.'page='.$page.a.'search_method[]='.$search_method.a.'crit='.$crit.'">'.(($rights) ? gTxt('smd_thumb_btn_tools_prefs') : gTxt('smd_thumb_btn_tools')).'</a>';
         $btnCancel = fInput('submit', 'smd_thumb_cancel', gTxt('Cancel'));
 
@@ -1453,6 +1454,22 @@ EOC
                 $link_del = join_qs($qs).a.'step=smd_thumb_profile_delete'.a.'smd_thumb_name='.$row['name'];
                 $btnEdt = '<a href="'.$link_edt.'">[' . gTxt('edit') . ']</a>';
                 $btnDel = '<a href="'.$link_del.'" onclick="return confirm(\''.gTxt('smd_thumb_delete_confirm', array("{name}" => $row['name'])).'\');">[' . gTxt('delete') . ']</a>';
+                $btnDel = href('×', array(
+                    'event'          => 'image',
+                    'step'           => 'smd_thumb_profile_delete',
+                    'smd_thumb_name' => $row['name'],
+                    '_txp_token'     => form_token(),
+                    'page'           => $page,
+                    'sort'           => $sort,
+                    'dir'            => $dir,
+                    'crit'           => $crit,
+                    'search_method'  => $search_method,
+                ), array(
+                    'class'       => 'dlink destroy ui-icon ui-icon-close',
+                    'title'       => gTxt('delete'),
+                    'data-verify' => gTxt('smd_thumb_delete_confirm', array("{name}" => $row['name'])),
+                ));
+
                 $active = ($row['flags'] & SMD_THUMB_ACTIVE) ? 1 : 0;
                 $crop = ($row['flags'] & SMD_THUMB_CROP) ? 1 : 0;
                 $sharpen = ($row['flags'] & SMD_THUMB_SHARP) ? 1 : 0;
@@ -1933,7 +1950,7 @@ You must define at least one profile to begin with, so click the *New profile* b
 * *Active*: Enable/disable this thumbnail size so it will/won't be automatically generated when the next image is uploaded. Click the checkbox to instantly switch the profile on/off. Click the 'Active' word in the heading row to toggle the status of all profiles. Note that this setting governs how the "All sizes":#smd_thumb_create dropdown entry interacts with the _Create_ and _Delete_ buttons.
 * *Default*: set this thumbnail profile as the default. The default image will be displayed in the 'Images' list and will also be used as the default size to be displayed using @<txp:smd_thumbnail/>@. If the option to "sync with Textpattern's thumbs":#smd_thumb_prefs is on, it will also become Textpattern's standard (built-in) thumbnail size from this point forward.
 
-Once you've configured your profile, click 'Save' to store it. You can always edit it again by clicking its name. Go ahead and create some more profiles for thumbnails of different sizes/parameters. If you wish to delete a profile, hit the 'Delete' button and confirm. *All thumbnails associated with that profile will be deleted.*
+Once you've configured your profile, click 'Save' to store it. You can always edit it again by clicking its name. Go ahead and create some more profiles for thumbnails of different sizes/parameters. If you wish to delete a profile, hit the 'x' button and confirm. *All thumbnails associated with that profile will be deleted.*
 
 At this point, no thumbnails have been created. Let's rectify that...
 

@@ -1,5 +1,10 @@
 h1. Changelog
 
+h2. 0.33 - 2016-11-15
+
+* Bit of whitespace styling (thanks joopvos).
+* Use a jQuery UI 'x' instead of [Delete].
+
 h2. 0.32 - 2016-09-10
 
 * For Textpattern 4.6.0.
