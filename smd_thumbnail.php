@@ -200,15 +200,11 @@ function smd_thumb_get_style_rules()
 .smd_selected { border:1px solid #1b3eb7; background:#1b3eb7; }
 #smd_thumbs img { padding:2px; margin:1px; border:1px solid black; }
 .smd_hidden { display:none; }
-.smd_thumb_new { display:inline-block; margin: 0.6rem; }
 .smd_thumb_new_profile { display:table-row; }
-#smd_thumb_profiles { clear:both; margin:0 auto 1em; }
-#smd_thumb_profiles .txp-summary { text-align:left; }
 #smd_thumb_batch { float:right; }
 .smd_inactive { opacity:.3; }
 .smd_thumb_heading_active { cursor:pointer; }
 #smd_thumb_profile_form table { width:100% }
-.smd_thumb_switcher { float:right; margin: 0.8rem 0.6rem; 0.5rem}
 .pref-label { text-align: right!important; }
 #smd_thumb_profile_form th { display:none; }
 #smd_thumb_profile_form td { display:block; }
@@ -248,7 +244,7 @@ function smd_thumb_inject_css($evt, $stp)
 }
 
 /**
- * Kickstart the plugin after installation / activation / deletion.
+ * Kickstart the plugin after installation/activation/deletion.
  *
  * @param  string $evt Textpattern event (panel)
  * @param  string $stp Textpattern step (action)
@@ -365,7 +361,7 @@ EOJS;
 }
 
 /**
- * AJAX method to create one thumbnail for each active profile, from the passed id.
+ * AJAX method to create one thumbnail for each active profile, from the passed ID.
  */
 function smd_thumb_create_one()
 {
@@ -420,7 +416,7 @@ function smd_thumb_switch_pref()
  *
  * @param  string $evt Textpattern event (panel)
  * @param  string $stp Textpattern step (action)
- * @param  string $id  New image identifier. If omitted, will try GET/POST, then Txp's GLOBALS['ID']
+ * @param  string $id  New image identifier. If omitted, will try GET/POST, then Textpattern's GLOBALS['ID']
  */
 function smd_thumb_generate($evt, $stp, $id='')
 {
@@ -524,7 +520,7 @@ function smd_thumb_make($rs, $currimg, $force = 0)
                 $outfile = IMPATH . $this->m_dir . DS . $this->m_id . $this->m_ext;
 
                 if (!file_exists($outfile) || $autor || $this->force) {
-                    // If this is the default profile and the pref indicates, write a Txp thumb too.
+                    // If this is the default profile and the pref indicates, write a Textpattern thumb too.
                     if (($this->m_dflt === true) && (get_pref('smd_thumb_txp_create', '0'))) {
                         $txp_thumb = IMPATH . $this->m_id . 't' . $this->m_ext;
 
@@ -632,7 +628,7 @@ function smd_thumb_unmake($rs, $currimg)
 }
 
 /**
- * Insert a thumbnail when a new file is uploaded
+ * Insert a thumbnail when a new file is uploaded.
  */
 function smd_thumb_insert()
 {
@@ -683,7 +679,7 @@ function smd_thumb_insert()
         } else {
             @chmod($newpath, 0644);
 
-            // If the pref indicates, duplicate as a Txp thumb too.
+            // If the pref indicates, duplicate as a Textpattern thumb too.
             if (get_pref('smd_thumb_txp_create', '0') == 1) {
                 $txp_thumb = IMPATH . $id . 't' . $ext;
 
@@ -697,7 +693,7 @@ function smd_thumb_insert()
         }
     }
 
-    // Since the headers have been sent, resort to js to refresh the page.
+    // Since the headers have been sent, resort to JavaScript to refresh the page.
     $urlPieces = array(
         'event'         => 'image',
         'step'          => 'image_edit',
@@ -758,7 +754,7 @@ function smd_thumb_edit($evt, $stp, $dflt, $currimg)
 
     // Create/delete the selected thumbs depending on the button pressed.
     if ($smd_step === 'smd_thumbnail_manage') {
-        // Validate user
+        // Validate user.
         $author = fetch('author', 'txp_image', 'id', $id);
 
         if (!has_privs('image.edit') && !($author == $txp_user && has_privs('image.edit.own'))) {
@@ -767,7 +763,7 @@ function smd_thumb_edit($evt, $stp, $dflt, $currimg)
             return;
         }
 
-        // Grab the thumbnails to work on
+        // Grab the thumbnails to work on.
         $where = ($smd_thumbnail_size === 'all') ? '1=1 AND flags & ' . SMD_THUMB_ACTIVE : "name='" . doSlash($smd_thumbnail_chosen_size) . "'";
         $rs = safe_rows('*', SMD_THUMB, $where);
 
@@ -867,7 +863,7 @@ EOC
                 "search_method" => $search_method,
             );
 
-            $out[] = '<div id="smd_thumbnail_control"><span class="txp-summary lever'.(get_pref('pane_smd_thumbnails_visible') ? ' expanded' : '').'"><a href="#smd_thumbnails">'.gTxt('smd_thumb_thumbnail_heading').'</a></span><div id="smd_thumbnails" class="toggle" style="display:'.(get_pref('pane_smd_thumbnails_visible') ? 'block' : 'none').'">';
+            $out[] = '<div id="smd_thumbnail_control"><span class="txp-summary lever'.(get_pref('pane_smd_thumbnails_visible') ? ' expanded' : '').'"><a href="#smd_thumbnails">'.gTxt('smd_thumb_thumbnail_heading').'</a></span><div class="toggle" id="smd_thumbnails" role="region" style="display:'.(get_pref('pane_smd_thumbnails_visible') ? 'block' : 'none').'">';
             $out[] = upload_form(gTxt('smd_thumb_upload'), 'upload_thumbnail', 'smd_thumbnail_insert', 'image', $id, $file_max_upload_size, 'smd_upload_thumbnail', 'thumbnail-upload');
             $out[] = '<form name="smd_thumbnail_create" method="post" action="'.join_qs($qs).'">';
             $out[] = fInput('hidden', 'smd_step', 'smd_thumbnail_manage');
@@ -965,7 +961,7 @@ function smd_thumb_img($row, $currimg, $meta = array(), $dsp = '')
         }
 
         if ($dsp) {
-            // Hand off to the form/container for formatting advice
+            // Hand off to the form/container for formatting advice.
             $smd_thumb_data = $meta;
             $smd_thumb_data['id'] = $id;
             $smd_thumb_data['ext'] = $ext;
@@ -1122,7 +1118,7 @@ function smd_thumb_profiles($evt, $stp, $dflt, $imglist)
                             set_pref('smd_thumb_default_profile', $newname, 'smd_thumb', PREF_HIDDEN);
                         }
 
-                        // Create the thumbnail directory
+                        // Create the thumbnail directory.
                         @mkdir(IMPATH.$newname);
                     }
                 }
@@ -1160,7 +1156,7 @@ function smd_thumb_profiles($evt, $stp, $dflt, $imglist)
                             }
                         }
 
-                        // Adjust the thumbnail directory if the name has changed
+                        // Adjust the thumbnail directory if the name has changed.
                         if ($newname != $name) {
                             rename(IMPATH.$name, IMPATH.$newname);
                         }
@@ -1186,7 +1182,7 @@ function smd_thumb_profiles($evt, $stp, $dflt, $imglist)
                 if ($ret) {
                     smd_thumb_rmdir(IMPATH.$name);
 
-                    // Delete all Txp thumbs too?
+                    // Delete all Textpattern thumbs too?
                     if (($name == $the_dflt) && ($txp_del == '1')) {
                         $rs = safe_rows('id, ext', 'txp_image', 'thumbnail = 1');
 
@@ -1201,7 +1197,7 @@ function smd_thumb_profiles($evt, $stp, $dflt, $imglist)
                         safe_update('txp_image', 'thumbnail = 0, thumb_w = 0, thumb_h = 0', 'thumbnail = 1');
                     }
 
-                    // Remove the default flag if this used to be the default
+                    // Remove the default flag if this used to be the default.
                     if (get_pref('smd_thumb_default_profile') === doSlash($name)) {
                         set_pref('smd_thumb_default_profile', '', 'smd_thumb', PREF_HIDDEN);
                     }
@@ -1282,7 +1278,7 @@ jQuery(function() {
 EOC
         );
 
-            $btnPnl = '<a class="smd_thumb_switcher" href="?event=image'.a.'sort='.$sort.a.'dir='.$dir.a.'page='.$page.a.'search_method[]='.$search_method.a.'crit='.$crit.'">'.gTxt('smd_thumb_btn_pnl').'</a>';
+            $btnPnl = '<a class="txp-button" href="?event=image'.a.'sort='.$sort.a.'dir='.$dir.a.'page='.$page.a.'search_method[]='.$search_method.a.'crit='.$crit.'">'.gTxt('smd_thumb_btn_pnl').'</a>';
             $btnGrp = '<button class="navlink" type="submit" onclick="smd_thumb_copy_selected(); return confirm(\''.gTxt('smd_thumb_create_group_confirm').'\');">'.gTxt('smd_thumb_all_thumbs').'</button>';
             $grpTypes = array(
                 'sel' => gTxt('smd_thumb_bysel'),
@@ -1293,8 +1289,9 @@ EOC
 
             $grpOpts = selectInput('smd_thumb_group_type', $grpTypes, get_pref('pane_smd_thumb_group_type', 'all', 1), '', ' onchange="smd_thumb_subsel(this);"', 'smd_thumb_group_type').'<span id="smd_thumb_subsel"></span>';
 
-            $out[] = '<div id="smd_thumb_profiles"><h3 class="txp-summary lever'.(get_pref('pane_smd_thumbnail_profiles_visible') ? ' expanded' : '').'"><a href="#smd_thumbnail_profiles">'.(($rights) ? gTxt('smd_thumb_profile_preftool_heading') : gTxt('smd_thumb_profile_tool_heading')).'</a></h3><div id="smd_thumbnail_profiles" class="toggle" style="display:'.(get_pref('pane_smd_thumbnail_profiles_visible') ? 'block' : 'none').'">';
-            $out[] = '<div class="txp-buttons">'.$btnPnl.'</div>';
+            $out[] = '<section class="txp-details" id="smd_thumb_profiles">';
+            $out[] = '<h3 class="txp-summary lever'.(get_pref('pane_smd_thumbnail_profiles_visible') ? ' expanded' : '').'"><a href="#smd_thumbnail_profiles">'.(($rights) ? gTxt('smd_thumb_profile_preftool_heading') : gTxt('smd_thumb_profile_tool_heading')).'</a></h3><div class="toggle" id="smd_thumbnail_profiles" role="region" style="display:'.(get_pref('pane_smd_thumbnail_profiles_visible') ? 'block' : 'none').'">';
+            $out[] = $btnPnl;
 
             $out[] = '<div id="smd_thumb_batch"><span id="smd_thumb_bcurr"></span><span id="smd_thumb_btot"></span></div>';
             $out[] = '<form method="post" name="smd_thumb_multi_edit" id="smd_thumb_multi_edit" action="'.join_qs($qs).'">';
@@ -1378,7 +1375,7 @@ EOC
                 $out[] = '</div></div>';
                 $out[] = '</div></form></div>';
             }
-            $out[] = '</div></div> ';
+            $out[] = '</section>';
         }
     // Action to show thumbnail profile list.
     } else {
@@ -1420,12 +1417,12 @@ jQuery(function() {
 EOC
         );
 
-        $btnNew = '<a href="#" onclick="return smd_thumb_togglenew();" class="smd_thumb_new">'.gTxt('smd_thumb_new').'</a>';
-        $btnPref = '<a class="smd_thumb_switcher" href="?event=image'.a.'step=smd_thumb_prefs'.a.'sort='.$sort.a.'dir='.$dir.a.'page='.$page.a.'search_method[]='.$search_method.a.'crit='.$crit.'">'.(($rights) ? gTxt('smd_thumb_btn_tools_prefs') : gTxt('smd_thumb_btn_tools')).'</a>';
+        $btnNew = '<p><a class="txp-button" href="#" onclick="return smd_thumb_togglenew();">'.gTxt('smd_thumb_new').'</a></p>';
+        $btnPref = '<p class="txp-list-options"><a href="?event=image'.a.'step=smd_thumb_prefs'.a.'sort='.$sort.a.'dir='.$dir.a.'page='.$page.a.'search_method[]='.$search_method.a.'crit='.$crit.'"><span class="ui-icon ui-icon-wrench"></span> '.(($rights) ? gTxt('smd_thumb_btn_tools_prefs') : gTxt('smd_thumb_btn_tools')).'</a></p>';
         $btnCancel = fInput('submit', 'smd_thumb_cancel', gTxt('Cancel'));
 
         $headings = n.'<thead>'.tr(
-            n.column_head('name', 'name', 'image', false, 'asc').
+            column_head('name', 'name', 'image', false, 'asc').
             column_head('thumb_width', 'width', 'image', false).
             column_head('thumb_height', 'height', 'image', false).
             column_head(gTxt('smd_thumb_quality'), 'quality', 'image', false).
@@ -1436,11 +1433,13 @@ EOC
             column_head(gTxt('smd_thumb_actions'), 'actions', 'image', false)
         ).'</thead>';
 
-        $out[] = '<div id="smd_thumb_profiles"><h3 class="txp-summary lever'.(get_pref('pane_smd_thumbnail_profiles_visible') ? ' expanded' : '').'"><a href="#smd_thumbnail_profiles" class="smd_thumbnail_heading">'.gTxt('smd_thumb_profile_heading').'</a></h3><div id="smd_thumbnail_profiles" class="toggle" style="display:'.(get_pref('pane_smd_thumbnail_profiles_visible') ? 'block' : 'none').'">';
-        $out[] = '<div class="txp-buttons">'.n.$btnPref.'</div>';
+        $out[] = '<section class="txp-details" id="smd_thumb_profiles">';
+        $out[] = '<h3 class="txp-summary lever'.(get_pref('pane_smd_thumbnail_profiles_visible') ? ' expanded' : '').'"><a href="#smd_thumbnail_profiles" class="smd_thumbnail_heading">'.gTxt('smd_thumb_profile_heading').'</a></h3><div class="toggle" id="smd_thumbnail_profiles" role="region" style="display:'.(get_pref('pane_smd_thumbnail_profiles_visible') ? 'block' : 'none').'">';
+        $out[] = $btnPref;
 
         // Main list of profiles.
         $out[] = '<form method="post" name="smd_thumb_profile_form" id="smd_thumb_profile_form" action="'.join_qs($qs).'">';
+        $out[] = n.tag_start('div', array('class' => 'txp-listtables'));
         $out[] = startTable();
         $out[] = $headings;
 
@@ -1454,21 +1453,31 @@ EOC
                 $link_del = join_qs($qs).a.'step=smd_thumb_profile_delete'.a.'smd_thumb_name='.$row['name'];
                 $btnEdt = '<a href="'.$link_edt.'">[' . gTxt('edit') . ']</a>';
                 $btnDel = '<a href="'.$link_del.'" onclick="return confirm(\''.gTxt('smd_thumb_delete_confirm', array("{name}" => $row['name'])).'\');">[' . gTxt('delete') . ']</a>';
-                $btnDel = href('×', array(
-                    'event'          => 'image',
-                    'step'           => 'smd_thumb_profile_delete',
-                    'smd_thumb_name' => $row['name'],
-                    '_txp_token'     => form_token(),
-                    'page'           => $page,
-                    'sort'           => $sort,
-                    'dir'            => $dir,
-                    'crit'           => $crit,
-                    'search_method'  => $search_method,
-                ), array(
-                    'class'       => 'dlink destroy ui-icon ui-icon-close',
-                    'title'       => gTxt('delete'),
-                    'data-verify' => gTxt('smd_thumb_delete_confirm', array("{name}" => $row['name'])),
-                ));
+                $btnDel = tag(
+                    href(
+                        span(gTxt('delete'), array('class' => 'ui-icon ui-icon-close')), array(
+                        'event'          => 'image',
+                        'step'           => 'smd_thumb_profile_delete',
+                        'smd_thumb_name' => $row['name'],
+                        '_txp_token'     => form_token(),
+                        'page'           => $page,
+                        'sort'           => $sort,
+                        'dir'            => $dir,
+                        'crit'           => $crit,
+                        'search_method'  => $search_method,
+                    ), array(
+                        'class'       => 'destroy ui-icon ui-icon-close',
+                        'title'       => gTxt('delete'),
+                        'data-verify' => gTxt('smd_thumb_delete_confirm', array("{name}" => $row['name'])),
+                    )),
+                    'button',
+                        array(
+                        'class'       => 'destroy',
+                        'type'        => 'button',
+                        'title'       => gTxt('delete'),
+                        'aria-label'  => gTxt('delete'),
+                        )
+                    );
 
                 $active = ($row['flags'] & SMD_THUMB_ACTIVE) ? 1 : 0;
                 $crop = ($row['flags'] & SMD_THUMB_CROP) ? 1 : 0;
@@ -1477,15 +1486,15 @@ EOC
                 if ($step == 'smd_thumb_profile_edit' && $row['name'] == $smd_thumb_name) {
                     $btnSave = fInput('submit', 'smd_thumb_save', gTxt('Save'), 'publish');
                     $out[] = tr(
-                        tda(hInput('smd_thumb_name', $row['name']).fInput('text', 'smd_thumb_newname', $row['name']), array('data-th' => gTxt('name')))
-                        .tda(fInput('text', 'smd_thumb_width', $row['width'], '', '', '', '4'), array('data-th' => gTxt('thumb_width')))
-                        .tda(fInput('text', 'smd_thumb_height', $row['height'], '', '', '', '4'), array('data-th' => gTxt('thumb_height')))
-                        .tda(fInput('text', 'smd_thumb_quality', $row['quality'], '', '', '', '4'), array('data-th' => gTxt('smd_thumb_quality')))
-                        .tda(checkbox('smd_thumb_crop', '1', $crop), array('data-th' => gTxt('keep_square_pixels')))
-                        .tda(checkbox('smd_thumb_sharpen', '1', $sharpen), array('data-th' => gTxt('smd_thumb_sharpen')))
-                        .tda(checkbox('smd_thumb_active', '1', $active), array('data-th' => gTxt('active'), 'class' => $row['name']))
-                        .tda(checkbox('smd_thumb_default', '1', (($row['name'] == $pro_dflt) ? 1 : 0)), array('data-th' => gTxt('default')))
-                        .tda($btnSave.$btnCancel, array('data-th' => gTxt('smd_thumb_actions')))
+                        tda(hInput('smd_thumb_name', $row['name']).fInput('text', 'smd_thumb_newname', $row['name']), array('data-th' => gTxt('name'))).
+                        tda(fInput('text', 'smd_thumb_width', $row['width'], 'input-xsmall', '', '', '4'), array('data-th' => gTxt('thumb_width'))).
+                        tda(fInput('text', 'smd_thumb_height', $row['height'], 'input-xsmall', '', '', '4'), array('data-th' => gTxt('thumb_height'))).
+                        tda(fInput('text', 'smd_thumb_quality', $row['quality'], 'input-xsmall', '', '', '3'), array('data-th' => gTxt('smd_thumb_quality'))).
+                        tda(checkbox('smd_thumb_crop', '1', $crop), array('data-th' => gTxt('keep_square_pixels'))).
+                        tda(checkbox('smd_thumb_sharpen', '1', $sharpen), array('data-th' => gTxt('smd_thumb_sharpen'))).
+                        tda(checkbox('smd_thumb_active', '1', $active), array('data-th' => gTxt('active'), 'class' => $row['name'])).
+                        tda(checkbox('smd_thumb_default', '1', (($row['name'] == $pro_dflt) ? 1 : 0)), array('data-th' => gTxt('default'))).
+                        tda($btnSave.$btnCancel, array('data-th' => gTxt('smd_thumb_actions')))
                     , ' id="smd_thumb_profile_edited"');
                 } else {
                     $out[] = tr(
@@ -1512,13 +1521,16 @@ EOC
                 .tda(checkbox('smd_thumb_add_sharpen', '1', (($step === 'smd_thumb_profile_save') ? $smd_thumb_sharpen : 0)), array('data-th' => gTxt('smd_thumb_sharpen')))
                 .tda(checkbox('smd_thumb_add_active_new', '1', 1), array('data-th' => gTxt('active')))
                 .tda(checkbox('smd_thumb_add_default', '1', 0), array('data-th' => gTxt('default')))
-                .tda(fInput('submit', 'smd_thumb_add', gTxt('add'), 'publish').$btnCancel, array('data-th' => gTxt('smd_thumb_actions')));
+                .tda(fInput('submit', 'smd_thumb_add', gTxt('add')).$btnCancel, array('data-th' => gTxt('smd_thumb_actions')));
             $out[]= '</tr>';
 
         }
 
-        $out[] = endTable().n.$btnNew;
-        $out[] = '</form></div></div>';
+        $out[] = endTable();
+        $out[] = n.tag_end('div'); // End of .txp-listtables.
+        $out[] = n.$btnNew;
+        $out[] = '</form>';
+        $out[] = '</section>';
     }
 
     return join(n, $out);
@@ -1609,7 +1621,7 @@ function smd_thumb_table_install()
         set_pref('smd_thumb_backup_h', get_pref('thumb_h'), 'smd_thumb', PREF_HIDDEN, 'text_input', 1);
         set_pref('smd_thumb_backup_c', get_pref('thumb_crop'), 'smd_thumb', PREF_HIDDEN, 'text_input', 2);
 
-        // Erase the current thumb prefs
+        // Erase the current thumb prefs.
         set_pref('thumb_w', '', 'image', PREF_HIDDEN);
         set_pref('thumb_h', '', 'image', PREF_HIDDEN);
         set_pref('thumb_crop', '', 'image', PREF_HIDDEN);
@@ -1712,7 +1724,7 @@ function smd_thumbnail($atts, $thing = NULL)
         'width'      => '',
         'height'     => '',
         'force_size' => '',
-        'display'    => 'thumbnail', // thumbnail (full img tag) or url
+        'display'    => 'thumbnail', // thumbnail (full img tag) or URL.
         'form'       => '',
     ), $atts));
 
