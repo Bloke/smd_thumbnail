@@ -196,7 +196,8 @@ function smd_thumb_get_style_rules()
 .smd_selected { border-color: #0066ff; }
 .smd_hidden { display: none; }
 .smd_inactive td { opacity: 0.33; }
-#smd_thumbs img { cursor: pointer; }
+input.smd_thumbnail-create { margin: 0; }
+#smd_thumbs img { display: block; margin: 1em 0; cursor: pointer; }
 '
 );
 
@@ -850,8 +851,8 @@ EOC
             $out[] = fInput('hidden', 'smd_step', 'smd_thumbnail_manage');
             $out[] = fInput('hidden', 'smd_thumbnail_chosen_size', '', '', '', '', '', '', 'smd_thumbnail_chosen_size');
             $out[] = selectInput('smd_thumbnail_size', $profiles, '', '', ' onchange="return smd_thumb_select_changed()";', 'smd_thumbnail_size');
-            $out[] = fInput('submit', '', gTxt('create'));
-            $out[] = fInput('submit', 'smd_thumbnail_delete', gTxt('delete'));
+            $out[] = fInput('submit', '', gTxt('create'), 'smd_thumbnail-create');
+            $out[] = fInput('submit', 'smd_thumbnail_delete', gTxt('delete'), 'smd_thumbnail-delete');
             $out[] = join('', $thumbs);
             $out[] = '</p>'.n.'</form>';
 
