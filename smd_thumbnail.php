@@ -197,12 +197,9 @@ function smd_thumb_get_style_rules()
 {
     $smd_thumb_styles = array(
         'smd_thumb' =>'
-.smd_selected { border:1px solid #1b3eb7; background:#1b3eb7; }
-#smd_thumbs img { padding:2px; margin:1px; border:1px solid black; }
-.smd_hidden { display:none; }
-.smd_thumb_new_profile { display:table-row; }
-.smd_inactive { opacity:.3; }
-.smd_thumb_heading_active { cursor:pointer; }
+.smd_selected { border: 1px solid #1b3eb7; background: #1b3eb7; }
+.smd_hidden { display: none; }
+.smd_inactive { opacity: 0.3; }
 '
 );
 
@@ -1162,6 +1159,7 @@ function smd_thumb_profiles($evt, $stp, $dflt, $imglist)
             if (!empty($smd_thumb_name)) {
                 $name = sanitizeForUrl($smd_thumb_name);
                 $ret = safe_delete(SMD_THUMB, "name='" . doSlash($name) . "'");
+
                 if ($ret) {
                     smd_thumb_rmdir(IMPATH.$name);
 
@@ -1270,7 +1268,7 @@ EOC
                 'all' => gTxt('smd_thumb_byall'),
             );
 
-            $grpOpts = selectInput('smd_thumb_group_type', $grpTypes, get_pref('pane_smd_thumb_group_type', 'all', 1), '', ' onchange="smd_thumb_subsel(this);"', 'smd_thumb_group_type').'<span id="smd_thumb_subsel"></span>';
+            $grpOpts = selectInput('smd_thumb_group_type', $grpTypes, get_pref('pane_smd_thumb_group_type', 'all', 1), '', ' onchange="smd_thumb_subsel(this);"', 'smd_thumb_group_type').'<span id="smd_thumb_subsel"></span> ';
 
             $out[] = '<section class="txp-details" id="smd_thumb_profiles">';
             $out[] = '<h3 class="txp-summary lever'.(get_pref('pane_smd_thumbnail_profiles_visible') ? ' expanded' : '').'"><a href="#smd_thumbnail_profiles">'.(($rights) ? gTxt('smd_thumb_profile_preftool_heading') : gTxt('smd_thumb_profile_tool_heading')).'</a></h3><div class="toggle" id="smd_thumbnail_profiles" role="region" style="display:'.(get_pref('pane_smd_thumbnail_profiles_visible') ? 'block' : 'none').'">';
@@ -1278,11 +1276,7 @@ EOC
             $out[] = '<div id="smd_thumb_batch"><span id="smd_thumb_bcurr"></span><span id="smd_thumb_btot"></span></div>';
             $out[] = '<form method="post" name="smd_thumb_multi_edit" id="smd_thumb_multi_edit" action="'.join_qs($qs).'">';
 
-            $out[] = inputLabel(
-                'smd_thumb_group_type',
-                $grpOpts.$btnGrp,
-                'smd_thumb_batch_preamble', '', array('class' => 'txp-form-field')
-            );
+            $out[] = '<p><label for="smd_thumb_group_type">'.gTxt('smd_thumb_batch_preamble').'</table>'.$grpOpts.$btnGrp.'</p>';
 
             $out[] = fInput('hidden', 'smd_thumb_selected', '', '', '', '', '', '', 'smd_thumb_selected');
             $out[] = eInput($smd_thumb_event);
@@ -1290,76 +1284,55 @@ EOC
             $out[] = '</form>';
 
             if ($rights) {
-                $out[] = '<div><h3>'.gTxt('smd_thumb_prefs').'</h3>';
-                $out[] = '<form method="post" name="smd_thumb_prefs" id="smd_thumb_prefs_form" action="'.join_qs($qs).'">';
+                $out[] = '<h3>'.gTxt('smd_thumb_prefs').'</h3>';
+                $out[] = '<form class="txp-prefs-group" method="post" name="smd_thumb_prefs" id="smd_thumb_prefs_form" action="'.join_qs($qs).'">';
 
                 $txp_rf = get_pref('smd_thumb_create_from', 'full');
-                $out[] = '<div class="txp-prefs-group">';
-                $out[] = '<div class="txp-form-field">';
-                $out[] = '<div class="txp-form-field-label"><label>' . gTxt('smd_thumb_txp_create_from') . '</label></div>';
-                $out[] = '<div class="txp-form-field-value">
-                        <label>
-                            <input type="radio"
-                                name="smd_thumb_create_from"
-                                value="full"'
-                                . (($txp_rf=='full') ? ' checked="checked"' : '')
-                                . ' class="radio"
-                                onchange="smd_thumb_switch_pref(this, \'create_from\');" />'
-                                . n . gTxt('smd_thumb_txp_create_from_full')
-                        . '</label>'
-                        . n . '<label>
-                            <input type="radio"
-                                name="smd_thumb_create_from"
-                                value="thumb"'
-                                . (($txp_rf=='thumb') ? ' checked="checked"' : '')
-                                . ' class="radio"
-                                onchange="smd_thumb_switch_pref(this, \'create_from\');" />'
-                                . n . gTxt('smd_thumb_txp_create_from_thumb')
-                        .'</label>';
-                $out[] = '</div></div>';
+                $out[] = '<p>'.gTxt('smd_thumb_txp_create_from');
+                $out[] = br.n.'<label>
+                            <input class="radio" type="radio" name="smd_thumb_create_from" value="full"'.
+                                (($txp_rf=='full') ? ' checked="checked"' : '').
+                                ' onchange="smd_thumb_switch_pref(this, \'create_from\');">'.
+                                n.gTxt('smd_thumb_txp_create_from_full').
+                        '</label>'.
+                        n.'<label>
+                            <input class="radio" type="radio" name="smd_thumb_create_from" value="thumb"'.
+                                (($txp_rf=='thumb') ? ' checked="checked"' : '').
+                                ' onchange="smd_thumb_switch_pref(this, \'create_from\');">'.
+                                n.gTxt('smd_thumb_txp_create_from_thumb').
+                        '</label>';
+                $out[] = '</p>';
 
                 if ($pro_dflt) {
                     $txp_c = get_pref('smd_thumb_txp_create');
                     $txp_d = get_pref('smd_thumb_txp_delete');
-                    $out[] = '<div class="txp-form-field">';
-                    $out[] = '<div class="txp-form-field-label"><label>' . gTxt('smd_thumb_txp_default_sync') . '</label></div>';
-                    $out[] = '<div class="txp-form-field-value">
-                            <label>
-                                <input type="checkbox"
-                                    name="smd_thumb_txp_create"
-                                    value="1"'
-                                    . (($txp_c) ? ' checked="checked"' : '')
-                                    . ' class="checkbox"
-                                    onchange="smd_thumb_switch_pref(this, \'txp_create\');" />'
-                                    . n . gTxt('smd_thumb_create')
-                            . '</label>'
-                            . n . '<label>
-                                <input type="checkbox"
-                                    name="smd_thumb_txp_delete"
-                                    value="1"'
-                                    . (($txp_d) ? ' checked="checked"' : '')
-                                    . ' class="checkbox"
-                                    onchange="smd_thumb_switch_pref(this, \'txp_delete\');" />'
-                                    . n . gTxt('smd_thumb_delete')
-                            . '</label>';
-                    $out[] = '</div></div>';
+                    $out[] = '<p>'.gTxt('smd_thumb_txp_default_sync');
+                    $out[] = br.n.'<label>
+                        <input class="checkbox" type="checkbox" name="smd_thumb_txp_create" value="1"'.
+                                (($txp_c) ? ' checked="checked"' : '').
+                                ' onchange="smd_thumb_switch_pref(this, \'txp_create\');">'.
+                                n.gTxt('smd_thumb_create').
+                        '</label>'.
+                        n.'<label>
+                            <input class="checkbox" type="checkbox" name="smd_thumb_txp_delete" value="1"'.
+                                (($txp_d) ? ' checked="checked"' : '').
+                                ' onchange="smd_thumb_switch_pref(this, \'txp_delete\');">'.
+                                n.gTxt('smd_thumb_delete').
+                        '</label>';
+                    $out[] = '</p>';
                 }
 
                 $txp_ar = get_pref('smd_thumb_auto_replace');
-                $out[] = '<div class="txp-form-field">';
-                $out[] = '<div class="txp-form-field-label"><label>' . gTxt('smd_thumb_txp_auto_replace') . '</label></div>';
-                $out[] = '<div class="txp-form-field-value">
-                        <label>
-                            <input type="checkbox"
-                                name="smd_thumb_auto_replace"
-                                value="1"'
-                                . (($txp_ar) ? ' checked="checked"' : '')
-                                . ' class="checkbox"
-                                onchange="smd_thumb_switch_pref(this, \'auto_replace\');" />'
-                                . n . gTxt('yes')
-                        . '</label>';
-                $out[] = '</div></div>';
-                $out[] = '</div></form></div>';
+                $out[] = '<p>'.gTxt('smd_thumb_txp_auto_replace');
+                $out[] = br.n.'<label>
+                        <input class="checkbox" type="checkbox" name="smd_thumb_auto_replace" value="1"'.
+                            (($txp_ar) ? ' checked="checked"' : '').
+                            ' onchange="smd_thumb_switch_pref(this, \'auto_replace\');">'.
+                            n.gTxt('yes').
+                    '</label>';
+                $out[] = '</p>';
+
+                $out[] = '</form>';
             }
             $out[] = '</section>';
         }
@@ -1656,6 +1629,7 @@ function smd_thumb_table_exist($all='')
             if (gps('debug')) {
                 echo "++ TABLE ".$tbl." HAS ".count(@safe_show('columns', $tbl))." COLUMNS; REQUIRES ".$cols." ++".br;
             }
+
             if (count(@safe_show('columns', $tbl)) == $cols) {
                 $out--;
             }
