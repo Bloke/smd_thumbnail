@@ -651,7 +651,6 @@ function smd_thumb_insert()
         IMAGETYPE_GIF  => '.gif',
         IMAGETYPE_JPEG => '.jpg',
         IMAGETYPE_PNG  => '.png',
-        IMAGETYPE_SWF  => '.swf',
     );
 
     $ext = isset($valid_exts[$extension]) ? $valid_exts[$extension] : '';
