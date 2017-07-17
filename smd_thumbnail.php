@@ -69,9 +69,8 @@ smd_thumb_create => Creation
 smd_thumb_create_group_confirm => Really create thumbnails for <strong>all</strong> active profiles? Any existing thumbs will be overwritten.
 smd_thumb_delete => Deletion
 smd_thumb_delete_confirm => Really delete profile {name}? It will delete <strong>all</strong> thumbnails of this type.
-smd_thumb_image => Image=
+smd_thumb_image => Image =
 smd_thumb_new => New profile
-smd_thumb_prefs => Preferences
 smd_thumb_profile => Profile =
 smd_thumb_profile_deleted => Profile <strong>{name}</strong> deleted
 smd_thumb_profile_exists => Profile <strong>{name}</strong> already exists
@@ -81,7 +80,6 @@ smd_thumb_profile_tool_heading => Thumbnail tools
 smd_thumb_quality => Quality (%)
 smd_thumb_sharpen => Sharpen
 smd_thumb_tables_not_installed => Tables not installed: try reinstalling the plugin
-smd_thumb_thumbnail_heading => Thumbnails
 smd_thumb_txp_auto_replace => Recreate thumbnails on re-upload of main image:
 smd_thumb_txp_create_from => Create thumbnails from:
 smd_thumb_txp_create_from_full => Full size image
@@ -103,9 +101,8 @@ smd_thumb_create => Création
 smd_thumb_create_group_confirm => Créer les vignettes pour <strong>tous</strong> les profils existant ? Les précédentes vignettes seront écrasées.
 smd_thumb_delete => Suppression
 smd_thumb_delete_confirm => Voulez-vous vraiment supprimer le profil {name} ? Les vignettes de ce type seront <strong>toutes</strong> supprimées.
-smd_thumb_image => Image=
+smd_thumb_image => Image =
 smd_thumb_new => Nouveau profil
-smd_thumb_prefs => Préférences
 smd_thumb_profile => Profil =
 smd_thumb_profile_deleted => Le profil <strong>{name}</strong> a été supprimé.
 smd_thumb_profile_exists => Le profil <strong>{name}</strong> existe déjà.
@@ -115,7 +112,6 @@ smd_thumb_profile_tool_heading => Outils de vignettage
 smd_thumb_quality => Qualité (%)
 smd_thumb_sharpen => Rendre net
 smd_thumb_tables_not_installed => Tables non installées : essayez de réinstaller le plugin.
-smd_thumb_thumbnail_heading => Vignettes
 smd_thumb_txp_auto_replace => Recréer les vignettes au téléchargement des images :
 smd_thumb_txp_create_from => Créer les vignettes à partir de :
 smd_thumb_txp_create_from_full => l’image originale
@@ -197,9 +193,10 @@ function smd_thumb_get_style_rules()
 {
     $smd_thumb_styles = array(
         'smd_thumb' =>'
-.smd_selected { border: 1px solid #1b3eb7; background: #1b3eb7; }
+.smd_selected { border-color: #0066ff; }
 .smd_hidden { display: none; }
-.smd_inactive { opacity: 0.3; }
+.smd_inactive td { opacity: 0.33; }
+#smd_thumbs img { cursor: pointer; }
 '
 );
 
@@ -765,11 +762,13 @@ console.log(sel);
             jQuery(this).toggleClass('smd_selected active');
             if (jQuery(this).hasClass('smd_selected')) {
                 jQuery("#smd_upload_thumbnail").attr('disabled', false);
+                jQuery(".smd_thumbnail-upload input[type=submit]").attr('disabled', false);
                 jQuery("#smd_thumb_profile").val(sel);
                 idx = jQuery("#smd_thumbnail_size option[value='"+sel+"']").index();
                 jQuery("#smd_thumbnail_chosen_size").val(sel);
             } else {
                 jQuery("#smd_upload_thumbnail").attr('disabled', true);
+                jQuery(".smd_thumbnail-upload input[type=submit]").attr('disabled', true);
                 jQuery("#smd_thumb_profile").val('');
                 jQuery("#smd_thumbnail_chosen_size").val('');
             }
@@ -783,10 +782,12 @@ function smd_thumb_select_changed() {
     obj = jQuery("#smd_thumbnail_size");
     if (obj.attr("selectedIndex") == 0) {
         jQuery("#smd_upload_thumbnail").attr('disabled', true);
+        jQuery(".smd_thumbnail-upload input[type=submit]").attr('disabled', true);
         jQuery("#smd_thumb_profile").val('');
         jQuery("#smd_thumbnail_chosen_size").val('');
     } else {
         jQuery("#smd_upload_thumbnail").attr('disabled', false);
+        jQuery(".smd_thumbnail-upload input[type=submit]").attr('disabled', false);
         jQuery("#smd_thumb_profile").val(obj.val());
         jQuery("#smd_thumbnail_chosen_size").val(obj.val());
     }
@@ -806,7 +807,8 @@ jQuery(function() {
         });
     });
     jQuery("#smd_upload_thumbnail").attr('disabled', true);
-    jQuery(".thumbnail-upload").prepend('<input type="hidden" name="smd_thumb_imgid" value="{$id}" /><input type="hidden" id="smd_thumb_profile" name="smd_thumb_profile" value="" /><input type="hidden" id="smd_thumb_ext" name="smd_thumb_ext" value="{$ext}" />');
+    jQuery(".smd_thumbnail-upload input[type=submit]").attr('disabled', true);
+    jQuery(".smd_thumbnail-upload").prepend('<input type="hidden" name="smd_thumb_imgid" value="{$id}" /><input type="hidden" id="smd_thumb_profile" name="smd_thumb_profile" value="" /><input type="hidden" id="smd_thumb_ext" name="smd_thumb_ext" value="{$ext}" />');
 });
 EOC
     );
@@ -843,17 +845,15 @@ EOC
                 "search_method" => $search_method,
             );
 
-            $out[] = '<div id="smd_thumbnail_control"><span class="txp-summary lever'.(get_pref('pane_smd_thumbnails_visible') ? ' expanded' : '').'"><a href="#smd_thumbnails">'.gTxt('smd_thumb_thumbnail_heading').'</a></span><div class="toggle" id="smd_thumbnails" role="region" style="display:'.(get_pref('pane_smd_thumbnails_visible') ? 'block' : 'none').'">';
-            $out[] = upload_form(gTxt('smd_thumb_upload'), 'upload_thumbnail', 'smd_thumbnail_insert', 'image', $id, $file_max_upload_size, 'smd_upload_thumbnail', 'thumbnail-upload');
-            $out[] = '<form name="smd_thumbnail_create" method="post" action="'.join_qs($qs).'">';
+            $out[] = upload_form(gTxt('smd_thumb_upload'), '', 'smd_thumbnail_insert', 'image', $id, $file_max_upload_size, 'smd_upload_thumbnail', 'smd_thumbnail-upload');
+            $out[] = '<form name="smd_thumbnail_create" method="post" action="'.join_qs($qs).'">'.n.'<p>';
             $out[] = fInput('hidden', 'smd_step', 'smd_thumbnail_manage');
             $out[] = fInput('hidden', 'smd_thumbnail_chosen_size', '', '', '', '', '', '', 'smd_thumbnail_chosen_size');
             $out[] = selectInput('smd_thumbnail_size', $profiles, '', '', ' onchange="return smd_thumb_select_changed()";', 'smd_thumbnail_size');
             $out[] = fInput('submit', '', gTxt('create'));
             $out[] = fInput('submit', 'smd_thumbnail_delete', gTxt('delete'));
             $out[] = join('', $thumbs);
-            $out[] = '</form>';
-            $out[] = '</div>';
+            $out[] = '</p>'.n.'</form>';
 
             return join(n, $out);
         }
@@ -936,7 +936,7 @@ function smd_thumb_img($row, $currimg, $meta = array(), $dsp = '')
         foreach ($meta as $key => $val) {
             // We need all atts for container tags, but only valid HTML atts should appear in the default <img> tag.
             if (in_array($key, array('alt', 'class', 'title')) || strpos($key, 'data-') === 0) {
-                $extras .= ' ' . $key . '="' . $val . '"';
+                $extras .= ' '.$key.'="'.$val.'"';
             }
         }
 
@@ -952,7 +952,7 @@ function smd_thumb_img($row, $currimg, $meta = array(), $dsp = '')
             $smd_thumb_data['html_h'] = $h;
             return parse($dsp);
         } else {
-            return '<img src="' . ihu . $img_dir . '/' . $dir . '/' . $id . $ext . $uDate . '"' . $w . $h . $extras . ' />';
+            return '<img src="'.ihu.$img_dir.'/'.$dir.'/'.$id.$ext.$uDate.'"'.$w.$h.$extras.'>';
         }
     }
 
@@ -1284,12 +1284,11 @@ EOC
             $out[] = '</form>';
 
             if ($rights) {
-                $out[] = '<h3>'.gTxt('smd_thumb_prefs').'</h3>';
                 $out[] = '<form class="txp-prefs-group" method="post" name="smd_thumb_prefs" id="smd_thumb_prefs_form" action="'.join_qs($qs).'">';
 
                 $txp_rf = get_pref('smd_thumb_create_from', 'full');
                 $out[] = '<p>'.gTxt('smd_thumb_txp_create_from');
-                $out[] = br.n.'<label>
+                $out[] = n.'<label>
                             <input class="radio" type="radio" name="smd_thumb_create_from" value="full"'.
                                 (($txp_rf=='full') ? ' checked="checked"' : '').
                                 ' onchange="smd_thumb_switch_pref(this, \'create_from\');">'.
@@ -1307,7 +1306,7 @@ EOC
                     $txp_c = get_pref('smd_thumb_txp_create');
                     $txp_d = get_pref('smd_thumb_txp_delete');
                     $out[] = '<p>'.gTxt('smd_thumb_txp_default_sync');
-                    $out[] = br.n.'<label>
+                    $out[] = n.'<label>
                         <input class="checkbox" type="checkbox" name="smd_thumb_txp_create" value="1"'.
                                 (($txp_c) ? ' checked="checked"' : '').
                                 ' onchange="smd_thumb_switch_pref(this, \'txp_create\');">'.
@@ -1324,7 +1323,7 @@ EOC
 
                 $txp_ar = get_pref('smd_thumb_auto_replace');
                 $out[] = '<p>'.gTxt('smd_thumb_txp_auto_replace');
-                $out[] = br.n.'<label>
+                $out[] = n.'<label>
                         <input class="checkbox" type="checkbox" name="smd_thumb_auto_replace" value="1"'.
                             (($txp_ar) ? ' checked="checked"' : '').
                             ' onchange="smd_thumb_switch_pref(this, \'auto_replace\');">'.
@@ -1443,12 +1442,12 @@ EOC
                 $sharpen = ($row['flags'] & SMD_THUMB_SHARP) ? 1 : 0;
 
                 if ($step == 'smd_thumb_profile_edit' && $row['name'] == $smd_thumb_name) {
-                    $btnSave = fInput('submit', 'smd_thumb_save', gTxt('Save'), 'publish');
+                    $btnSave = fInput('submit', 'smd_thumb_save', gTxt('Save'));
                     $out[] = tr(
                         tda(hInput('smd_thumb_name', $row['name']).fInput('text', 'smd_thumb_newname', $row['name']), array('data-th' => gTxt('name'))).
-                        tda(fInput('text', 'smd_thumb_width', $row['width'], 'input-xsmall', '', '', '4'), array('data-th' => gTxt('thumb_width'))).
-                        tda(fInput('text', 'smd_thumb_height', $row['height'], 'input-xsmall', '', '', '4'), array('data-th' => gTxt('thumb_height'))).
-                        tda(fInput('text', 'smd_thumb_quality', $row['quality'], 'input-xsmall', '', '', '3'), array('data-th' => gTxt('smd_thumb_quality'))).
+                        tda(fInput('text', 'smd_thumb_width', $row['width'], '', '', '', '4'), array('data-th' => gTxt('thumb_width'))).
+                        tda(fInput('text', 'smd_thumb_height', $row['height'], '', '', '', '4'), array('data-th' => gTxt('thumb_height'))).
+                        tda(fInput('text', 'smd_thumb_quality', $row['quality'], '', '', '', '3'), array('data-th' => gTxt('smd_thumb_quality'))).
                         tda(checkbox('smd_thumb_crop', '1', $crop), array('data-th' => gTxt('keep_square_pixels'))).
                         tda(checkbox('smd_thumb_sharpen', '1', $sharpen), array('data-th' => gTxt('smd_thumb_sharpen'))).
                         tda(checkbox('smd_thumb_active', '1', $active), array('data-th' => gTxt('active'), 'class' => $row['name'])).
@@ -1472,15 +1471,15 @@ EOC
 
             // New Profile row.
             $out[]= '<tr id="smd_thumb_profile_create" class="smd_hidden">';
-            $out[] = tda(sInput('smd_thumb_profile_save').fInput('text', 'smd_thumb_add_newname', (($step === 'smd_thumb_profile_save') ? $smd_thumb_name : ''), 'smd_focus'), array('data-th' => gTxt('name')))
-                .tda(fInput('text', 'smd_thumb_add_width', (($step === 'smd_thumb_profile_save') ? $width : ''), '', '', '', INPUT_XSMALL), array('data-th' => gTxt('thumb_width')))
-                .tda(fInput('text', 'smd_thumb_add_height', (($step === 'smd_thumb_profile_save') ? $height : ''), '', '', '', INPUT_XSMALL), array('data-th' => gTxt('thumb_height')))
-                .tda(fInput('text', 'smd_thumb_add_quality', (($step === 'smd_thumb_profile_save') ? $quality : ''), '', '', '', INPUT_XSMALL), array('data-th' => gTxt('smd_thumb_quality')))
-                .tda(checkbox('smd_thumb_add_crop', '1', (($step === 'smd_thumb_profile_save') ? $smd_thumb_crop : 0)), array('data-th' => gTxt('keep_square_pixels')))
-                .tda(checkbox('smd_thumb_add_sharpen', '1', (($step === 'smd_thumb_profile_save') ? $smd_thumb_sharpen : 0)), array('data-th' => gTxt('smd_thumb_sharpen')))
-                .tda(checkbox('smd_thumb_add_active_new', '1', 1), array('data-th' => gTxt('active')))
-                .tda(checkbox('smd_thumb_add_default', '1', 0), array('data-th' => gTxt('default')))
-                .tda(fInput('submit', 'smd_thumb_add', gTxt('add')).$btnCancel, array('data-th' => gTxt('smd_thumb_actions')));
+            $out[] = tda(sInput('smd_thumb_profile_save').fInput('text', 'smd_thumb_add_newname', (($step === 'smd_thumb_profile_save') ? $smd_thumb_name : ''), 'smd_focus'), array('data-th' => gTxt('name'))).
+                tda(fInput('text', 'smd_thumb_add_width', (($step === 'smd_thumb_profile_save') ? $width : ''), '', '', '', '4'), array('data-th' => gTxt('thumb_width'))).
+                tda(fInput('text', 'smd_thumb_add_height', (($step === 'smd_thumb_profile_save') ? $height : ''), '', '', '', '4'), array('data-th' => gTxt('thumb_height'))).
+                tda(fInput('text', 'smd_thumb_add_quality', (($step === 'smd_thumb_profile_save') ? $quality : ''), '', '', '', '3'), array('data-th' => gTxt('smd_thumb_quality'))).
+                tda(checkbox('smd_thumb_add_crop', '1', (($step === 'smd_thumb_profile_save') ? $smd_thumb_crop : 0)), array('data-th' => gTxt('keep_square_pixels'))).
+                tda(checkbox('smd_thumb_add_sharpen', '1', (($step === 'smd_thumb_profile_save') ? $smd_thumb_sharpen : 0)), array('data-th' => gTxt('smd_thumb_sharpen'))).
+                tda(checkbox('smd_thumb_add_active_new', '1', 1), array('data-th' => gTxt('active'))).
+                tda(checkbox('smd_thumb_add_default', '1', 0), array('data-th' => gTxt('default'))).
+                tda(fInput('submit', 'smd_thumb_add', gTxt('add')).$btnCancel, array('data-th' => gTxt('smd_thumb_actions')));
             $out[]= '</tr>';
 
         }
@@ -1612,7 +1611,7 @@ function smd_thumb_table_remove()
 
     // Erase the backup thumb prefs.
     safe_delete('txp_prefs',
-        "name IN('smd_thumb_backup_w', 'smd_thumb_backup_h', 'smd_thumb_backup_c', 'smd_thumb_default_profile', 'pane_smd_thumbnail_profiles_visible', 'pane_smd_thumbnails_visible')");
+        "name IN('smd_thumb_backup_w', 'smd_thumb_backup_h', 'smd_thumb_backup_c', 'smd_thumb_default_profile', 'pane_smd_thumbnail_profiles_visible')");
 }
 
 /**
@@ -1648,7 +1647,7 @@ function smd_thumb_table_exist($all='')
  */
 function smd_thumbnail_save_pane_state()
 {
-    $panes = array('smd_thumbnail_profiles', 'smd_thumbnails');
+    $panes = array('smd_thumbnail_profiles');
     $pane = gps('pane');
 
     if (in_array($pane, $panes)) {
