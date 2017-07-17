@@ -201,24 +201,8 @@ function smd_thumb_get_style_rules()
 #smd_thumbs img { padding:2px; margin:1px; border:1px solid black; }
 .smd_hidden { display:none; }
 .smd_thumb_new_profile { display:table-row; }
-#smd_thumb_batch { float:right; }
 .smd_inactive { opacity:.3; }
 .smd_thumb_heading_active { cursor:pointer; }
-#smd_thumb_profile_form table { width:100% }
-.pref-label { text-align: right!important; }
-#smd_thumb_profile_form th { display:none; }
-#smd_thumb_profile_form td { display:block; }
-#smd_thumb_profile_form td:first-child { padding-top:0.5em }
-#smd_thumb_profile_form td:last-child { padding-bottom:0.5em }
-#smd_thumb_profile_form td:before { content: attr(data-th) ": "; font-weight:bold; width:6.5em; display:inline-block; }
-#smd_thumb_profile_form tr { border-top:1px solid #ccc; }
-#smd_thumb_profile_form th, #smd_thumb_profile_form td { margin:0.3em 0.7em; }
-@media (min-width:480px) {
-  #smd_thumb_profile_form td:before { display:none; }
-  #smd_thumb_profile_form th, #smd_thumb_profile_form td { display:table-cell; padding:.1em .1em; vertical-align:baseline }
-  #smd_thumb_profile_form th:first-child, #smd_thumb_profile_form td:first-child { padding-left: 0.6rem; }
-  #smd_thumb_profile_form th:last-child, #smd_thumb_profile_form td:last-child { padding-right: 0.6rem; }
-}
 '
 );
 
@@ -1278,7 +1262,7 @@ jQuery(function() {
 EOC
         );
 
-            $btnPnl = '<a class="txp-button" href="?event=image'.a.'sort='.$sort.a.'dir='.$dir.a.'page='.$page.a.'search_method[]='.$search_method.a.'crit='.$crit.'">'.gTxt('smd_thumb_btn_pnl').'</a>';
+            $btnPnl = '<p class="txp-list-options"><a href="?event=image'.a.'sort='.$sort.a.'dir='.$dir.a.'page='.$page.a.'search_method[]='.$search_method.a.'crit='.$crit.'"><span class="ui-icon ui-icon-wrench"></span>  '.gTxt('smd_thumb_btn_pnl').'</a></p>';
             $btnGrp = '<button class="navlink" type="submit" onclick="smd_thumb_copy_selected(); return confirm(\''.gTxt('smd_thumb_create_group_confirm').'\');">'.gTxt('smd_thumb_all_thumbs').'</button>';
             $grpTypes = array(
                 'sel' => gTxt('smd_thumb_bysel'),
@@ -1292,19 +1276,22 @@ EOC
             $out[] = '<section class="txp-details" id="smd_thumb_profiles">';
             $out[] = '<h3 class="txp-summary lever'.(get_pref('pane_smd_thumbnail_profiles_visible') ? ' expanded' : '').'"><a href="#smd_thumbnail_profiles">'.(($rights) ? gTxt('smd_thumb_profile_preftool_heading') : gTxt('smd_thumb_profile_tool_heading')).'</a></h3><div class="toggle" id="smd_thumbnail_profiles" role="region" style="display:'.(get_pref('pane_smd_thumbnail_profiles_visible') ? 'block' : 'none').'">';
             $out[] = $btnPnl;
-
             $out[] = '<div id="smd_thumb_batch"><span id="smd_thumb_bcurr"></span><span id="smd_thumb_btot"></span></div>';
             $out[] = '<form method="post" name="smd_thumb_multi_edit" id="smd_thumb_multi_edit" action="'.join_qs($qs).'">';
-            $out[] = startTable();
-            $out[] = tr(td(gTxt('smd_thumb_batch_preamble') . $grpOpts . $btnGrp));
-            $out[] = endTable();
+
+            $out[] = inputLabel(
+                'smd_thumb_group_type',
+                $grpOpts.$btnGrp,
+                'smd_thumb_batch_preamble', '', array('class' => 'txp-form-field')
+            );
+
             $out[] = fInput('hidden', 'smd_thumb_selected', '', '', '', '', '', '', 'smd_thumb_selected');
             $out[] = eInput($smd_thumb_event);
             $out[] = sInput('smd_thumb_create_group');
             $out[] = '</form>';
 
             if ($rights) {
-                $out[] = '<div><h4>'.gTxt('smd_thumb_prefs').'</h4>';
+                $out[] = '<div><h3>'.gTxt('smd_thumb_prefs').'</h3>';
                 $out[] = '<form method="post" name="smd_thumb_prefs" id="smd_thumb_prefs_form" action="'.join_qs($qs).'">';
 
                 $txp_rf = get_pref('smd_thumb_create_from', 'full');
@@ -1434,14 +1421,15 @@ EOC
         ).'</thead>';
 
         $out[] = '<section class="txp-details" id="smd_thumb_profiles">';
-        $out[] = '<h3 class="txp-summary lever'.(get_pref('pane_smd_thumbnail_profiles_visible') ? ' expanded' : '').'"><a href="#smd_thumbnail_profiles" class="smd_thumbnail_heading">'.gTxt('smd_thumb_profile_heading').'</a></h3><div class="toggle" id="smd_thumbnail_profiles" role="region" style="display:'.(get_pref('pane_smd_thumbnail_profiles_visible') ? 'block' : 'none').'">';
+        $out[] = '<h3 class="txp-summary lever'.(get_pref('pane_smd_thumbnail_profiles_visible') ? ' expanded' : '').'"><a href="#smd_thumbnail_profiles">'.gTxt('smd_thumb_profile_heading').'</a></h3><div class="toggle" id="smd_thumbnail_profiles" role="region" style="display:'.(get_pref('pane_smd_thumbnail_profiles_visible') ? 'block' : 'none').'">';
         $out[] = $btnPref;
 
         // Main list of profiles.
         $out[] = '<form method="post" name="smd_thumb_profile_form" id="smd_thumb_profile_form" action="'.join_qs($qs).'">';
         $out[] = n.tag_start('div', array('class' => 'txp-listtables'));
-        $out[] = startTable();
+        $out[] = n.tag_start('table', array('class' => 'txp-list--no-options'));
         $out[] = $headings;
+        $out[] = n.tag_start('tbody');
 
         if (smd_thumb_table_exist()) {
             $rs = safe_rows('*', SMD_THUMB, '1=1 ORDER BY name');
@@ -1526,7 +1514,8 @@ EOC
 
         }
 
-        $out[] = endTable();
+        $out[] = n.tag_end('tbody');
+        $out[] = n.tag_end('table');
         $out[] = n.tag_end('div'); // End of .txp-listtables.
         $out[] = n.$btnNew;
         $out[] = '</form>';

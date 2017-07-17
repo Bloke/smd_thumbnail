@@ -1,6 +1,6 @@
 h1. smd_thumbnail
 
-*Requires Textpattern 4.5.0+*
+*Requires Textpattern 4.6.0+*
 
 If you're bored of one Textpattern thumbnail per image and don't fancy using an auto-resizing script or relying on the browser to stretch your thumbnails, @smd_thumbnail@ could be the answer. It allows you to create profiles for as many Textpattern thumbnail sizes as you like and will automatically create physical thumbnails at those dimensions for any/all of your images.
 
