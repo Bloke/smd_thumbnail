@@ -17,9 +17,9 @@ $plugin['name'] = 'smd_thumbnail';
 // 1 = Plugin help is in raw HTML.  Not recommended.
 # $plugin['allow_html_help'] = 1;
 
-$plugin['version'] = '0.3.4-beta';
+$plugin['version'] = '0.4.0-beta';
 $plugin['author'] = 'Stef Dawson';
-$plugin['author_uri'] = 'http://stefdawson.com/';
+$plugin['author_uri'] = 'https://stefdawson.com/';
 $plugin['description'] = 'Multiple image thumbnails of arbitrary dimensions';
 
 // Plugin load order:
@@ -59,22 +59,22 @@ $plugin['textpack'] = <<<EOT
 smd_thumb_actions => Actions
 smd_thumb_all_sizes => All sizes
 smd_thumb_all_thumbs => Create
-smd_thumb_batch_preamble => (Re)create thumbnails for all active profiles, based on
+smd_thumb_batch_preamble => (Re)create thumbnails for all active profiles, based on:
 smd_thumb_btn_pnl => Profiles
 smd_thumb_btn_tools => Tools
 smd_thumb_btn_tools_prefs => Setup
 smd_thumb_byall => All images
 smd_thumb_bysel => Selected images
 smd_thumb_create => Creation
-smd_thumb_create_group_confirm => Really create thumbnails for ALL active profiles? Any existing thumbs will be overwritten.
+smd_thumb_create_group_confirm => Really create thumbnails for <strong>all</strong> active profiles? Any existing thumbs will be overwritten.
 smd_thumb_delete => Deletion
-smd_thumb_delete_confirm => Really delete profile {name}? It will delete ALL thumbnails of this type.
+smd_thumb_delete_confirm => Really delete profile {name}? It will delete <strong>all</strong> thumbnails of this type.
 smd_thumb_image => Image=
 smd_thumb_new => New profile
 smd_thumb_prefs => Preferences
-smd_thumb_profile => Profile=
-smd_thumb_profile_deleted => Profile "{name}" deleted
-smd_thumb_profile_exists => Profile "{name}" already exists
+smd_thumb_profile => Profile =
+smd_thumb_profile_deleted => Profile <strong>{name}</strong> deleted
+smd_thumb_profile_exists => Profile <strong>{name}</strong> already exists
 smd_thumb_profile_heading => Thumbnail profiles
 smd_thumb_profile_preftool_heading => Thumbnail setup
 smd_thumb_profile_tool_heading => Thumbnail tools
@@ -86,42 +86,42 @@ smd_thumb_txp_auto_replace => Recreate thumbnails on re-upload of main image:
 smd_thumb_txp_create_from => Create thumbnails from:
 smd_thumb_txp_create_from_full => Full size image
 smd_thumb_txp_create_from_thumb => Thumbnail
-smd_thumb_txp_default_sync => Keep Txp thumbnails in sync with default profile on:
+smd_thumb_txp_default_sync => Keep thumbnails in sync with default profile on:
 smd_thumb_upload => Replace selected thumbnail
 #@smd_thumb
 #@language fr-fr
 smd_thumb_actions => Actions
 smd_thumb_all_sizes => Toutes les tailles
 smd_thumb_all_thumbs => Créer
-smd_thumb_batch_preamble => (Re)créer des vignettes pour les profils actifs
+smd_thumb_batch_preamble => (Re)créer des vignettes pour les profils actifs :
 smd_thumb_btn_pnl => Profils
 smd_thumb_btn_tools => Outils
 smd_thumb_btn_tools_prefs => Configuration
-smd_thumb_byAll => Tous images
-smd_thumb_bySel => Sélectionnées
+smd_thumb_byall => Tous images
+smd_thumb_bysel => Sélectionnées
 smd_thumb_create => Création
-smd_thumb_create_group_confirm => Créer les vignettes pour TOUS les profils existant ? Les précédentes vignettes seront écrasées.
+smd_thumb_create_group_confirm => Créer les vignettes pour <strong>tous</strong> les profils existant ? Les précédentes vignettes seront écrasées.
 smd_thumb_delete => Suppression
-smd_thumb_delete_confirm => Voulez-vous vraiment supprimer le profil {name} ? Les vignettes de ce type seront TOUTES supprimées.
+smd_thumb_delete_confirm => Voulez-vous vraiment supprimer le profil {name} ? Les vignettes de ce type seront <strong>toutes</strong> supprimées.
 smd_thumb_image => Image=
 smd_thumb_new => Nouveau profil
 smd_thumb_prefs => Préférences
-smd_thumb_profile => Profil=
-smd_thumb_profile_deleted => Le profil "{name}" a été supprimé.
-smd_thumb_profile_exists => Le profil "{name}" existe déjà.
+smd_thumb_profile => Profil =
+smd_thumb_profile_deleted => Le profil <strong>{name}</strong> a été supprimé.
+smd_thumb_profile_exists => Le profil <strong>{name}</strong> existe déjà.
 smd_thumb_profile_heading => Profils de vignettes
 smd_thumb_profile_preftool_heading => Configuration du vignettage
 smd_thumb_profile_tool_heading => Outils de vignettage
 smd_thumb_quality => Qualité (%)
 smd_thumb_sharpen => Rendre net
-smd_thumb_tables_not_installed => Tables non installées : essayez de réinstaller le plugin.
+smd_thumb_tables_not_installed => Tables non installées : essayez de réinstaller le plugin.
 smd_thumb_thumbnail_heading => Vignettes
-smd_thumb_txp_auto_replace => Recréer les vignettes au téléchargement des images :
-smd_thumb_txp_create => Créer
-smd_thumb_txp_create_from => Créer les vignettes à partir de :
-smd_thumb_txp_create_from_full => l'image originale
+smd_thumb_txp_auto_replace => Recréer les vignettes au téléchargement des images :
+smd_thumb_txp_create_from => Créer les vignettes à partir de :
+smd_thumb_txp_create_from_full => l’image originale
 smd_thumb_txp_create_from_thumb => la vignette
 smd_thumb_txp_delete => Supprimer
+smd_thumb_txp_default_sync => Gardez les vignettes en synchronisation avec le profil par défaut sur :
 smd_thumb_upload => Remplacer les vignettes sélectionnées
 EOT;
 
@@ -139,7 +139,7 @@ if (!defined('txpinterface'))
  *  -> Choose to sync the thumbnails with Textpattern's own thumbs
  *
  * @author Stef Dawson
- * @link   http://stefdawson.com/
+ * @link   https://stefdawson.com/
  * TODO: Make Selections (lines 912-916) optional via prefs or something
  * TODO: Simplify AJAX response packets to speed things up
  * TODO: Interface elements for Profile creation don't get rendered if there are no images in pool
@@ -1262,7 +1262,7 @@ jQuery(function() {
 EOC
         );
 
-            $btnPnl = '<p class="txp-list-options"><a href="?event=image'.a.'sort='.$sort.a.'dir='.$dir.a.'page='.$page.a.'search_method[]='.$search_method.a.'crit='.$crit.'"><span class="ui-icon ui-icon-wrench"></span>  '.gTxt('smd_thumb_btn_pnl').'</a></p>';
+            $btnPnl = '<p><a href="?event=image'.a.'sort='.$sort.a.'dir='.$dir.a.'page='.$page.a.'search_method[]='.$search_method.a.'crit='.$crit.'"><span class="ui-icon ui-icon-arrowreturnthick-1-w"></span>  '.gTxt('smd_thumb_btn_pnl').'</a></p>';
             $btnGrp = '<button class="navlink" type="submit" onclick="smd_thumb_copy_selected(); return confirm(\''.gTxt('smd_thumb_create_group_confirm').'\');">'.gTxt('smd_thumb_all_thumbs').'</button>';
             $grpTypes = array(
                 'sel' => gTxt('smd_thumb_bysel'),
@@ -1422,7 +1422,6 @@ EOC
 
         $out[] = '<section class="txp-details" id="smd_thumb_profiles">';
         $out[] = '<h3 class="txp-summary lever'.(get_pref('pane_smd_thumbnail_profiles_visible') ? ' expanded' : '').'"><a href="#smd_thumbnail_profiles">'.gTxt('smd_thumb_profile_heading').'</a></h3><div class="toggle" id="smd_thumbnail_profiles" role="region" style="display:'.(get_pref('pane_smd_thumbnail_profiles_visible') ? 'block' : 'none').'">';
-        $out[] = $btnPref;
 
         // Main list of profiles.
         $out[] = '<form method="post" name="smd_thumb_profile_form" id="smd_thumb_profile_form" action="'.join_qs($qs).'">';
@@ -1517,7 +1516,8 @@ EOC
         $out[] = n.tag_end('tbody');
         $out[] = n.tag_end('table');
         $out[] = n.tag_end('div'); // End of .txp-listtables.
-        $out[] = n.$btnNew;
+        $out[] = $btnPref;
+        $out[] = $btnNew;
         $out[] = '</form>';
         $out[] = '</section>';
     }
@@ -1901,7 +1901,9 @@ if (0) {
 # --- BEGIN PLUGIN HELP ---
 h1. smd_thumbnail
 
-If you're bored of one Textpattern thumbnail per image and don't fancy using an auto-resizing script or relying on the browser to stretch your thumbnails, @smd_thumbnail@ could be the answer. It allows you to create profiles for as many Textpattern thumbnail sizes as you like and will automatically create physical thumbnails at those dimensions for any/all of your images.
+"Download":https://github.com/Bloke/smd_thumbnail/releases | "Packagist":https://packagist.org/packages/bloke/smd_thumbnail
+
+If you're bored of one Textpattern thumbnail per image and don't fancy using an auto-resizing script or relying on the browser to stretch your thumbnails, @smd_thumbnail@ could be the answer! It allows you to create profiles for as many Textpattern thumbnail sizes as you like and will automatically create physical thumbnails at those dimensions for any/all of your images.
 
 Please report bugs and problems with this plugin at "the GitHub project's issues page":https://github.com/Bloke/smd_thumbnail/issues.
 
@@ -1926,15 +1928,17 @@ h2(#features). Features
 * Keep thumbs in sync with Textpattern's thumbs if you wish.
 * Conditional thumbnail check available.
 
-h2(#install). Upgrading and uninstallation
+h2(#install). Installing
 
-Requires Textpattern 4.6.0 or higher.
+*Requires Textpattern 4.6.0+*
 
-Download the plugin from either "textpattern.org":http://textpattern.org/plugins/1186/smd_thumbnail, or the "software page":http://stefdawson.com/sw, paste the code into the Textpattern Admin → Plugins pane, install and enable the plugin. Visit the "forum thread":http://forum.textpattern.com/viewtopic.php?id=34367 for more info or to report on the success or otherwise of the plugin.
+Download the plugin from either "GitHub":https://github.com/Bloke/smd_thumbnail/releases, or the "software page":https://stefdawson.com/sw/plugins/smd_thumbnail, paste the code into the Plugins administration panel, install and enable the plugin. Visit the "forum thread":https://forum.textpattern.io/viewtopic.php?id=34367 for more info or to report on the success or otherwise of the plugin.
 
-*When upgrading from v0.1x to v0.20, your preferences for 'Keep Textpattern thumbnails in sync with default profile' will be removed. Please visit the 'Setup' area to reinstate the behaviour you desire.*
+Note: When upgrading from v0.1x to v0.20, your preferences for 'Keep Textpattern thumbnails in sync with default profile' will be removed. Please visit the 'Setup' area to reinstate the behaviour you desire.
 
-To uninstall, delete from the Admin → Plugins page.
+Alternatively, this plugin can be installed using "Composer":https://getcomposer.org:
+
+bc. $ composer require bloke/smd_thumbnail:*
 
 h2(#usage). Usage
 
@@ -2126,7 +2130,7 @@ Please see the "changelog on GitHub":https://github.com/Bloke/smd_thumbnail/blob
 
 h2(#credits). Authors/credits
 
-Written by "Stef Dawson":http://stefdawson.com/contact. Many thanks to "all additional contributors":https://github.com/Bloke/smd_thumbnail/graphs/contributors. Special thanks also to the beta test crew who offered feature and workflow advice, especially thebombsite, jakob, jstubbs and maniqui.
+Written by "Stef Dawson":https://stefdawson.com/contact. Many thanks to "all additional contributors":https://github.com/Bloke/smd_thumbnail/graphs/contributors. Special thanks also to the beta test crew who offered feature and workflow advice, especially thebombsite, jakob, jstubbs and maniqui.
 # --- END PLUGIN HELP ---
 -->
 <?php
