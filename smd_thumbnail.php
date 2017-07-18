@@ -1378,7 +1378,7 @@ EOC
 
         $btnNew = '<p><a class="txp-button" href="#" onclick="return smd_thumb_togglenew();">'.gTxt('smd_thumb_new').'</a></p>';
         $btnPref = '<p class="txp-list-options"><a href="?event=image'.a.'step=smd_thumb_prefs'.a.'sort='.$sort.a.'dir='.$dir.a.'page='.$page.a.'search_method[]='.$search_method.a.'crit='.$crit.'"><span class="ui-icon ui-icon-wrench"></span> '.(($rights) ? gTxt('smd_thumb_btn_tools_prefs') : gTxt('smd_thumb_btn_tools')).'</a></p>';
-        $btnCancel = fInput('submit', 'smd_thumb_cancel', gTxt('Cancel'));
+        $btnCancel = fInput('submit', 'smd_thumb_cancel', gTxt('cancel'));
 
         $headings = n.'<thead>'.tr(
             column_head('name', 'name', 'image', false, 'asc').
@@ -1443,7 +1443,7 @@ EOC
                 $sharpen = ($row['flags'] & SMD_THUMB_SHARP) ? 1 : 0;
 
                 if ($step == 'smd_thumb_profile_edit' && $row['name'] == $smd_thumb_name) {
-                    $btnSave = fInput('submit', 'smd_thumb_save', gTxt('Save'));
+                    $btnSave = fInput('submit', 'smd_thumb_save', gTxt('save'));
                     $out[] = tr(
                         tda(hInput('smd_thumb_name', $row['name']).fInput('text', 'smd_thumb_newname', $row['name']), array('data-th' => gTxt('name'))).
                         tda(fInput('text', 'smd_thumb_width', $row['width'], '', '', '', '4'), array('data-th' => gTxt('thumb_width'))).
