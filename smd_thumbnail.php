@@ -1412,31 +1412,21 @@ EOC
                 $link_del = join_qs($qs).a.'step=smd_thumb_profile_delete'.a.'smd_thumb_name='.$row['name'];
                 $btnEdt = '<a href="'.$link_edt.'">[' . gTxt('edit') . ']</a>';
                 $btnDel = '<a href="'.$link_del.'" onclick="return confirm(\''.gTxt('smd_thumb_delete_confirm', array("{name}" => $row['name'])).'\');">[' . gTxt('delete') . ']</a>';
-                $btnDel = tag(
-                    href(
-                        span(gTxt('delete'), array('class' => 'ui-icon ui-icon-close')), array(
-                        'event'          => 'image',
-                        'step'           => 'smd_thumb_profile_delete',
-                        'smd_thumb_name' => $row['name'],
-                        '_txp_token'     => form_token(),
-                        'page'           => $page,
-                        'sort'           => $sort,
-                        'dir'            => $dir,
-                        'crit'           => $crit,
-                        'search_method'  => $search_method,
-                    ), array(
-                        'class'       => 'destroy ui-icon ui-icon-close',
-                        'title'       => gTxt('delete'),
-                        'data-verify' => gTxt('smd_thumb_delete_confirm', array("{name}" => $row['name'])),
-                    )),
-                    'button',
-                        array(
-                        'class'       => 'destroy',
-                        'type'        => 'button',
-                        'title'       => gTxt('delete'),
-                        'aria-label'  => gTxt('delete'),
-                        )
-                    );
+                $btnDel = href('×', array(
+                    'event'          => 'image',
+                    'step'           => 'smd_thumb_profile_delete',
+                    'smd_thumb_name' => $row['name'],
+                    '_txp_token'     => form_token(),
+                    'page'           => $page,
+                    'sort'           => $sort,
+                    'dir'            => $dir,
+                    'crit'           => $crit,
+                    'search_method'  => $search_method,
+                ), array(
+                    'class'       => 'destroy ui-icon ui-icon-close',
+                    'title'       => gTxt('delete'),
+                    'data-verify' => gTxt('smd_thumb_delete_confirm', array("{name}" => $row['name'])),
+                ));
 
                 $active = ($row['flags'] & SMD_THUMB_ACTIVE) ? 1 : 0;
                 $crop = ($row['flags'] & SMD_THUMB_CROP) ? 1 : 0;
