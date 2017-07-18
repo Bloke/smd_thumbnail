@@ -1,8 +1,8 @@
 h1. smd_thumbnail
 
-*Requires Textpattern 4.5.0+*
+"Download":https://github.com/Bloke/smd_thumbnail/releases | "Packagist":https://packagist.org/packages/bloke/smd_thumbnail
 
-If you're bored of one Textpattern thumbnail per image and don't fancy using an auto-resizing script or relying on the browser to stretch your thumbnails, @smd_thumbnail@ could be the answer. It allows you to create profiles for as many Textpattern thumbnail sizes as you like and will automatically create physical thumbnails at those dimensions for any/all of your images.
+If you're bored of one Textpattern thumbnail per image and don't fancy using an auto-resizing script or relying on the browser to stretch your thumbnails, @smd_thumbnail@ could be the answer! It allows you to create profiles for as many Textpattern thumbnail sizes as you like and will automatically create physical thumbnails at those dimensions for any/all of your images.
 
 Please report bugs and problems with this plugin at "the GitHub project's issues page":https://github.com/Bloke/smd_thumbnail/issues.
 
@@ -15,15 +15,17 @@ h2. Features
 * Keep thumbs in sync with Textpattern's thumbs if you wish.
 * Conditional thumbnail check available.
 
-h2. Installation, upgrading and uninstallation
+h2. Installing
 
-Requires Textpattern 4.6.0 or higher.
+*Requires Textpattern 4.6.0+*
 
-Download the plugin from either "textpattern.org":http://textpattern.org/plugins/1186/smd_thumbnail, or the "software page":http://stefdawson.com/sw, paste the code into the Textpattern Admin → Plugins pane, install and enable the plugin. Visit the "forum thread":http://forum.textpattern.com/viewtopic.php?id=34367 for more info or to report on the success or otherwise of the plugin.
+Download the plugin from either "GitHub":https://github.com/Bloke/smd_thumbnail/releases, or the "software page":https://stefdawson.com/sw/plugins/smd_thumbnail, paste the code into the Plugins administration panel, install and enable the plugin. Visit the "forum thread":https://forum.textpattern.io/viewtopic.php?id=34367 for more info or to report on the success or otherwise of the plugin.
 
-*When upgrading from v0.1x to v0.20, your preferences for 'Keep Textpattern thumbnails in sync with default profile' will be removed. Please visit the 'Tools/Prefs' area to reinstate the behaviour you desire.*
+Note: When upgrading from v0.1x to v0.20, your preferences for 'Keep Textpattern thumbnails in sync with default profile' will be removed. Please visit the 'Setup' area to reinstate the behaviour you desire.
 
-To uninstall, delete from the Admin → Plugins page.
+Alternatively, this plugin can be installed using "Composer":https://getcomposer.org:
+
+bc. $ composer require bloke/smd_thumbnail:*
 
 h2. Usage
 
@@ -215,4 +217,4 @@ Please see the "changelog on GitHub":https://github.com/Bloke/smd_thumbnail/blob
 
 h2. Author/credits
 
-Written by "Stef Dawson":http://stefdawson.com/contact. Many thanks to "all additional contributors":https://github.com/Bloke/smd_thumbnail/graphs/contributors. Special thanks also to the beta test crew who offered feature and workflow advice, especially thebombsite, jakob, jstubbs and maniqui.
+Written by "Stef Dawson":https://stefdawson.com/contact. Many thanks to "all additional contributors":https://github.com/Bloke/smd_thumbnail/graphs/contributors. Special thanks also to the beta test crew who offered feature and workflow advice, especially thebombsite, jakob, jstubbs and maniqui.
