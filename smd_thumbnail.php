@@ -198,6 +198,10 @@ function smd_thumb_get_style_rules()
 .smd_inactive td { opacity: 0.33; }
 input.smd_thumbnail-create { margin: 0; }
 #smd_thumbs img { display: block; margin: 1em 0; cursor: pointer; }
+/* Legacy 4.6.x support */
+#smd_thumb_profiles { clear: both; }
+.txp-list--no-options { width: 100%; }
+.txp-details .txp-listtables { margin: 1em 0;}
 '
 );
 
