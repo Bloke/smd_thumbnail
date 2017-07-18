@@ -1277,7 +1277,7 @@ EOC
             $out[] = '<div id="smd_thumb_batch"><span id="smd_thumb_bcurr"></span><span id="smd_thumb_btot"></span></div>';
             $out[] = '<form method="post" name="smd_thumb_multi_edit" id="smd_thumb_multi_edit" action="'.join_qs($qs).'">';
 
-            $out[] = '<p><label for="smd_thumb_group_type">'.gTxt('smd_thumb_batch_preamble').'</table>'.$grpOpts.$btnGrp.'</p>';
+            $out[] = '<p><label for="smd_thumb_group_type">'.gTxt('smd_thumb_batch_preamble').'</label>'.$grpOpts.$btnGrp.'</p>';
 
             $out[] = fInput('hidden', 'smd_thumb_selected', '', '', '', '', '', '', 'smd_thumb_selected');
             $out[] = eInput($smd_thumb_event);
