@@ -1946,6 +1946,7 @@ Visit the Content → Images tab. Above the list of images is an area labelled *
 You must define at least one profile to begin with, so click the *New profile* button. This will reveal edit boxes where you can enter:
 
 * *Name*: some descriptive name for this thumbnail dimension. You are limited to usual non-weird characters in the name.
+* *Description*: a brief summary of this thumbnail dimension to jog your memory or inform other users of its purpose.
 * *Width*: thumbnail width, in pixels. If left blank (or set to @0@) and height is specified, the width will be computed in proportion to the height.
 * *Height*: thumbnail height, in pixels. If left blank (or set to @0@) and width is specified, the height will be computed in proportion to the width.
 * *Quality (%)*: The quality of the resulting thumbnail. Generally only of use for JPEG or 24-bit PNG images. The higher the value the better the quality and the bigger the file size. Default: @75@.
