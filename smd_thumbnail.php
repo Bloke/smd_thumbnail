@@ -1416,7 +1416,7 @@ EOC
                 $link_del = join_qs($qs).a.'step=smd_thumb_profile_delete'.a.'smd_thumb_name='.$row['name'];
                 $btnEdt = '<a href="'.$link_edt.'">[' . gTxt('edit') . ']</a>';
                 $btnDel = '<a href="'.$link_del.'" onclick="return confirm(\''.gTxt('smd_thumb_delete_confirm', array("{name}" => $row['name'])).'\');">[' . gTxt('delete') . ']</a>';
-                $btnDel = href('×', array(
+                $btnDel = href(gTxt('delete'), array(
                     'event'          => 'image',
                     'step'           => 'smd_thumb_profile_delete',
                     'smd_thumb_name' => $row['name'],
