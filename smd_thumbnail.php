@@ -17,7 +17,7 @@ $plugin['name'] = 'smd_thumbnail';
 // 1 = Plugin help is in raw HTML.  Not recommended.
 # $plugin['allow_html_help'] = 1;
 
-$plugin['version'] = '0.4.0-beta';
+$plugin['version'] = '0.4.0';
 $plugin['author'] = 'Stef Dawson';
 $plugin['author_uri'] = 'https://stefdawson.com/';
 $plugin['description'] = 'Multiple image thumbnails of arbitrary dimensions';
@@ -250,6 +250,11 @@ function smd_thumb_welcome($evt, $stp)
 
 /**
  * Display the designated default thumbnail on the list page.
+ *
+ * @param  string $evt     Textpattern event (panel)
+ * @param  string $stp     Textpattern step (action)
+ * @param  string $dflt    Default markup ready to render
+ * @param  array  $currimg Current image information
  */
 function smd_thumbs($evt, $stp, $dflt, $currimg)
 {
@@ -280,6 +285,11 @@ function smd_thumbs($evt, $stp, $dflt, $currimg)
 
 /**
  * Don't want the 'create' controls or thumbnail image as they're both handled in the edit portion of the screen.
+ *
+ * @param  string $evt     Textpattern event (panel)
+ * @param  string $stp     Textpattern step (action)
+ * @param  string $dflt    Default markup ready to render
+ * @param  array  $currimg Current image information
  */
 function smd_thumb_empty($evt, $stp, $dflt, $currimg)
 {
@@ -401,7 +411,7 @@ function smd_thumb_switch_pref()
  * @param  string $stp Textpattern step (action)
  * @param  string $id  New image identifier. If omitted, will try GET/POST, then Textpattern's GLOBALS['ID']
  */
-function smd_thumb_generate($evt, $stp, $id='')
+function smd_thumb_generate($evt, $stp, $id = '')
 {
     $id = ($id) ? $id : gps('id');
     $id = ($id) ? $id : $GLOBALS['ID'];
@@ -437,7 +447,7 @@ function smd_thumb_delete($evt, $stp)
  * @param  array  $rs       Record set containing image meta data
  * @param  int    $currimg  Identifier for the current image being operated upon
  * @param  bool   $force    Whether to always create the thumbnail, even if it exists
- * @return string           Feedback message§
+ * @return string           Feedback message
  */
 function smd_thumb_make($rs, $currimg, $force = 0)
 {
@@ -993,6 +1003,8 @@ function smd_thumb_profiles($evt, $stp, $dflt, $imglist)
         'smd_thumb_name',
         'smd_thumb_newname',
         'smd_thumb_add_newname',
+        'smd_thumb_description',
+        'smd_thumb_add_description',
         'smd_thumb_width',
         'smd_thumb_add_width',
         'smd_thumb_height',
@@ -1016,6 +1028,7 @@ function smd_thumb_profiles($evt, $stp, $dflt, $imglist)
 
     if ($smd_thumb_add) {
         $smd_thumb_newname = $smd_thumb_add_newname;
+        $smd_thumb_description = $smd_thumb_add_description;
         $smd_thumb_width = $smd_thumb_add_width;
         $smd_thumb_height = $smd_thumb_add_height;
         $smd_thumb_quality = $smd_thumb_add_quality;
@@ -1092,6 +1105,7 @@ function smd_thumb_profiles($evt, $stp, $dflt, $imglist)
                         safe_insert(
                             SMD_THUMB,
                             "name='" . doSlash($newname) . "'"
+                            . ", description='" . doSlash($smd_thumb_description) . "'"
                             . ", width='" . doSlash($width) . "'"
                             . ", height='" . doSlash($height) . "'"
                             . ", quality='" . doSlash($quality) . "'"
@@ -1124,6 +1138,7 @@ function smd_thumb_profiles($evt, $stp, $dflt, $imglist)
                         safe_update(
                             SMD_THUMB,
                             "name='" . doSlash($newname) . "'"
+                            . ", description='" . doSlash($smd_thumb_description) . "'"
                             . ", width='" . doSlash($width) . "'"
                             . ", height='" . doSlash($height) . "'"
                             . ", quality='" . doSlash($quality) . "'"
@@ -1386,6 +1401,7 @@ EOC
 
         $headings = n.'<thead>'.tr(
             column_head('name', 'name', 'image', false, 'asc').
+            column_head('description', 'description', 'image', false).
             column_head('thumb_width', 'width', 'image', false).
             column_head('thumb_height', 'height', 'image', false).
             column_head(gTxt('smd_thumb_quality'), 'quality', 'image', false).
@@ -1440,6 +1456,7 @@ EOC
                     $btnSave = fInput('submit', 'smd_thumb_save', gTxt('save'));
                     $out[] = tr(
                         tda(hInput('smd_thumb_name', $row['name']).fInput('text', 'smd_thumb_newname', $row['name']), array('data-th' => gTxt('name'))).
+                        tda(fInput('text', 'smd_thumb_description', $row['description']), array('data-th' => gTxt('description'))).
                         tda(fInput('text', 'smd_thumb_width', $row['width'], '', '', '', '4'), array('data-th' => gTxt('thumb_width'))).
                         tda(fInput('text', 'smd_thumb_height', $row['height'], '', '', '', '4'), array('data-th' => gTxt('thumb_height'))).
                         tda(fInput('text', 'smd_thumb_quality', $row['quality'], '', '', '', '3'), array('data-th' => gTxt('smd_thumb_quality'))).
@@ -1452,6 +1469,7 @@ EOC
                 } else {
                     $out[] = tr(
                         tda(href($row['name'], $link_edt), array('data-th' => gTxt('name'))).
+                        tda($row['description'], array('data-th' => gTxt('description'))).
                         tda($row['width'], array('data-th' => gTxt('thumb_width'))).
                         tda($row['height'], array('data-th' => gTxt('thumb_height'))).
                         tda($row['quality'], array('data-th' => gTxt('smd_thumb_quality'))).
@@ -1467,6 +1485,7 @@ EOC
             // New Profile row.
             $out[]= '<tr id="smd_thumb_profile_create" class="smd_hidden">';
             $out[] = tda(sInput('smd_thumb_profile_save').fInput('text', 'smd_thumb_add_newname', (($step === 'smd_thumb_profile_save') ? $smd_thumb_name : ''), 'smd_focus'), array('data-th' => gTxt('name'))).
+                tda(fInput('text', 'smd_thumb_add_description', (($step === 'smd_thumb_profile_save') ? $description : '')), array('data-th' => gTxt('description'))).
                 tda(fInput('text', 'smd_thumb_add_width', (($step === 'smd_thumb_profile_save') ? $width : ''), '', '', '', '4'), array('data-th' => gTxt('thumb_width'))).
                 tda(fInput('text', 'smd_thumb_add_height', (($step === 'smd_thumb_profile_save') ? $height : ''), '', '', '', '4'), array('data-th' => gTxt('thumb_height'))).
                 tda(fInput('text', 'smd_thumb_add_quality', (($step === 'smd_thumb_profile_save') ? $quality : ''), '', '', '', '3'), array('data-th' => gTxt('smd_thumb_quality'))).
@@ -1556,16 +1575,25 @@ function smd_thumb_table_install()
     global $DB;
 
     $tableDef = "
-        name    VARCHAR(32) NOT NULL DEFAULT '',
-        width   INT(4)      NOT NULL DEFAULT '0',
-        height  INT(4)      NOT NULL DEFAULT '0',
-        quality TINYINT(2)  NULL     DEFAULT '75',
-        flags   TINYINT(2)  NOT NULL DEFAULT '0',
+        name        VARCHAR(32)  NOT NULL DEFAULT '',
+        description VARCHAR(255) NOT NULL DEFAULT '',
+        width       INT(4)       NOT NULL DEFAULT '0',
+        height      INT(4)       NOT NULL DEFAULT '0',
+        quality     TINYINT(2)   NULL     DEFAULT '75',
+        flags       TINYINT(2)   NOT NULL DEFAULT '0',
         PRIMARY KEY (name)
     ";
 
     if (!safe_create(SMD_THUMB, $tableDef)) {
         echo mysqli_error($DB->link);
+    }
+
+    // Upgrades.
+    // -> to v0.4.0: Add the description column.
+    $flds = getThings('SHOW COLUMNS FROM `'.PFX.SMD_THUMB.'`');
+
+    if (!in_array('description', $flds)) {
+        safe_alter(SMD_THUMB, "ADD `description` VARCHAR(255) NOT NULL DEFAULT '' AFTER `name`");
     }
 
     // Backup the current thumb prefs.
@@ -1614,11 +1642,12 @@ function smd_thumb_table_remove()
  *
  * @param  string $all [description]
  */
-function smd_thumb_table_exist($all='')
+function smd_thumb_table_exist($all = '')
 {
     if ($all) {
-        $tbls = array(SMD_THUMB => 5);
+        $tbls = array(SMD_THUMB => 6);
         $out = count($tbls);
+
         foreach ($tbls as $tbl => $cols) {
             if (gps('debug')) {
                 echo "++ TABLE ".$tbl." HAS ".count(@safe_show('columns', $tbl))." COLUMNS; REQUIRES ".$cols." ++".br;
@@ -1628,11 +1657,13 @@ function smd_thumb_table_exist($all='')
                 $out--;
             }
         }
-        return ($out===0) ? 1 : 0;
+
+        return ($out === 0) ? 1 : 0;
     } else {
         if (gps('debug')) {
             echo "++ TABLE ".SMD_THUMB." HAS ".count(@safe_show('columns', SMD_THUMB))." COLUMNS;";
         }
+
         return(@safe_show('columns', SMD_THUMB));
     }
 }
@@ -1726,6 +1757,7 @@ function smd_thumbnail($atts, $thing = NULL)
                 $meta['type'] = $type;
                 $meta['width'] = $width;
                 $meta['height'] = $height;
+                $meta['description'] = $description;
                 $force_size = do_list($force_size);
 
                 if (in_array('width', $force_size)) {
