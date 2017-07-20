@@ -2104,7 +2104,11 @@ h4. Attributes
 
 h5. Example 1
 
-TODO.
+bc. <txp:smd_thumbnail type="big-size">
+    <meta itemprop="image" content="<txp:smd_thumbnail_info item="url" />">
+    <meta itemprop="width" content="<txp:smd_thumbnail_info item="w" />">
+    <meta itemprop="height" content="<txp:smd_thumbnail_info item="h" />">
+</txp:smd_thumbnail>
 
 h3(#st_if). smd_if_thumbnail tag
 
