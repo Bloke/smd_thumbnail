@@ -204,7 +204,13 @@ h4. Attributes
 
 h5. Example 1
 
-TODO.
+bc. <txp:smd_if_thumbnail type="640w">
+    <img alt="<txp:image_info type='alt' />"
+        src="<txp:smd_thumbnail id='<txp:image_info type="id" />' type='640w' display='url' />"
+        srcset="<txp:image_url link='0' /> 2x, <txp:smd_thumbnail id='<txp:image_info type="id" />' type='640w' display='url' /> 1x">
+<txp:else />
+    <img alt="<txp:image_info type='alt' />" src="<txp:image_url link='0' />">
+</txp:smd_if_thumbnail>
 
 h2. How it works
 
