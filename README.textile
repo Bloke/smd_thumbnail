@@ -43,7 +43,7 @@ You must define at least one profile to begin with, so click the *New profile* b
 * *Active*: Enable/disable this thumbnail size so it will/won't be automatically generated when the next image is uploaded. Click the checkbox to instantly switch the profile on/off. Click the 'Active' word in the heading row to toggle the status of all profiles. Note that this setting governs how the "All sizes":#smd_thumb_create dropdown entry interacts with the _Create_ and _Delete_ buttons.
 * *Default*: set this thumbnail profile as the default. The default image will be displayed in the 'Images' list and will also be used as the default size to be displayed using @<txp:smd_thumbnail/>@. If the option to "sync with Textpattern's thumbs":#smd_thumb_prefs is on, it will also become Textpattern's standard (built-in) thumbnail size from this point forward.
 
-Once you've configured your profile, click 'Save' to store it. You can always edit it again by clicking its name. Go ahead and create some more profiles for thumbnails of different sizes/parameters. If you wish to delete a profile, hit the 'Delete' button and confirm. *All thumbnails associated with that profile will be deleted.*
+Once you've configured your profile, click 'Save' to store it. You can always edit it again by clicking its name. Go ahead and create some more profiles for thumbnails of different sizes/parameters. If you wish to delete a profile, hit the 'x' button and confirm. *All thumbnails associated with that profile will be deleted.*
 
 At this point, no thumbnails have been created. Let's rectify that...
 
@@ -74,7 +74,7 @@ At any time you can click one of the thumbnails (or select a size from the dropd
 
 h3. Batch thumbnail creation
 
-You can also create thumbnails en-masse. Click the 'Tools' button (labelled 'Tools/Prefs' if you have sufficient rights) in the top-right hand corner of the smd_thumbnail control panel. From there you will see an area that allows you to create thumbnails for:
+You can also create thumbnails en-masse. Click the 'Tools' button (labelled 'Setup' if you have sufficient rights) in the top-right hand corner of the smd_thumbnail control panel. From there you will see an area that allows you to create thumbnails for:
 
 # Only the selected images (the checkboxes next to each image).
 # All images of a particular category.
@@ -87,7 +87,7 @@ Because of the nature of this tool - especially with large image pools - the pro
 
 h3. Preferences
 
-If you have sufficient privileges, in the lower portion of the 'Tools' panel are some options that govern how thumbnails are created for all users. There is no 'Save' action here: the checkmarks are stored in real-time and always reflect the current state.
+If you have sufficient privileges, in the lower portion of the 'Setup' panel are some options that govern how thumbnails are created for all users. There is no 'Save' action here: the checkmarks are stored in real-time and always reflect the current state.
 
 h4. Create smd_thumbnails from
 
@@ -155,9 +155,9 @@ bc. <txp:images>
 
 Show all images that have been generated with the 'big-size' smd_thumbnail profile.
 
-h5. Example 2
+h5. Example 2: responsive images
 
-TODO
+See "responsive images post":https://forum.textpattern.io/viewtopic.php?pid=288361#p288361 in the Textpattern forum.
 
 h3. smd_thumbnail_info tag
 
@@ -222,6 +222,6 @@ h2. History
 
 Please see the "changelog on GitHub":https://github.com/Bloke/smd_thumbnail/blob/master/CHANGELOG.textile.
 
-h2. Author/credits
+h2. Authors/credits
 
 Written by "Stef Dawson":https://stefdawson.com/contact. Many thanks to "all additional contributors":https://github.com/Bloke/smd_thumbnail/graphs/contributors. Special thanks also to the beta test crew who offered feature and workflow advice, especially thebombsite, jakob, jstubbs and maniqui.
