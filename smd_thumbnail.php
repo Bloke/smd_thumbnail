@@ -413,6 +413,13 @@ function smd_thumb_switch_pref()
  */
 function smd_thumb_generate($evt, $stp, $id = '')
 {
+    // Catch situations where the plugin is installed without lifecycle on a
+    // new install where no images exist. Thus the first time the plugin is
+    // invoked is here when the first image is uploaded.
+    if (!smd_thumb_table_exist()) {
+        smd_thumb_table_install();
+    }
+
     $id = ($id) ? $id : gps('id');
     $id = ($id) ? $id : $GLOBALS['ID'];
     $rs = safe_rows('*', SMD_THUMB, '1=1 AND flags & ' . SMD_THUMB_ACTIVE);
@@ -1123,8 +1130,11 @@ function smd_thumb_profiles($evt, $stp, $dflt, $imglist)
                             set_pref('smd_thumb_default_profile', $newname, 'smd_thumb', PREF_HIDDEN);
                         }
 
-                        // Create the thumbnail directory.
+                        // Create the thumbnail directory with the same permissions as
+                        // the parent (images) directory.
+                        // Requires much back-and-forth number conversion.
                         @mkdir(IMPATH.$newname);
+                        @chmod(IMPATH.$newname, octdec(decoct(fileperms(IMPATH) & 0777)));
                     }
                 }
             } else {
