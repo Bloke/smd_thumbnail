@@ -506,13 +506,19 @@ function smd_thumb_make($rs, $currimg, $force = 0)
                     return false;
                 }
 
-                $autor = get_pref('smd_thumb_auto_replace', '0');
+                $autorep = get_pref('smd_thumb_auto_replace', '0');
                 $recfrom = get_pref('smd_thumb_create_from', 'full');
                 $src_sz = ($recfrom === 'full') ? '' : 't';
                 $infile = IMPATH . $this->m_id . $src_sz . $this->m_ext;
                 $outfile = IMPATH . $this->m_dir . DS . $this->m_id . $this->m_ext;
 
-                if (!file_exists($outfile) || $autor || $this->force) {
+                // If we're trying to create from Txp thumbnail but it doesn't exist,
+                // fall back to creating from full image.
+                if (!file_exists($infile) && $src_sz === 't') {
+                    $infile = IMPATH . $this->m_id . $this->m_ext;
+                }
+
+                if (!file_exists($outfile) || $autorep || $this->force) {
                     // If this is the default profile and the pref indicates, write a Textpattern thumb too.
                     if (($this->m_dflt === true) && (get_pref('smd_thumb_txp_create', '0'))) {
                         $txp_thumb = IMPATH . $this->m_id . 't' . $this->m_ext;
