@@ -270,7 +270,7 @@ function smd_thumbs($evt, $stp, $dflt, $currimg)
 
             if ($row) {
                 $edit_url = '?event=image'.a.'step=image_edit'.a.'id='.$currimg['id'].a.'sort='.$sort.
-                        a.'dir='.$dir.a.'page='.$page.a.'search_method[]='.$search_method.a.'crit='.$crit;
+                        a.'dir='.$dir.a.'page='.$page.a.'search_method='.$search_method.a.'crit='.$crit;
                 $out = smd_thumb_img($row, $currimg, array('class' => 'content-image '.$default));
 
                 return ($out) ? href($out, $edit_url) : gTxt('no');
@@ -1279,7 +1279,7 @@ jQuery(function() {
 EOC
         );
 
-            $btnPnl = '<p><a href="?event=image'.a.'sort='.$sort.a.'dir='.$dir.a.'page='.$page.a.'search_method[]='.$search_method.a.'crit='.$crit.'"><span class="ui-icon ui-icon-arrowreturnthick-1-w"></span>  '.gTxt('smd_thumb_btn_pnl').'</a></p>';
+            $btnPnl = '<p><a href="?event=image'.a.'sort='.$sort.a.'dir='.$dir.a.'page='.$page.a.'search_method='.$search_method.a.'crit='.$crit.'"><span class="ui-icon ui-icon-arrowreturnthick-1-w"></span>  '.gTxt('smd_thumb_btn_pnl').'</a></p>';
             $btnGrp = '<button class="navlink" type="submit" onclick="smd_thumb_copy_selected(); return confirm(\''.gTxt('smd_thumb_create_group_confirm').'\');">'.gTxt('smd_thumb_all_thumbs').'</button>';
             $grpTypes = array(
                 'sel' => gTxt('smd_thumb_bysel'),
@@ -1397,7 +1397,7 @@ EOC
         );
 
         $btnNew = '<p><a class="txp-button" href="#" onclick="return smd_thumb_togglenew();">'.gTxt('smd_thumb_new').'</a></p>';
-        $btnPref = '<p class="txp-list-options"><a href="?event=image'.a.'step=smd_thumb_prefs'.a.'sort='.$sort.a.'dir='.$dir.a.'page='.$page.a.'search_method[]='.$search_method.a.'crit='.$crit.'"><span class="ui-icon ui-icon-wrench"></span> '.(($rights) ? gTxt('smd_thumb_btn_tools_prefs') : gTxt('smd_thumb_btn_tools')).'</a></p>';
+        $btnPref = '<p class="txp-list-options"><a href="?event=image'.a.'step=smd_thumb_prefs'.a.'sort='.$sort.a.'dir='.$dir.a.'page='.$page.a.'search_method='.$search_method.a.'crit='.$crit.'"><span class="ui-icon ui-icon-wrench"></span> '.(($rights) ? gTxt('smd_thumb_btn_tools_prefs') : gTxt('smd_thumb_btn_tools')).'</a></p>';
         $btnCancel = fInput('submit', 'smd_thumb_cancel', gTxt('cancel'));
 
         $headings = '<thead>'.tr(
