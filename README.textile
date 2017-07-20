@@ -188,13 +188,15 @@ h4. Attributes
 ** @w@: thumbnail width (pixels).
 * @wraptag="element"@<br />HTML element to wrap (markup) list block, specified without brackets (e.g., @wraptag="ul"@).
 
-h5. Example 1
+h5. Example
 
-bc. <txp:smd_thumbnail type="big-size">
-    <meta itemprop="image" content="<txp:smd_thumbnail_info item="url" />">
-    <meta itemprop="width" content="<txp:smd_thumbnail_info item="w" />">
-    <meta itemprop="height" content="<txp:smd_thumbnail_info item="h" />">
-</txp:smd_thumbnail>
+bc. <txp:images>
+    <txp:smd_thumbnail type="big-size">
+        <meta itemprop="image" content="<txp:smd_thumbnail_info item="url" />">
+        <meta itemprop="width" content="<txp:smd_thumbnail_info item="w" />">
+        <meta itemprop="height" content="<txp:smd_thumbnail_info item="h" />">
+    </txp:smd_thumbnail>
+</txp:images>
 
 h3. smd_if_thumbnail tag
 
@@ -206,15 +208,17 @@ h4. Attributes
 
 * @type@: use this attribute to check for thumbnails of the given profile name (e.g., @type="Medium"@). If you do not specify this attribute, the default profile will be tested. If there is no default profile the tag will always render the @<txp:else />@ portion.
 
-h5. Example 1
+h5. Example
 
-bc. <txp:smd_if_thumbnail type="640w">
-    <img alt="<txp:image_info type='alt' />"
-        src="<txp:smd_thumbnail id='<txp:image_info type="id" />' type='640w' display='url' />"
-        srcset="<txp:image_url link='0' /> 2x, <txp:smd_thumbnail id='<txp:image_info type="id" />' type='640w' display='url' /> 1x">
-<txp:else />
-    <img alt="<txp:image_info type='alt' />" src="<txp:image_url link='0' />">
-</txp:smd_if_thumbnail>
+bc. <txp:images>
+    <txp:smd_if_thumbnail type="640w">
+        <img alt="<txp:image_info type='alt' />"
+            src="<txp:smd_thumbnail type='640w' display='url' />"
+            srcset="<txp:image_url link='0' /> 2x, <txp:smd_thumbnail type='640w' display='url' /> 1x">
+    <txp:else />
+        <img alt="<txp:image_info type='alt' />" src="<txp:image_url link='0' />">
+    </txp:smd_if_thumbnail>
+</txp:images>
 
 h2. How it works
 
