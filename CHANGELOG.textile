@@ -1,9 +1,10 @@
 h1. Changelog
 
-h2. 0.4.0 - 2017-07-19
+h2. 0.4.0 - UPCOMING
 
 * Added @description@ field.
 * Added Composer/Packagist support.
+* Removed SWF support.
 * Tidied layout for 4.6/4.7 (thanks, philwareham)
 
 h2. 0.33 - 2016-11-15
@@ -78,7 +79,3 @@ h2. 0.11 - 2010-11-09
 h2. 0.10 - 2010-10-04
 
 * Official public release.
-
-h2. 0.10beta - 2010-08-06
-
-* Initial beta release.
