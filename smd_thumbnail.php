@@ -66,9 +66,9 @@ smd_thumb_btn_tools_prefs => Setup
 smd_thumb_byall => All images
 smd_thumb_bysel => Selected images
 smd_thumb_create => Creation
-smd_thumb_create_group_confirm => Really create thumbnails for <strong>all</strong> active profiles? Any existing thumbs will be overwritten.
+smd_thumb_create_group_confirm => Really create thumbnails for ALL active profiles? Any existing thumbs will be overwritten.
 smd_thumb_delete => Deletion
-smd_thumb_delete_confirm => Really delete profile {name}? It will delete <strong>all</strong> thumbnails of this type.
+smd_thumb_delete_confirm => Really delete profile {name}? It will delete ALL thumbnails of this type.
 smd_thumb_image => Image =
 smd_thumb_new => New profile
 smd_thumb_profile => Profile =
@@ -98,9 +98,9 @@ smd_thumb_btn_tools_prefs => Configuration
 smd_thumb_byall => Tous images
 smd_thumb_bysel => Sélectionnées
 smd_thumb_create => Création
-smd_thumb_create_group_confirm => Créer les vignettes pour <strong>tous</strong> les profils existant ? Les précédentes vignettes seront écrasées.
+smd_thumb_create_group_confirm => Créer les vignettes pour TOUS les profils existant ? Les précédentes vignettes seront écrasées.
 smd_thumb_delete => Suppression
-smd_thumb_delete_confirm => Voulez-vous vraiment supprimer le profil {name} ? Les vignettes de ce type seront <strong>toutes</strong> supprimées.
+smd_thumb_delete_confirm => Voulez-vous vraiment supprimer le profil {name} ? Les vignettes de ce type seront TOUTES supprimées.
 smd_thumb_image => Image =
 smd_thumb_new => Nouveau profil
 smd_thumb_profile => Profil =
