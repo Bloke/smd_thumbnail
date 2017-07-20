@@ -2077,7 +2077,7 @@ Show all images that have been generated with the 'big-size' smd_thumbnail profi
 
 h5. Example 2: responsive images
 
-See "responsive images post":http://forum.textpattern.com/viewtopic.php?pid=288361#p288361 in the Textpattern forum.
+See "responsive images post":https://forum.textpattern.io/viewtopic.php?pid=288361#p288361 in the Textpattern forum.
 
 h3(#st_info). smd_thumbnail_info tag
 
@@ -2110,7 +2110,11 @@ h4. Attributes
 
 h5. Example 1
 
-TODO.
+bc. <txp:smd_thumbnail type="big-size">
+    <meta itemprop="image" content="<txp:smd_thumbnail_info item="url" />">
+    <meta itemprop="width" content="<txp:smd_thumbnail_info item="w" />">
+    <meta itemprop="height" content="<txp:smd_thumbnail_info item="h" />">
+</txp:smd_thumbnail>
 
 h3(#st_if). smd_if_thumbnail tag
 
@@ -2124,7 +2128,13 @@ h4. Attributes
 
 h5. Example 1
 
-TODO.
+bc. <txp:smd_if_thumbnail type="640w">
+    <img alt="<txp:image_info type='alt' />"
+        src="<txp:smd_thumbnail id='<txp:image_info type="id" />' type='640w' display='url' />"
+        srcset="<txp:image_url link='0' /> 2x, <txp:smd_thumbnail id='<txp:image_info type="id" />' type='640w' display='url' /> 1x">
+<txp:else />
+    <img alt="<txp:image_info type='alt' />" src="<txp:image_url link='0' />">
+</txp:smd_if_thumbnail>
 
 h2. How it works
 
