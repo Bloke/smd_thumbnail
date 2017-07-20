@@ -2071,7 +2071,7 @@ Show all images that have been generated with the 'big-size' smd_thumbnail profi
 
 h5. Example 2: responsive images
 
-See "responsive images post":http://forum.textpattern.com/viewtopic.php?pid=288361#p288361 in the Textpattern forum.
+See "responsive images post":https://forum.textpattern.io/viewtopic.php?pid=288361#p288361 in the Textpattern forum.
 
 h3(#st_info). smd_thumbnail_info tag
 
