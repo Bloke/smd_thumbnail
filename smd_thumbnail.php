@@ -1291,7 +1291,8 @@ EOC
             $grpOpts = selectInput('smd_thumb_group_type', $grpTypes, get_pref('pane_smd_thumb_group_type', 'all', 1), '', ' onchange="smd_thumb_subsel(this);"', 'smd_thumb_group_type').'<span id="smd_thumb_subsel"></span> ';
 
             $out[] = '<section class="txp-details" id="smd_thumb_profiles">';
-            $out[] = '<h3 class="txp-summary lever'.(get_pref('pane_smd_thumbnail_profiles_visible') ? ' expanded' : '').'"><a href="#smd_thumbnail_profiles">'.(($rights) ? gTxt('smd_thumb_profile_preftool_heading') : gTxt('smd_thumb_profile_tool_heading')).'</a></h3><div class="toggle" id="smd_thumbnail_profiles" role="region" style="display:'.(get_pref('pane_smd_thumbnail_profiles_visible') ? 'block' : 'none').'">';
+            $out[] = '<h3 class="txp-summary lever'.(get_pref('pane_smd_thumbnail_profiles_visible') ? ' expanded' : '').'"><a href="#smd_thumbnail_profiles">'.(($rights) ? gTxt('smd_thumb_profile_preftool_heading') : gTxt('smd_thumb_profile_tool_heading')).'</a></h3>'.
+                n.'<div class="toggle" id="smd_thumbnail_profiles" role="region" style="display:'.(get_pref('pane_smd_thumbnail_profiles_visible') ? 'block' : 'none').'">';
             $out[] = $btnPnl;
             $out[] = '<div id="smd_thumb_batch"><span id="smd_thumb_bcurr"></span><span id="smd_thumb_btot"></span></div>';
             $out[] = '<form method="post" name="smd_thumb_multi_edit" id="smd_thumb_multi_edit" action="'.join_qs($qs).'">';
@@ -1399,7 +1400,7 @@ EOC
         $btnPref = '<p class="txp-list-options"><a href="?event=image'.a.'step=smd_thumb_prefs'.a.'sort='.$sort.a.'dir='.$dir.a.'page='.$page.a.'search_method[]='.$search_method.a.'crit='.$crit.'"><span class="ui-icon ui-icon-wrench"></span> '.(($rights) ? gTxt('smd_thumb_btn_tools_prefs') : gTxt('smd_thumb_btn_tools')).'</a></p>';
         $btnCancel = fInput('submit', 'smd_thumb_cancel', gTxt('cancel'));
 
-        $headings = n.'<thead>'.tr(
+        $headings = '<thead>'.tr(
             column_head('name', 'name', 'image', false, 'asc').
             column_head('description', 'description', 'image', false).
             column_head('thumb_width', 'width', 'image', false).
@@ -1410,17 +1411,18 @@ EOC
             column_head('active', 'active', 'image', false, '', '', '', 'smd_thumb_heading_active').
             column_head('default', 'default', 'image', false).
             column_head(gTxt('smd_thumb_actions'), 'actions', 'image', false)
-        ).'</thead>';
+        ).n.'</thead>';
 
         $out[] = '<section class="txp-details" id="smd_thumb_profiles">';
-        $out[] = '<h3 class="txp-summary lever'.(get_pref('pane_smd_thumbnail_profiles_visible') ? ' expanded' : '').'"><a href="#smd_thumbnail_profiles">'.gTxt('smd_thumb_profile_heading').'</a></h3><div class="toggle" id="smd_thumbnail_profiles" role="region" style="display:'.(get_pref('pane_smd_thumbnail_profiles_visible') ? 'block' : 'none').'">';
+        $out[] = '<h3 class="txp-summary lever'.(get_pref('pane_smd_thumbnail_profiles_visible') ? ' expanded' : '').'"><a href="#smd_thumbnail_profiles">'.gTxt('smd_thumb_profile_heading').'</a></h3>'.
+            n.'<div class="toggle" id="smd_thumbnail_profiles" role="region" style="display:'.(get_pref('pane_smd_thumbnail_profiles_visible') ? 'block' : 'none').'">';
 
         // Main list of profiles.
         $out[] = '<form method="post" name="smd_thumb_profile_form" id="smd_thumb_profile_form" action="'.join_qs($qs).'">';
-        $out[] = n.tag_start('div', array('class' => 'txp-listtables'));
-        $out[] = n.tag_start('table', array('class' => 'txp-list--no-options'));
+        $out[] = tag_start('div', array('class' => 'txp-listtables'));
+        $out[] = tag_start('table', array('class' => 'txp-list--no-options'));
         $out[] = $headings;
-        $out[] = n.tag_start('tbody');
+        $out[] = tag_start('tbody');
 
         if (smd_thumb_table_exist()) {
             $rs = safe_rows('*', SMD_THUMB, '1=1 ORDER BY name');
@@ -1455,11 +1457,11 @@ EOC
                 if ($step == 'smd_thumb_profile_edit' && $row['name'] == $smd_thumb_name) {
                     $btnSave = fInput('submit', 'smd_thumb_save', gTxt('save'));
                     $out[] = tr(
-                        tda(hInput('smd_thumb_name', $row['name']).fInput('text', 'smd_thumb_newname', $row['name']), array('data-th' => gTxt('name'))).
-                        tda(fInput('text', 'smd_thumb_description', $row['description']), array('data-th' => gTxt('description'))).
-                        tda(fInput('text', 'smd_thumb_width', $row['width'], '', '', '', '4'), array('data-th' => gTxt('thumb_width'))).
-                        tda(fInput('text', 'smd_thumb_height', $row['height'], '', '', '', '4'), array('data-th' => gTxt('thumb_height'))).
-                        tda(fInput('text', 'smd_thumb_quality', $row['quality'], '', '', '', '3'), array('data-th' => gTxt('smd_thumb_quality'))).
+                        tda(hInput('smd_thumb_name', $row['name']).fInput('text', 'smd_thumb_newname', $row['name']), array('data-th' => gTxt('name')), '', '', INPUT_MEDIUM).
+                        tda(fInput('text', 'smd_thumb_description', $row['description'], '', '', '', INPUT_REGULAR), array('data-th' => gTxt('description'))).
+                        tda(fInput('text', 'smd_thumb_width', $row['width'], '', '', '', INPUT_XSMALL), array('data-th' => gTxt('thumb_width'))).
+                        tda(fInput('text', 'smd_thumb_height', $row['height'], '', '', '', INPUT_XSMALL), array('data-th' => gTxt('thumb_height'))).
+                        tda(fInput('text', 'smd_thumb_quality', $row['quality'], '', '', '', 3), array('data-th' => gTxt('smd_thumb_quality'))).
                         tda(checkbox('smd_thumb_crop', '1', $crop), array('data-th' => gTxt('keep_square_pixels'))).
                         tda(checkbox('smd_thumb_sharpen', '1', $sharpen), array('data-th' => gTxt('smd_thumb_sharpen'))).
                         tda(checkbox('smd_thumb_active', '1', $active), array('data-th' => gTxt('active'), 'class' => $row['name'])).
@@ -1484,11 +1486,11 @@ EOC
 
             // New Profile row.
             $out[]= '<tr id="smd_thumb_profile_create" class="smd_hidden">';
-            $out[] = tda(sInput('smd_thumb_profile_save').fInput('text', 'smd_thumb_add_newname', (($step === 'smd_thumb_profile_save') ? $smd_thumb_name : ''), 'smd_focus'), array('data-th' => gTxt('name'))).
-                tda(fInput('text', 'smd_thumb_add_description', (($step === 'smd_thumb_profile_save') ? $description : '')), array('data-th' => gTxt('description'))).
-                tda(fInput('text', 'smd_thumb_add_width', (($step === 'smd_thumb_profile_save') ? $width : ''), '', '', '', '4'), array('data-th' => gTxt('thumb_width'))).
-                tda(fInput('text', 'smd_thumb_add_height', (($step === 'smd_thumb_profile_save') ? $height : ''), '', '', '', '4'), array('data-th' => gTxt('thumb_height'))).
-                tda(fInput('text', 'smd_thumb_add_quality', (($step === 'smd_thumb_profile_save') ? $quality : ''), '', '', '', '3'), array('data-th' => gTxt('smd_thumb_quality'))).
+            $out[] = tda(sInput('smd_thumb_profile_save').fInput('text', 'smd_thumb_add_newname', (($step === 'smd_thumb_profile_save') ? $smd_thumb_name : ''), 'smd_focus', '', '', INPUT_MEDIUM), array('data-th' => gTxt('name'))).
+                tda(fInput('text', 'smd_thumb_add_description', (($step === 'smd_thumb_profile_save') ? $description : ''), '', '', '', INPUT_REGULAR), array('data-th' => gTxt('description'))).
+                tda(fInput('text', 'smd_thumb_add_width', (($step === 'smd_thumb_profile_save') ? $width : ''), '', '', '', INPUT_XSMALL), array('data-th' => gTxt('thumb_width'))).
+                tda(fInput('text', 'smd_thumb_add_height', (($step === 'smd_thumb_profile_save') ? $height : ''), '', '', '', INPUT_XSMALL), array('data-th' => gTxt('thumb_height'))).
+                tda(fInput('text', 'smd_thumb_add_quality', (($step === 'smd_thumb_profile_save') ? $quality : ''), '', '', '', 3), array('data-th' => gTxt('smd_thumb_quality'))).
                 tda(checkbox('smd_thumb_add_crop', '1', (($step === 'smd_thumb_profile_save') ? $smd_thumb_crop : 0)), array('data-th' => gTxt('keep_square_pixels'))).
                 tda(checkbox('smd_thumb_add_sharpen', '1', (($step === 'smd_thumb_profile_save') ? $smd_thumb_sharpen : 0)), array('data-th' => gTxt('smd_thumb_sharpen'))).
                 tda(checkbox('smd_thumb_add_active_new', '1', 1), array('data-th' => gTxt('active'))).
@@ -1498,9 +1500,9 @@ EOC
 
         }
 
-        $out[] = n.tag_end('tbody');
-        $out[] = n.tag_end('table');
-        $out[] = n.tag_end('div'); // End of .txp-listtables.
+        $out[] = tag_end('tbody');
+        $out[] = tag_end('table');
+        $out[] = tag_end('div'); // End of .txp-listtables.
         $out[] = $btnPref;
         $out[] = $btnNew;
         $out[] = '</form>';
