@@ -2107,7 +2107,7 @@ h4. Attributes
 ** @class@: class applied to thumbnail (if not supplied, is same as type).
 ** @date@ : raw datestamp of when the image was uploaded.
 ** @ext@: thumbnail file extension.
-** @h@: thumbnail height (pixels).
+** @h@: thumbnail height (pixels). Note the resulting value is taken directly from your profile setup, so if you have the profile height set to @0@ (variable height) then this value will be incorrectly displayed as @0@.
 ** @html_h@: HTML-formatted @height@ attribute.
 ** @html_w@: HTML-formatted @width@ attribute.
 ** @id@: thumbnail ID.
@@ -2115,7 +2115,7 @@ h4. Attributes
 ** @title@: image title/caption.
 ** @type@: thumbnail profile name.
 ** @url@: full image URL of the thumbnail.
-** @w@: thumbnail width (pixels).
+** @w@: thumbnail width (pixels). Note the resulting value is taken directly from your profile setup, so if you have the profile width set to @0@ (variable width) then this value will be incorrectly displayed as @0@.
 * @wraptag="element"@<br />HTML element to wrap (markup) list block, specified without brackets (e.g., @wraptag="ul"@).
 
 h5. Example
