@@ -908,6 +908,7 @@ function smd_thumb_img($row, $currimg, $meta = array(), $dsp = '')
     $dir = sanitizeForUrl($row['name']);
     $id = $currimg['id'];
     $ext = $currimg['ext'];
+    $alt = $currimg['alt'];
 
     // alt is a mandatory attribute so make sure it exists (even if it's "").
     if (!isset($meta['alt'])) {
@@ -1775,7 +1776,6 @@ function smd_thumbnail($atts, $thing = NULL)
                 $meta['type'] = $type;
                 $meta['width'] = $width;
                 $meta['height'] = $height;
-                $meta['description'] = $description;
                 $force_size = do_list($force_size);
 
                 if (in_array('width', $force_size)) {
