@@ -197,6 +197,7 @@ function smd_thumb_get_style_rules()
 .smd_hidden { display: none; }
 .smd_inactive td { opacity: 0.33; }
 input.smd_thumbnail-create { margin: 0; }
+.smd_thumbnail_links { position:relative; flex-grow:1; margin:1em 0; text-align:right }
 #smd_thumbs img { display: block; margin: 1em 0; cursor: pointer; }
 /* Legacy 4.6.x support */
 #smd_thumb_profiles { clear: both; }
@@ -1307,9 +1308,6 @@ EOC
 
             $grpOpts = selectInput('smd_thumb_group_type', $grpTypes, get_pref('pane_smd_thumb_group_type', 'all', 1), '', ' onchange="smd_thumb_subsel(this);"', 'smd_thumb_group_type').'<span id="smd_thumb_subsel"></span> ';
 
-            $out[] = '<section class="txp-details" id="smd_thumb_profiles">';
-            $out[] = '<h3 class="txp-summary lever'.(get_pref('pane_smd_thumbnail_profiles_visible') ? ' expanded' : '').'"><a href="#smd_thumbnail_profiles">'.(($rights) ? gTxt('smd_thumb_profile_preftool_heading') : gTxt('smd_thumb_profile_tool_heading')).'</a></h3>'.
-                n.'<div class="toggle" id="smd_thumbnail_profiles" role="region" style="display:'.(get_pref('pane_smd_thumbnail_profiles_visible') ? 'block' : 'none').'">';
             $out[] = $btnPnl;
             $out[] = '<div id="smd_thumb_batch"><span id="smd_thumb_bcurr"></span><span id="smd_thumb_btot"></span></div>';
             $out[] = '<form method="post" name="smd_thumb_multi_edit" id="smd_thumb_multi_edit" action="'.join_qs($qs).'">';
@@ -1371,7 +1369,6 @@ EOC
 
                 $out[] = '</form>';
             }
-            $out[] = '</section>';
         }
     // Action to show thumbnail profile list.
     } else {
@@ -1414,7 +1411,7 @@ EOC
         );
 
         $btnNew = '<p><a class="txp-button" href="#" onclick="return smd_thumb_togglenew();">'.gTxt('smd_thumb_new').'</a></p>';
-        $btnPref = '<p class="txp-list-options"><a href="?event=image'.a.'step=smd_thumb_prefs'.a.'sort='.$sort.a.'dir='.$dir.a.'page='.$page.a.'search_method='.$search_method.a.'crit='.$crit.'"><span class="ui-icon ui-icon-wrench"></span> '.(($rights) ? gTxt('smd_thumb_btn_tools_prefs') : gTxt('smd_thumb_btn_tools')).'</a></p>';
+        $btnPref = '<p class="smd_thumbnail_links"><a href="?event=image'.a.'step=smd_thumb_prefs'.a.'sort='.$sort.a.'dir='.$dir.a.'page='.$page.a.'search_method='.$search_method.a.'crit='.$crit.'"><span class="ui-icon ui-icon-wrench"></span> '.(($rights) ? gTxt('smd_thumb_btn_tools_prefs') : gTxt('smd_thumb_btn_tools')).'</a></p>';
         $btnCancel = fInput('submit', 'smd_thumb_cancel', gTxt('cancel'));
 
         $headings = '<thead>'.tr(
@@ -1429,10 +1426,6 @@ EOC
             column_head('default', 'default', 'image', false).
             column_head(gTxt('smd_thumb_actions'), 'actions', 'image', false)
         ).n.'</thead>';
-
-        $out[] = '<section class="txp-details" id="smd_thumb_profiles">';
-        $out[] = '<h3 class="txp-summary lever'.(get_pref('pane_smd_thumbnail_profiles_visible') ? ' expanded' : '').'"><a href="#smd_thumbnail_profiles">'.gTxt('smd_thumb_profile_heading').'</a></h3>'.
-            n.'<div class="toggle" id="smd_thumbnail_profiles" role="region" style="display:'.(get_pref('pane_smd_thumbnail_profiles_visible') ? 'block' : 'none').'">';
 
         // Main list of profiles.
         $out[] = '<form method="post" name="smd_thumb_profile_form" id="smd_thumb_profile_form" action="'.join_qs($qs).'">';
@@ -1523,10 +1516,9 @@ EOC
         $out[] = $btnPref;
         $out[] = $btnNew;
         $out[] = '</form>';
-        $out[] = '</section>';
     }
 
-    return join(n, $out);
+    return wrapRegion('smd_thumb_profiles', join(n, $out), 'smd_thumbnail_profiles', 'smd_thumb_profile_heading', 'smd_thumbnail_profiles_visible');
 }
 
 /**
