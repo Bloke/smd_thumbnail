@@ -17,7 +17,7 @@ $plugin['name'] = 'smd_thumbnail';
 // 1 = Plugin help is in raw HTML.  Not recommended.
 # $plugin['allow_html_help'] = 1;
 
-$plugin['version'] = '0.4.0';
+$plugin['version'] = '0.5.0';
 $plugin['author'] = 'Stef Dawson';
 $plugin['author_uri'] = 'https://stefdawson.com/';
 $plugin['description'] = 'Multiple image thumbnails of arbitrary dimensions';
@@ -56,6 +56,7 @@ $plugin['flags'] = '2';
 
 $plugin['textpack'] = <<<EOT
 #@smd_thumb
+#@language en, en-gb, en-us
 smd_thumb_actions => Actions
 smd_thumb_all_sizes => All sizes
 smd_thumb_all_thumbs => Create
@@ -69,9 +70,9 @@ smd_thumb_create => Creation
 smd_thumb_create_group_confirm => Really create thumbnails for ALL active profiles? Any existing thumbs will be overwritten.
 smd_thumb_delete => Deletion
 smd_thumb_delete_confirm => Really delete profile {name}? It will delete ALL thumbnails of this type.
-smd_thumb_image => Image =
+smd_thumb_image => Image =
 smd_thumb_new => New profile
-smd_thumb_profile => Profile =
+smd_thumb_profile => Profile =
 smd_thumb_profile_deleted => Profile <strong>{name}</strong> deleted
 smd_thumb_profile_exists => Profile <strong>{name}</strong> already exists
 smd_thumb_profile_heading => Thumbnail profiles
@@ -87,7 +88,7 @@ smd_thumb_txp_create_from_thumb => Thumbnail
 smd_thumb_txp_default_sync => Keep thumbnails in sync with default profile on:
 smd_thumb_upload => Replace selected thumbnail
 #@smd_thumb
-#@language fr-fr
+#@language fr
 smd_thumb_actions => Actions
 smd_thumb_all_sizes => Toutes les tailles
 smd_thumb_all_thumbs => Créer
@@ -1939,7 +1940,7 @@ h2(#features). Features
 
 h2(#install). Installing
 
-*Requires Textpattern 4.6.0+*
+*Requires Textpattern 4.7.0+*
 
 Download the plugin from either "GitHub":https://github.com/Bloke/smd_thumbnail/releases, or the "software page":https://stefdawson.com/sw/plugins/smd_thumbnail, paste the code into the Plugins administration panel, install and enable the plugin. Visit the "forum thread":https://forum.textpattern.io/viewtopic.php?id=34367 for more info or to report on the success or otherwise of the plugin.
 

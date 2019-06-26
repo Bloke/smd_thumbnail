@@ -10,7 +10,7 @@
     "source": "https://github.com/bloke/smd_thumbnail"
   },
   "require": {
-    "textpattern/lock": ">=4.6.0",
+    "textpattern/lock": ">=4.7.0",
     "textpattern/installer": "*"
   }
 }

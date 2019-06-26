@@ -17,7 +17,7 @@ h2. Features
 
 h2. Installing
 
-*Requires Textpattern 4.6.0+*
+*Requires Textpattern 4.7.0+*
 
 Download the plugin from either "GitHub":https://github.com/Bloke/smd_thumbnail/releases, or the "software page":https://stefdawson.com/sw/plugins/smd_thumbnail, paste the code into the Plugins administration panel, install and enable the plugin. Visit the "forum thread":https://forum.textpattern.io/viewtopic.php?id=34367 for more info or to report on the success or otherwise of the plugin.
 
