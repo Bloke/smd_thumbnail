@@ -1725,6 +1725,7 @@ function smd_thumbnail($atts, $thing = NULL)
         'force_size' => '',
         'display'    => 'thumbnail', // thumbnail (full img tag) or URL.
         'form'       => '',
+        'quiet'      => 0,
     ), $atts));
 
     $thing = (empty($form)) ? $thing : fetch_form($form);
@@ -1739,7 +1740,10 @@ function smd_thumbnail($atts, $thing = NULL)
         $id = (int) $thisimage['id'];
         $rs = $thisimage;
     } else {
-        trigger_error(gTxt('unknown_image'));
+        if (!$quiet) {
+            trigger_error(gTxt('unknown_image'));
+        }
+
         return;
     }
 
@@ -1837,7 +1841,9 @@ function smd_thumbnail($atts, $thing = NULL)
         }
     }
 
-    trigger_error(gTxt('unknown_image'));
+    if (!$quiet) {
+        trigger_error(gTxt('unknown_image'));
+    }
 }
 
 /**
