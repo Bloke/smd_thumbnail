@@ -1754,9 +1754,11 @@ function smd_thumbnail($atts, $thing = NULL)
             $path = IMPATH . $dir . DS . $id . $ext;
 
             if (file_exists($path)) {
-                // Drop out if all we need to display is the thumb's URL.
+                // Drop out if all we need to display is the thumb's URL (but support wraptag).
                 if ($display === 'url') {
-                    return ihu . $img_dir . '/' . $dir . '/' . $id . $ext;
+                    $out = ihu . $img_dir . '/' . $dir . '/' . $id . $ext;
+
+                    return ($wraptag) ? doTag($out, $wraptag, $class, '', $html_id) : $out;
                 }
 
                 if ($escape === 'html') {
