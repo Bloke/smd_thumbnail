@@ -142,6 +142,7 @@ h4. Attributes (in addition to standard txp:thumbnail tag attributes)
 * @force_size="value"@<br />Usually when you set one or other width/height to @0@ in a profile, the browser scales the missing dimension automatically. It does this by omitting the @width=@ or @height=@ attribute in the @img@ tag. This may cause visual artefacts as the page is rendered and the browser calculates the sizes. If you wish the plugin to add the actual dimension to the @<img>@ tag (the size at the time the thumbnail was created), tell the plugin with this attribute. Choose one or both of @width@ or @height@. Comma-separate as required. Default: unset.
 * @form="form name"@<br />You can construct your own @<img>@ tags using the given form. If not specified, you may use the tag as a container.
 * @type="value"@<br />Use this attribute to display thumbnails of the given profile name (e.g., @type="large"@). If you do not specify this attribute, the default profile will be used. If there is no default profile you'll see warning messages.
+* @quiet="boolean"@<br />Use quiet="1" to suppress warnings about missing images. Default: @0@.
 
 The tag works inside @<txp:images>@ or can be used standalone by specifying the @id@ or @name@ attribute. If using it as a container or with the @form@ attribute you display the various pieces of thumbnail information using the @<txp:smd_thumbnail_info>@ tag.
 

@@ -1,5 +1,10 @@
 h1. Changelog
 
+h2. 0.5.1 - 2019-09-10
+
+* Permit @wraptag@ when outputting display="url" (thanks, jools-r).
+* Add @quiet@ attribute to suppress missing image warnings (thanks, jools-r).
+
 h2. 0.5.0 - 2019-06-26
 
 * For Textpattern 4.7.0+.
