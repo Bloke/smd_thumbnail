@@ -1,5 +1,9 @@
 h1. Changelog
 
+h2. 0.5.2 - 2019-09-17
+
+* Added German Textpack (thanks, Christian Rapp)
+
 h2. 0.5.1 - 2019-09-10
 
 * Permit @wraptag@ when outputting display="url" (thanks, jools-r).
