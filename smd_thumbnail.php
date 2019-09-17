@@ -87,7 +87,6 @@ smd_thumb_txp_create_from_full => Full size image
 smd_thumb_txp_create_from_thumb => Thumbnail
 smd_thumb_txp_default_sync => Keep thumbnails in sync with default profile on:
 smd_thumb_upload => Replace selected thumbnail
-#@smd_thumb
 #@language fr
 smd_thumb_actions => Actions
 smd_thumb_all_sizes => Toutes les tailles
@@ -120,6 +119,37 @@ smd_thumb_txp_create_from_thumb => la vignette
 smd_thumb_txp_delete => Supprimer
 smd_thumb_txp_default_sync => Gardez les vignettes en synchronisation avec le profil par défaut sur :
 smd_thumb_upload => Remplacer les vignettes sélectionnées
+#@language de
+smd_thumb_actions => Aktionen
+smd_thumb_all_sizes => Alle Größen
+smd_thumb_all_thumbs => Erstellen
+smd_thumb_batch_preamble => (Neu-)Erstellung ALLER Thumbnails für alle aktiven Profile, basierend auf:
+smd_thumb_btn_pnl => Profile
+smd_thumb_btn_tools => Werkzeuge
+smd_thumb_btn_tools_prefs => Einstellungen
+smd_thumb_byall => Alle Bilder
+smd_thumb_bysel => Ausgewählte Bilder
+smd_thumb_create => beim Erstellen
+smd_thumb_create_group_confirm => Wirklich thumbnails für ALLE aktiven Profile erstellen? Alle existierenden Thumbs werden überschrieben.
+smd_thumb_delete => beim Löschen
+smd_thumb_delete_confirm => Profil {name} wirklich löschen? Es werden ALLE Thumbs diesen Types gelöscht.
+smd_thumb_image => Bild =
+smd_thumb_new => Neues Profil
+smd_thumb_profile => Profile =
+smd_thumb_profile_deleted => Profil <strong>{name}</strong> gelöscht
+smd_thumb_profile_exists => Profil <strong>{name}</strong> existiert bereits
+smd_thumb_profile_heading => Thumbnail Profile
+smd_thumb_profile_preftool_heading => Thumbnail Setup
+smd_thumb_profile_tool_heading => Thumbnail Werkzeuge
+smd_thumb_quality => Qualität (%)
+smd_thumb_sharpen => schärfen
+smd_thumb_tables_not_installed => Tabellen wurden nicht installiert: versuche das Plugin neu zu installieren
+smd_thumb_txp_auto_replace => Neugenerierung der Thumbnails bei Upload des Hauptbildes:
+smd_thumb_txp_create_from => Erstelle Thumbnails vom:
+smd_thumb_txp_create_from_full => Hauptbild
+smd_thumb_txp_create_from_thumb => Thumbnail
+smd_thumb_txp_default_sync => Thumbnails synchron halten mit Standard-Profil:
+smd_thumb_upload => Ersetze ausgewählte Thumbnails
 EOT;
 
 if (!defined('txpinterface'))
