@@ -1741,6 +1741,7 @@ function smd_thumbnail($atts, $thing = null)
         'type'       => get_pref('smd_thumb_default_profile', ''),
         'id'         => '',
         'name'       => '',
+        'aspect'     => '',
         'escape'     => true,
         'wraptag'    => '',
         'class'      => '',
@@ -1788,19 +1789,29 @@ function smd_thumbnail($atts, $thing = null)
 
     smd_thumb_set_impath();
 
-    $typeClause = "0"; // Default to doing nothing.
-
     if ($type === 'SMD_ALL') {
-        $typeClause = "1=1";
+        $typeClause[] = "1=1";
     } elseif ($type === 'SMD_ACTIVE') {
-        $typeClause = "flags & ".SMD_THUMB_ACTIVE;
+        $typeClause[] = "flags & ".SMD_THUMB_ACTIVE;
     } elseif ($type) {
-        $typeClause = "name IN ('".join("','", doSlash(do_list_unique($type)))."')";
+        $typeClause[] = "name IN ('".join("','", doSlash(do_list_unique($type)))."')";
+    }
+
+    if ($aspect === 'portrait') {
+        $typeClause[] = "height > width";
+    } elseif ($aspect === 'landscape') {
+        $typeClause[] = "width > height";
+    } elseif ($aspect === 'square') {
+        $typeClause[] = "width = height";
+    }
+
+    if (empty($typeClause)) {
+        $typeClause[] = "0";
     }
 
     if ($rs) {
         extract($rs);
-        $thumbs = safe_rows('*', SMD_THUMB, $typeClause . " ORDER BY width DESC, height DESC");
+        $thumbs = safe_rows('*', SMD_THUMB, implode(' AND ', $typeClause) . " ORDER BY width DESC, height DESC");
         $outset = array();
         $force_size = do_list($force_size);
 
@@ -2118,6 +2129,15 @@ h4. Attributes (in addition to standard txp:thumbnail tag attributes)
 ; @add_stamp="boolean"@
 : Adds the image file modification time to the end of the thumbnail's URL. Use @add_stamp="1"@ to switch this feature on. This helps prevent stale images, but may prevent browsers from cacheing the thumbnails properly, thus increasing bandwidth usage.
 : Default: @0@.
+; @aspect="ratio"@
+: Only consider images of a particular aspect ratio. Choose from: @portrait@, @landscape@, or @square@.
+: Default: unset.
+; @break="tag"@
+: HTML tag to apply between each thumbnail when iterating over them.
+: Default: unset.
+; @breakclass="class name"@
+: HTML @class@ to apply to the @break>@ tag.
+: Default: unset.
 ; @class="class name"@
 : HTML @class@ to apply to the @<img>@ attribute value.
 : If omitted, the name of the profile will be used as a @class@ name for the @<img>@ tag.
@@ -2125,12 +2145,6 @@ h4. Attributes (in addition to standard txp:thumbnail tag attributes)
 ; @format="value"@
 : By default, this tag outputs a full @<img>@ tag. If you just require the image URL so you can make your own image tags, set @format="url"@.
 : Default: @thumbnail@.
-; @break="tag"@
-: HTML tag to apply between each thumbnail when iterating over them.
-: Default: unset.
-; @breakclass="class name"@
-: HTML @class@ to apply to the @break>@ tag.
-: Default: unset.
 ; @force_size="value"@
 : Usually when you set one or other width/height to @0@ in a profile, the browser scales the missing dimension automatically. It does this by omitting the @width=@ or @height=@ attribute in the @img@ tag. This may cause visual artefacts as the page is rendered and the browser calculates the sizes. If you wish the plugin to add the actual dimension to the @<img>@ tag (the size at the time the thumbnail was created), tell the plugin with this attribute. Choose one or both of @width@ or @height@. Comma-separate as required.
 : Default: unset.
