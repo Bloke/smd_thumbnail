@@ -1672,7 +1672,6 @@ function smd_thumb_table_remove()
         set_pref('thumb_w', get_pref('smd_thumb_backup_w'), 'image', PREF_HIDDEN);
         set_pref('thumb_h', get_pref('smd_thumb_backup_h'), 'image', PREF_HIDDEN);
         set_pref('thumb_crop', get_pref('smd_thumb_backup_c'), 'image', PREF_HIDDEN);
-
     }
 
     // Erase the backup thumb prefs.
@@ -1734,7 +1733,7 @@ function smd_thumbnail_save_pane_state()
  * @param  string $thing Container
  * @return string        HTML
  */
-function smd_thumbnail($atts, $thing = NULL)
+function smd_thumbnail($atts, $thing = null)
 {
     global $thisimage, $img_dir;
 
@@ -1742,9 +1741,11 @@ function smd_thumbnail($atts, $thing = NULL)
         'type'       => get_pref('smd_thumb_default_profile', ''),
         'id'         => '',
         'name'       => '',
-        'escape'     => 'html',
+        'escape'     => true,
         'wraptag'    => '',
         'class'      => '',
+        'break'      => '',
+        'breakclass' => '',
         'html_id'    => '',
         'style'      => '',
         'link'       => '',
@@ -1787,33 +1788,46 @@ function smd_thumbnail($atts, $thing = NULL)
 
     smd_thumb_set_impath();
 
+    $typeClause = "0"; // Default to doing nothing.
+
+    if ($type === 'SMD_ALL') {
+        $typeClause = "1=1";
+    } elseif ($type === 'SMD_ACTIVE') {
+        $typeClause = "flags & ".SMD_THUMB_ACTIVE;
+    } elseif ($type) {
+        $typeClause = "name IN ('".join("','", doSlash(do_list_unique($type)))."')";
+    }
+
     if ($rs) {
         extract($rs);
-        $thumbinfo = safe_row('*', SMD_THUMB, "name='".doSlash($type)."'");
+        $thumbs = safe_rows('*', SMD_THUMB, $typeClause . " ORDER BY width DESC, height DESC");
+        $outset = array();
+        $force_size = do_list($force_size);
 
-        if ($thumbinfo) {
+        if ($escape) {
+            $alt = txp_escape(array('escape' => $escape), $alt);
+            $caption = txp_escape(array('escape' => $escape), $caption);
+        }
+
+        foreach ($thumbs as $thumbinfo) {
             $dir = sanitizeForUrl($thumbinfo['name']);
             $path = IMPATH . $dir . DS . $id . $ext;
+            $meta = array();
 
             if (file_exists($path)) {
+                $url = ihu . $img_dir . '/' . $dir . '/' . $id . $ext;
+
                 // Drop out if all we need to display is the thumb's URL (but support wraptag).
                 if ($format === 'url') {
-                    $out = ihu . $img_dir . '/' . $dir . '/' . $id . $ext;
-
-                    return ($wraptag) ? doTag($out, $wraptag, $class, '', $html_id) : $out;
+                    $outset[] = $url;
+                    continue;
                 }
 
-                if ($escape === 'html') {
-                    $alt = htmlspecialchars($alt);
-                    $caption = htmlspecialchars($caption);
-                }
-
-                $meta['url'] = ihu . $img_dir . '/' . $dir . '/' . $id . $ext;
+                $meta['url'] = $url;
                 $meta['alt'] = $alt;
-                $meta['type'] = $type;
+                $meta['type'] = $thumbinfo['name'];
                 $meta['width'] = $width;
                 $meta['height'] = $height;
-                $force_size = do_list($force_size);
 
                 if (in_array('width', $force_size)) {
                     $meta['forcew'] = 1;
@@ -1870,15 +1884,19 @@ function smd_thumbnail($atts, $thing = NULL)
                 $out = smd_thumb_img($thumbinfo, $rs, $meta, $thing);
 
                 if ($link) {
-                    $out = href($out, imagesrcurl($id, $ext), (!empty($link_rel) ? ' rel="' . $link_rel . '"' : '') . ' title="' . $caption . '"');
+                    $outset[] = href($out, imagesrcurl($id, $ext), (!empty($link_rel) ? ' rel="' . $link_rel . '"' : '') . ' title="' . $caption . '"');
                 } elseif ($poplink) {
-                    $out = '<a href="' . imagesrcurl($id, $ext) . '"' .
+                    $outset[] = '<a href="' . imagesrcurl($id, $ext) . '"' .
                         ' onclick="window.open(this.href, \'popupwindow\', '.
                         '\'width=' . $w . ', height=' . $h . ', scrollbars, resizable\'); return false;">' . $out . '</a>';
+                } else {
+                    $outset[] = $out;
                 }
-
-                return ($wraptag) ? doTag($out, $wraptag, $class, '', $html_id) : $out;
             }
+        }
+
+        if ($outset) {
+            return doWrap($outset, $wraptag, $break, $class, $breakclass, '', '', $html_id);
         }
     }
 
@@ -1923,11 +1941,12 @@ function smd_if_thumbnail($atts, $thing)
  * @param  string $thing Container
  * @return string        HTML
  */
-function smd_thumbnail_info($atts, $thing = NULL)
+function smd_thumbnail_info($atts, $thing = null)
 {
     global $smd_thumb_data;
 
     extract(lAtts(array(
+        'escape'  => true,
         'item'    => '',
         'wraptag' => '',
         'break'   => '',
@@ -1947,7 +1966,7 @@ function smd_thumbnail_info($atts, $thing = NULL)
 
     foreach ($items as $it) {
         if (isset($tdata[$it])) {
-            $out[] = $tdata[$it];
+            $out[] = txp_escape(array('escape' => $escape), $tdata[$it]);
         }
     }
 
