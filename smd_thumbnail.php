@@ -1754,10 +1754,17 @@ function smd_thumbnail($atts, $thing = NULL)
         'width'      => '',
         'height'     => '',
         'force_size' => '',
-        'display'    => 'thumbnail', // thumbnail (full img tag) or URL.
+        'format'     => 'thumbnail', // thumbnail (full img tag) or url.
+        'display'    => 'thumbnail', // Deprecated: use format instead
         'form'       => '',
         'quiet'      => 0,
     ), $atts));
+
+    if (isset($atts['display'])) {
+        trigger_error(gTxt('deprecated_attribute', array('{name}' => 'display')) . '. Use format instead.', E_USER_NOTICE);
+        $format = $display;
+        unset($display);
+    }
 
     $thing = (empty($form)) ? $thing : fetch_form($form);
 
@@ -1790,7 +1797,7 @@ function smd_thumbnail($atts, $thing = NULL)
 
             if (file_exists($path)) {
                 // Drop out if all we need to display is the thumb's URL (but support wraptag).
-                if ($display === 'url') {
+                if ($format === 'url') {
                     $out = ihu . $img_dir . '/' . $dir . '/' . $id . $ext;
 
                     return ($wraptag) ? doTag($out, $wraptag, $class, '', $html_id) : $out;
@@ -2103,8 +2110,8 @@ h4. Attributes (in addition to standard txp:thumbnail tag attributes)
 : Default: @0@.
 ; @class="class name"@
 : HTML @class@ to apply to the @wraptag@ and/or @<img>@ attribute value. If omitted, the name of the profile will be used as a @class@ name for the @<img>@ tag. If you specify a @wraptag@ and omit the @class@, the profile name will be used as a @class@ on both the container and the @<img>@ tag.
-; @display="value"@
-: By default, this tag outputs a full @<img>@ tag. If you just require the image URL so you can make your own image tags, set @display="url"@.
+; @format="value"@
+: By default, this tag outputs a full @<img>@ tag. If you just require the image URL so you can make your own image tags, set @format="url"@.
 : Default: @thumbnail@.
 ; @force_size="value"@
 : Usually when you set one or other width/height to @0@ in a profile, the browser scales the missing dimension automatically. It does this by omitting the @width=@ or @height=@ attribute in the @img@ tag. This may cause visual artefacts as the page is rendered and the browser calculates the sizes. If you wish the plugin to add the actual dimension to the @<img>@ tag (the size at the time the thumbnail was created), tell the plugin with this attribute. Choose one or both of @width@ or @height@. Comma-separate as required.
@@ -2187,8 +2194,8 @@ h5. Example
 bc. <txp:images>
     <txp:smd_if_thumbnail type="640w">
         <img alt="<txp:image_info type='alt' />"
-            src="<txp:smd_thumbnail type='640w' display='url' />"
-            srcset="<txp:image_url link='0' /> 2x, <txp:smd_thumbnail type='640w' display='url' /> 1x">
+            src="<txp:smd_thumbnail type='640w' format='url' />"
+            srcset="<txp:image_url link='0' /> 2x, <txp:smd_thumbnail type='640w' format='url' /> 1x">
     <txp:else />
         <img alt="<txp:image_info type='alt' />" src="<txp:image_url link='0' />">
     </txp:smd_if_thumbnail>
