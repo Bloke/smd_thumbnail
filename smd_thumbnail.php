@@ -1985,18 +1985,6 @@ If you're bored of one Textpattern thumbnail per image and don't fancy using an 
 
 Please report bugs and problems with this plugin at "the GitHub project's issues page":https://github.com/Bloke/smd_thumbnail/issues.
 
-h2. Contents
-
-* "Features":#features
-* "Upgrading and uninstallation":#install
-* "Usage":#usage
-* "Tags":#tags
-** "smd_thumbnail tag":#st
-** "smd_thumbnail_info tag":#st_info
-** "smd_if_thumbnail tag":#st_if
-* "History":#history
-* "Authors/credits":#credits
-
 h2(#features). Features
 
 * Assign any number of thumbnails to Textpattern's images.
@@ -2020,12 +2008,12 @@ bc. $ composer require bloke/smd_thumbnail:*
 
 h2(#usage). Usage
 
-Visit the Images administration panel. Above the list of images is an area labelled *Thumbnail profiles*. Click it to reveal the control panel. You can toggle this panel open and closed by clicking the heading.
+Visit the Images panel. Above the list of images is an area labelled *Thumbnail profiles*. Click it to reveal the control panel. You can toggle this panel open and closed by clicking the heading.
 
 You must define at least one profile to begin with, so click the *New profile* button. This will reveal edit boxes where you can enter:
 
-* *Name*: some descriptive name for this thumbnail dimension. You are limited to usual non-weird characters in the name.
-* *Description*: a brief summary of this thumbnail dimension, to jog your memory or inform other users of its purpose.
+* *Name*: some descriptive name for this thumbnail profile. You are limited to usual non-weird characters in the name.
+* *Description*: a brief summary of this thumbnail profile, to jog your memory or inform other users of its purpose.
 * *Width*: thumbnail width, in pixels. If left blank (or set to @0@) and height is specified, the width will be computed in proportion to the height.
 * *Height*: thumbnail height, in pixels. If left blank (or set to @0@) and width is specified, the height will be computed in proportion to the width.
 * *Quality (%)*: The quality of the resulting thumbnail. Generally only of use for JPEG or 24-bit PNG images. The higher the value the better the quality and the bigger the file size. Default: @75@.
@@ -2131,17 +2119,28 @@ h4. Attributes (in addition to standard txp:thumbnail tag attributes)
 : Adds the image file modification time to the end of the thumbnail's URL. Use @add_stamp="1"@ to switch this feature on. This helps prevent stale images, but may prevent browsers from cacheing the thumbnails properly, thus increasing bandwidth usage.
 : Default: @0@.
 ; @class="class name"@
-: HTML @class@ to apply to the @wraptag@ and/or @<img>@ attribute value. If omitted, the name of the profile will be used as a @class@ name for the @<img>@ tag. If you specify a @wraptag@ and omit the @class@, the profile name will be used as a @class@ on both the container and the @<img>@ tag.
+: HTML @class@ to apply to the @<img>@ attribute value.
+: If omitted, the name of the profile will be used as a @class@ name for the @<img>@ tag.
+: If you specify a @wraptag@ and omit the @class@, the profile name will be used as a @class@ on both the container and the @<img>@ tag.
 ; @format="value"@
 : By default, this tag outputs a full @<img>@ tag. If you just require the image URL so you can make your own image tags, set @format="url"@.
 : Default: @thumbnail@.
+; @break="tag"@
+: HTML tag to apply between each thumbnail when iterating over them.
+: Default: unset.
+; @breakclass="class name"@
+: HTML @class@ to apply to the @break>@ tag.
+: Default: unset.
 ; @force_size="value"@
 : Usually when you set one or other width/height to @0@ in a profile, the browser scales the missing dimension automatically. It does this by omitting the @width=@ or @height=@ attribute in the @img@ tag. This may cause visual artefacts as the page is rendered and the browser calculates the sizes. If you wish the plugin to add the actual dimension to the @<img>@ tag (the size at the time the thumbnail was created), tell the plugin with this attribute. Choose one or both of @width@ or @height@. Comma-separate as required.
 : Default: unset.
 ; @form="form name"@
 : You can construct your own @<img>@ tags using the given form. If not specified, you may use the tag as a container.
 ; @type="value"@
-: Use this attribute to display thumbnails of the given profile name (e.g., @type="large"@). If you do not specify this attribute, the default profile will be used. If there is no default profile you'll see warning messages.
+: Use this attribute to display thumbnails of the given profile name (e.g., @type="large"@). You may comma-separate multiple profile names to iterate over them.
+: type="SMD_ALL" will iterate over all defined profiles.
+: type="SMD_ACTIVE" will iterate over all active profiles.
+: If you do not specify this attribute, the default profile will be used. If there is no default profile you'll see warning messages.
 ; @quiet="boolean"@
 : Use quiet="1" to suppress warnings about missing images.
 : Default: @0@.
@@ -2190,6 +2189,7 @@ h4. Attributes
 ** @url@: full image URL of the thumbnail.
 ** @w@: thumbnail width (pixels). Note the resulting value is taken directly from your profile setup, so if you have the profile width set to @0@ (variable width) then this value will be incorrectly displayed as @0@.
 * @wraptag="element"@ HTML element to wrap (markup) list block, specified without brackets (e.g., @wraptag="ul"@).
+* @escape="transform"@ to apply core escape transforms such as trim, tidy, html, textile, etc to the item.
 
 h5. Example
 
