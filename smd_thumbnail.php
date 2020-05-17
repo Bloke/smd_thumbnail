@@ -17,7 +17,7 @@ $plugin['name'] = 'smd_thumbnail';
 // 1 = Plugin help is in raw HTML.  Not recommended.
 # $plugin['allow_html_help'] = 1;
 
-$plugin['version'] = '0.5.3';
+$plugin['version'] = '0.6.0';
 $plugin['author'] = 'Stef Dawson';
 $plugin['author_uri'] = 'https://stefdawson.com/';
 $plugin['description'] = 'Multiple image thumbnails of arbitrary dimensions';
@@ -209,12 +209,13 @@ if (txpinterface === 'admin') {
     register_callback('smd_thumb_inject_css', 'admin_side', 'head_end');
 } elseif (txpinterface === 'public') {
     smd_thumb_set_impath();
-    if (class_exists('\Textpattern\Tag\Registry')) {
-        Txp::get('\Textpattern\Tag\Registry')
-            ->register('smd_thumbnail')
-            ->register('smd_if_thumbnail')
-            ->register('smd_thumbnail_info');
-    }
+}
+
+if (class_exists('\Textpattern\Tag\Registry')) {
+    Txp::get('\Textpattern\Tag\Registry')
+        ->register('smd_thumbnail')
+        ->register('smd_if_thumbnail')
+        ->register('smd_thumbnail_info');
 }
 
 /**
