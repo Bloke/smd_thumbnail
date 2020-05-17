@@ -1856,7 +1856,10 @@ function smd_thumbnail($atts, $thing = NULL)
 
                 if ($class && !$wraptag) {
                     $meta['class'] = $class;
-                } else {
+                } elseif ($class && $wraptag) {
+                    $meta['class'] = $class;
+                    $class = $type;
+                } elseif (!$class && $wraptag) {
                     $class = $type;
                 }
 
