@@ -230,6 +230,7 @@ function smd_thumb_get_style_rules()
 input.smd_thumbnail-create { margin: 0; }
 .smd_thumbnail_links { position:relative; flex-grow:1; margin:1em 0; text-align:right }
 #smd_thumbs img { display: block; margin: 1em 0; cursor: pointer; }
+.smd_thumb_heading_active { cursor:pointer; }
 /* Legacy 4.6.x support */
 #smd_thumb_profiles { clear: both; }
 .txp-list--no-options { width: 100%; }
