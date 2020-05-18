@@ -1449,8 +1449,8 @@ EOC
         $headings = '<thead>'.tr(
             column_head('name', 'name', 'image', false, 'asc').
             column_head('description', 'description', 'image', false).
-            column_head('thumb_width', 'width', 'image', false).
-            column_head('thumb_height', 'height', 'image', false).
+            column_head('width', 'width', 'image', false).
+            column_head('height', 'height', 'image', false).
             column_head(gTxt('smd_thumb_quality'), 'quality', 'image', false).
             column_head('keep_square_pixels', 'crop', 'image', false).
             column_head(gTxt('smd_thumb_sharpen'), 'sharpen', 'image', false).
@@ -1738,28 +1738,29 @@ function smd_thumbnail($atts, $thing = null)
     global $thisimage, $img_dir;
 
     extract(lAtts(array(
-        'type'       => get_pref('smd_thumb_default_profile', ''),
-        'id'         => '',
-        'name'       => '',
+        'add_stamp'  => 0,
         'aspect'     => '',
-        'escape'     => true,
-        'wraptag'    => '',
-        'class'      => '',
         'break'      => '',
         'breakclass' => '',
+        'class'      => '',
+        'display'    => 'thumbnail', // Deprecated in v0.6.0: use format instead
+        'escape'     => true,
+        'force_size' => '',
+        'form'       => '',
+        'format'     => 'thumbnail', // thumbnail (full img tag) or url.
+        'height'     => '',
         'html_id'    => '',
-        'style'      => '',
+        'id'         => '',
         'link'       => '',
         'link_rel'   => '',
-        'poplink'    => 0,
-        'add_stamp'  => 0,
-        'width'      => '',
-        'height'     => '',
-        'force_size' => '',
-        'format'     => 'thumbnail', // thumbnail (full img tag) or url.
-        'display'    => 'thumbnail', // Deprecated: use format instead
-        'form'       => '',
+        'name'       => '',
+        'poplink'    => 0, // Deprecated in v0.6.0
         'quiet'      => 0,
+        'sort'       => 'width DESC, height DESC',
+        'style'      => '',
+        'type'       => get_pref('smd_thumb_default_profile', ''),
+        'width'      => '',
+        'wraptag'    => '',
     ), $atts));
 
     if (isset($atts['display'])) {
@@ -1809,9 +1810,15 @@ function smd_thumbnail($atts, $thing = null)
         $typeClause[] = "0";
     }
 
+    $orderClause = '';
+
+    if ($sort) {
+        $orderClause = " ORDER BY " . $sort;
+    }
+
     if ($rs) {
         extract($rs);
-        $thumbs = safe_rows('*', SMD_THUMB, implode(' AND ', $typeClause) . " ORDER BY width DESC, height DESC");
+        $thumbs = safe_rows('*', SMD_THUMB, implode(' AND ', $typeClause) . $orderClause);
         $outset = array();
         $force_size = do_list($force_size);
 
@@ -2150,6 +2157,9 @@ h4. Attributes (in addition to standard txp:thumbnail tag attributes)
 : Default: unset.
 ; @form="form name"@
 : You can construct your own @<img>@ tags using the given form. If not specified, you may use the tag as a container.
+; @sort="col dir, col dir, ..."@
+: Order the images by the given columns and sort direction.
+: Default: @width DESC, height DESC@.
 ; @type="value"@
 : Use this attribute to display thumbnails of the given profile name (e.g., @type="large"@). You may comma-separate multiple profile names to iterate over them.
 : type="SMD_ALL" will iterate over all defined profiles.
