@@ -169,7 +169,6 @@ if (!defined('txpinterface'))
  * @link   https://stefdawson.com/
  * TODO: Make Selections (lines 912-916) optional via prefs or something
  * TODO: Simplify AJAX response packets to speed things up
- * TODO: Interface elements for Profile creation don't get rendered if there are no images in pool
  */
 if (!defined('SMD_THUMB')) {
     define("SMD_THUMB", 'smd_thumbnail');
@@ -360,10 +359,10 @@ function smd_thumb_create_group($type, $lst = '')
     $count = count($images);
 
     echo <<<EOJS
-<script type="text/javascript">
+<script>
 var bctr = 0; var btot = {$count};
 jQuery(function() {
-    jQuery("#smd_thumb_btot").text("/'.$count.'");
+    jQuery("#smd_thumb_btot").text("/{$count}");
 EOJS;
 
     foreach ($images as $img) {
@@ -398,8 +397,17 @@ function smd_thumb_create_one()
     $curr = safe_row('*', 'txp_image', "id=" . doSlash($currimg));
 
     if ($rs) {
-        smd_thumb_make($rs, $curr, 1);
-        send_xml_response();
+        $ret = smd_thumb_make($rs, $curr, 1);
+dmp($ret);
+        if (is_array($ret) && in_array($ret[1], array(E_ERROR, E_NOTICE))) {
+            $rcode = '415 Unsupported Media Type';
+        } elseif (!$ret) {
+            $rcode = '406 Not Acceptable';
+        } else {
+            $rcode = '200 OK';
+        }
+
+        send_xml_response(array('http-status' => $rcode, 'msg' => $ret));
     }
 }
 
