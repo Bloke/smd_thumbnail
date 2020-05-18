@@ -40,7 +40,7 @@ You must define at least one profile to begin with, so click the *New profile* b
 * *Quality (%)*: The quality of the resulting thumbnail. Generally only of use for JPEG or 24-bit PNG images. The higher the value the better the quality and the bigger the file size. Default: @75@.
 * *Crop*: whether to crop the image when the thumbnail is created, or scale it to fit.
 * *Sharpen*: whether to apply a sharpening filter to the thumbnail when it is created. Useful for very small images.
-* *Active*: Enable/disable this thumbnail size so it will/won't be automatically generated when the next image is uploaded. Click the checkbox to instantly switch the profile on/off. Click the 'Active' word in the heading row to toggle the status of all profiles. Note that this setting governs how the "All sizes":#smd_thumb_create dropdown entry interacts with the _Create_ and _Delete_ buttons.
+* *Active*: Enable/disable this thumbnail size so it will/won't be automatically generated when the next image is uploaded. Click the checkbox to instantly switch the profile on/off. Click the 'Active' word in the column heading to toggle the status of _all_ active profiles. Note that the active state governs how the "All sizes":#smd_thumb_create dropdown entry interacts with the _Create_ and _Delete_ buttons.
 * *Default*: set this thumbnail profile as the default. The default image will be displayed in the 'Images' list and will also be used as the default size to be displayed using @<txp:smd_thumbnail/>@. If the option to "sync with Textpattern's thumbs":#smd_thumb_prefs is on, it will also become Textpattern's standard (built-in) thumbnail size from this point forward.
 
 Once you've configured your profile, click 'Save' to store it. You can always edit it again by clicking its name. Go ahead and create some more profiles for thumbnails of different sizes/parameters. If you wish to delete a profile, click the 'x' button and confirm. *All thumbnails associated with that profile will be deleted.*
@@ -140,7 +140,7 @@ h4. Attributes (in addition to standard txp:thumbnail tag attributes)
 : Adds the image file modification time to the end of the thumbnail's URL. Use @add_stamp="1"@ to switch this feature on. This helps prevent stale images, but may prevent browsers from cacheing the thumbnails properly, thus increasing bandwidth usage.
 : Default: @0@.
 ; @aspect="ratio"@
-: Only consider images of a particular aspect ratio. Choose from: @portrait@, @landscape@, or @square@.
+: Only consider images of a particular aspect ratio. Choose from: @portrait@, @landscape@, or @square@. Or specify your own aspect ratio width:height, e.g. @16:9@ or @4:3@.
 : Default: unset.
 ; @break="tag"@
 : HTML tag to apply between each thumbnail when iterating over them.
