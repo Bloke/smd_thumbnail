@@ -1777,6 +1777,7 @@ function smd_thumbnail($atts, $thing = null)
         unset($display);
     }
 
+    $havingClause = '';
     $thing = (empty($form)) ? $thing : fetch_form($form);
 
     if ($name) {
@@ -1812,6 +1813,14 @@ function smd_thumbnail($atts, $thing = null)
         $typeClause[] = "width > height";
     } elseif ($aspect === 'square') {
         $typeClause[] = "width = height";
+    } elseif (strpos($aspect, ':') !== false) {
+        $ratio = explode(':', $aspect);
+        $ratiow = $ratio[0];
+        $ratioh = !empty($ratio[1]) ? $ratio[1] : '';
+
+        if (is_numeric($ratiow) && is_numeric($ratioh)) {
+            $havingClause = " HAVING ratio = ROUND($ratiow/$ratioh, 2)";
+        }
     }
 
     if (empty($typeClause)) {
@@ -1826,7 +1835,7 @@ function smd_thumbnail($atts, $thing = null)
 
     if ($rs) {
         extract($rs);
-        $thumbs = safe_rows('*', SMD_THUMB, implode(' AND ', $typeClause) . $orderClause);
+        $thumbs = safe_rows('*, ROUND(width/height, 2) AS ratio', SMD_THUMB, implode(' AND ', $typeClause) . $havingClause . $orderClause);
         $outset = array();
         $force_size = do_list($force_size);
 
@@ -2145,7 +2154,7 @@ h4. Attributes (in addition to standard txp:thumbnail tag attributes)
 : Adds the image file modification time to the end of the thumbnail's URL. Use @add_stamp="1"@ to switch this feature on. This helps prevent stale images, but may prevent browsers from cacheing the thumbnails properly, thus increasing bandwidth usage.
 : Default: @0@.
 ; @aspect="ratio"@
-: Only consider images of a particular aspect ratio. Choose from: @portrait@, @landscape@, or @square@.
+: Only consider images of a particular aspect ratio. Choose from: @portrait@, @landscape@, or @square@. Or specify your own aspect ratio width:height, e.g. @16:9@ or @4:3@.
 : Default: unset.
 ; @break="tag"@
 : HTML tag to apply between each thumbnail when iterating over them.
