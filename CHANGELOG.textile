@@ -1,5 +1,21 @@
 h1. Changelog
 
+h2. 0.6.0 - 2020-05-20
+
+* For Txp 4.8.0+
+* Register plugin tags on admin side so article previews work properly.
+* Deprecate @display@ attribute in favour of @format@.
+* Alter class assignments so class is always added to img tag.
+* The @type@ attribute accepts a list of profile names, plus SMD_ALL and SMD_ACTIVE.
+* Add @break@ and @breakclass@ attributes.
+* Add @aspect@ attribute. Accepts @landscape@, @portrait@, @square@ or any custom ratio pairs, @4:3@, @16:9@, etc.
+* Add @sort@ attribute.
+* smd_thumbnail and smd_thumbnail_info tags accept core @escape@ attribute.
+* Fix column heading width/height labels.
+* Fix image counter when batch creating thumbs.
+* Reinstate hover pointer on active column heading.
+* Hook into image saves on the Write panel for compatibility with Write panel image plugins.
+
 h2. 0.5.3 - 2019-10-23
 
 * Fix unescaped @br@ tags in help (thanks, phiw13).
