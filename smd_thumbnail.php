@@ -199,6 +199,7 @@ if (txpinterface === 'admin') {
     register_callback('smd_thumb_empty', 'image_ui', 'thumbnail_image');
     register_callback('smd_thumb_empty', 'image_ui', 'thumbnail_create');
     register_callback('smd_thumb_generate', 'image_uploaded', 'image');
+    register_callback('smd_thumb_generate', 'image_uploaded', 'article');
     register_callback('smd_thumb_generate', 'image_uploaded', 'moderate');
     register_callback('smd_thumb_delete', 'image_deleted', 'image');
     register_callback('smd_thumb_create_one', 'image', 'smd_thumb_create_one');
