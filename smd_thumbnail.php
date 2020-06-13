@@ -17,7 +17,7 @@ $plugin['name'] = 'smd_thumbnail';
 // 1 = Plugin help is in raw HTML.  Not recommended.
 # $plugin['allow_html_help'] = 1;
 
-$plugin['version'] = '0.6.0';
+$plugin['version'] = '0.6.1';
 $plugin['author'] = 'Stef Dawson';
 $plugin['author_uri'] = 'https://stefdawson.com/';
 $plugin['description'] = 'Multiple image thumbnails of arbitrary dimensions';
@@ -400,7 +400,7 @@ function smd_thumb_create_one()
 
     if ($rs) {
         $ret = smd_thumb_make($rs, $curr, 1);
-dmp($ret);
+
         if (is_array($ret) && in_array($ret[1], array(E_ERROR, E_NOTICE))) {
             $rcode = '415 Unsupported Media Type';
         } elseif (!$ret) {
@@ -1779,7 +1779,6 @@ function smd_thumbnail($atts, $thing = null)
         unset($display);
     }
 
-    $havingClause = '';
     $thing = (empty($form)) ? $thing : fetch_form($form);
 
     if ($name) {
@@ -1815,13 +1814,19 @@ function smd_thumbnail($atts, $thing = null)
         $typeClause[] = "width > height";
     } elseif ($aspect === 'square') {
         $typeClause[] = "width = height";
+    } elseif (is_numeric($aspect)) {
+        $typeClause[] = "ROUND(width/height, 2) = $aspect";
     } elseif (strpos($aspect, ':') !== false) {
         $ratio = explode(':', $aspect);
         $ratiow = $ratio[0];
         $ratioh = !empty($ratio[1]) ? $ratio[1] : '';
 
         if (is_numeric($ratiow) && is_numeric($ratioh)) {
-            $havingClause = " HAVING ratio = ROUND($ratiow/$ratioh, 2)";
+            $typeClause[] = "ROUND(width/height, 2) = " . round($ratiow/$ratioh, 2);
+        } elseif (is_numeric($ratiow)) {
+            $typeClause[] = "width = $ratiow";
+        } elseif (is_numeric($ratioh)) {
+            $typeClause[] = "height = $ratioh";
         }
     }
 
@@ -1837,7 +1842,7 @@ function smd_thumbnail($atts, $thing = null)
 
     if ($rs) {
         extract($rs);
-        $thumbs = safe_rows('*, ROUND(width/height, 2) AS ratio', SMD_THUMB, implode(' AND ', $typeClause) . $havingClause . $orderClause);
+        $thumbs = safe_rows('*', SMD_THUMB, implode(' AND ', $typeClause) . $orderClause);
         $outset = array();
         $force_size = do_list($force_size);
 
@@ -2156,7 +2161,7 @@ h4. Attributes (in addition to standard txp:thumbnail tag attributes)
 : Adds the image file modification time to the end of the thumbnail's URL. Use @add_stamp="1"@ to switch this feature on. This helps prevent stale images, but may prevent browsers from cacheing the thumbnails properly, thus increasing bandwidth usage.
 : Default: @0@.
 ; @aspect="ratio"@
-: Only consider images of a particular aspect ratio. Choose from: @portrait@, @landscape@, or @square@. Or specify your own aspect ratio width:height, e.g. @16:9@ or @4:3@.
+: Only consider images of a particular aspect ratio/size. Choose from: @portrait@, @landscape@, or @square@. Or specify your own aspect ratio width:height, e.g. @16:9@ or @4:3@, or numeric ratio such as @aspect="1.33"@ or @aspect="0.8". You may also specify just a width or height, e.g. @aspect="300:"@ (only consider images that are exactly 300px wide) or @aspect=":800"@ (only consider images that are exactly 800px tall).
 : Default: unset.
 ; @break="tag"@
 : HTML tag to apply between each thumbnail when iterating over them.
