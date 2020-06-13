@@ -1,5 +1,9 @@
 h1. Changelog
 
+h2. 0.6.1 - 2020-06-14
+
+* Permit @aspect@ attribute to match exact widths/heights and decimal aspects.
+
 h2. 0.6.0 - 2020-05-20
 
 * For Txp 4.8.0+

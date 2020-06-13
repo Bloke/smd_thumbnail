@@ -1,7 +1,7 @@
 {
   "name": "bloke/smd_thumbnail",
   "description": "Multiple image thumbnails of arbitrary dimensions within Textpattern CMS",
-  "keywords": ["textpattern", "plugin", "images", "src-set"],
+  "keywords": ["textpattern", "plugin", "images", "src-set", "multiple", "sizes"],
   "homepage": "https://github.com/bloke/smd_thumbnail",
   "license": "GPL-2.0",
   "type": "textpattern-plugin",
