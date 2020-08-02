@@ -17,7 +17,7 @@ $plugin['name'] = 'smd_thumbnail';
 // 1 = Plugin help is in raw HTML.  Not recommended.
 # $plugin['allow_html_help'] = 1;
 
-$plugin['version'] = '0.6.1';
+$plugin['version'] = '0.7.0';
 $plugin['author'] = 'Stef Dawson';
 $plugin['author_uri'] = 'https://stefdawson.com/';
 $plugin['description'] = 'Multiple image thumbnails of arbitrary dimensions';
@@ -1749,7 +1749,7 @@ function smd_thumbnail($atts, $thing = null)
 
     extract(lAtts(array(
         'add_stamp'  => 0,
-        'aspect'     => '',
+        'aspect'     => '', // Deprecated in v0.7.0: use size instead
         'break'      => '',
         'breakclass' => '',
         'class'      => '',
@@ -1766,6 +1766,7 @@ function smd_thumbnail($atts, $thing = null)
         'name'       => '',
         'poplink'    => 0, // Deprecated in v0.6.0
         'quiet'      => 0,
+        'size'       => '',
         'sort'       => 'width DESC, height DESC',
         'style'      => '',
         'type'       => get_pref('smd_thumb_default_profile', ''),
@@ -1777,6 +1778,12 @@ function smd_thumbnail($atts, $thing = null)
         trigger_error(gTxt('deprecated_attribute', array('{name}' => 'display')) . '. Use format instead.', E_USER_NOTICE);
         $format = $display;
         unset($display);
+    }
+
+    if (isset($atts['aspect'])) {
+        trigger_error(gTxt('deprecated_attribute', array('{name}' => 'aspect')) . '. Use size instead.', E_USER_NOTICE);
+        $size = $aspect;
+        unset($aspect);
     }
 
     $thing = (empty($form)) ? $thing : fetch_form($form);
@@ -1808,16 +1815,16 @@ function smd_thumbnail($atts, $thing = null)
         $typeClause[] = "name IN ('".join("','", doSlash(do_list_unique($type)))."')";
     }
 
-    if ($aspect === 'portrait') {
+    if ($size === 'portrait') {
         $typeClause[] = "height > width";
-    } elseif ($aspect === 'landscape') {
+    } elseif ($size === 'landscape') {
         $typeClause[] = "width > height";
-    } elseif ($aspect === 'square') {
+    } elseif ($size === 'square') {
         $typeClause[] = "width = height";
-    } elseif (is_numeric($aspect)) {
-        $typeClause[] = "ROUND(width/height, 2) = $aspect";
-    } elseif (strpos($aspect, ':') !== false) {
-        $ratio = explode(':', $aspect);
+    } elseif (is_numeric($size)) {
+        $typeClause[] = "ROUND(width/height, 2) = $size";
+    } elseif (strpos($size, ':') !== false) {
+        $ratio = explode(':', $size);
         $ratiow = $ratio[0];
         $ratioh = !empty($ratio[1]) ? $ratio[1] : '';
 
@@ -2160,8 +2167,8 @@ h4. Attributes (in addition to standard txp:thumbnail tag attributes)
 ; @add_stamp="boolean"@
 : Adds the image file modification time to the end of the thumbnail's URL. Use @add_stamp="1"@ to switch this feature on. This helps prevent stale images, but may prevent browsers from cacheing the thumbnails properly, thus increasing bandwidth usage.
 : Default: @0@.
-; @aspect="ratio"@
-: Only consider images of a particular aspect ratio/size. Choose from: @portrait@, @landscape@, or @square@. Or specify your own aspect ratio width:height, e.g. @16:9@ or @4:3@, or numeric ratio such as @aspect="1.33"@ or @aspect="0.8". You may also specify just a width or height, e.g. @aspect="300:"@ (only consider images that are exactly 300px wide) or @aspect=":800"@ (only consider images that are exactly 800px tall).
+; @size="ratio"@
+: Only consider images of a particular aspect ratio/size. Choose from: @portrait@, @landscape@, or @square@. Or specify your own aspect ratio width:height, e.g. @16:9@ or @4:3@, or numeric ratio such as @size="1.33"@ or @size="0.8". You may also specify just a width or height, e.g. @size="300:"@ (only consider images that are exactly 300px wide) or @size=":800"@ (only consider images that are exactly 800px tall).
 : Default: unset.
 ; @break="tag"@
 : HTML tag to apply between each thumbnail when iterating over them.

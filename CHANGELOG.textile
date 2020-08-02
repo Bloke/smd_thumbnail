@@ -1,5 +1,9 @@
 h1. Changelog
 
+h2. 0.7.0 - 2020-xx-yy
+
+* Replace @aspect@ with @size@ attribute (for commonality with Textpattern core 4.8.2).
+
 h2. 0.6.1 - 2020-06-14
 
 * Permit @aspect@ attribute to match exact widths/heights and decimal aspects.

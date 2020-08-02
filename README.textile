@@ -139,8 +139,8 @@ h4. Attributes (in addition to standard txp:thumbnail tag attributes)
 ; @add_stamp="boolean"@
 : Adds the image file modification time to the end of the thumbnail's URL. Use @add_stamp="1"@ to switch this feature on. This helps prevent stale images, but may prevent browsers from cacheing the thumbnails properly, thus increasing bandwidth usage.
 : Default: @0@.
-; @aspect="ratio"@
-: Only consider images of a particular aspect ratio/size. Choose from: @portrait@, @landscape@, or @square@. Or specify your own aspect ratio width:height, e.g. @16:9@ or @4:3@, or numeric ratio such as @aspect="1.33"@ or @aspect="0.8". You may also specify just a width or height, e.g. @aspect="300:"@ (only consider images that are exactly 300px wide) or @aspect=":800"@ (only consider images that are exactly 800px tall).
+; @size="ratio"@
+: Only consider images of a particular aspect ratio/size. Choose from: @portrait@, @landscape@, or @square@. Or specify your own aspect ratio width:height, e.g. @16:9@ or @4:3@, or numeric ratio such as @size="1.33"@ or @size="0.8". You may also specify just a width or height, e.g. @size="300:"@ (only consider images that are exactly 300px wide) or @size=":800"@ (only consider images that are exactly 800px tall).
 : Default: unset.
 ; @break="tag"@
 : HTML tag to apply between each thumbnail when iterating over them.

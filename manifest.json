@@ -1,7 +1,7 @@
 {
   "name": "smd_thumbnail",
   "description": "Multiple image thumbnails of arbitrary dimensions",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "type": 5,
   "author": "Stef Dawson",
   "author_uri": "https://stefdawson.com/",
