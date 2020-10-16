@@ -1007,7 +1007,7 @@ function smd_thumb_img($row, $currimg, $meta = array(), $dsp = '')
 
         foreach ($meta as $key => $val) {
             // We need all atts for container tags, but only valid HTML atts should appear in the default <img> tag.
-            if (in_array($key, array('alt', 'class', 'title')) || strpos($key, 'data-') === 0) {
+            if (in_array($key, array('alt', 'class', 'title', 'loading')) || strpos($key, 'data-') === 0) {
                 $extras .= ' '.$key.'="'.$val.'"';
             }
         }
@@ -1745,7 +1745,7 @@ function smd_thumbnail_save_pane_state()
  */
 function smd_thumbnail($atts, $thing = null)
 {
-    global $thisimage, $img_dir;
+    global $thisimage, $img_dir, $doctype;
 
     extract(lAtts(array(
         'add_stamp'  => 0,
@@ -1763,6 +1763,7 @@ function smd_thumbnail($atts, $thing = null)
         'id'         => '',
         'link'       => '',
         'link_rel'   => '',
+        'loading'    => null,
         'name'       => '',
         'poplink'    => 0, // Deprecated in v0.6.0
         'quiet'      => 0,
@@ -1915,6 +1916,10 @@ function smd_thumbnail($atts, $thing = null)
 
                 if ($html_id && !$wraptag) {
                     $meta['id'] = $html_id;
+                }
+
+                if ($loading && $doctype == 'html5' && in_array($loading, array('auto', 'eager', 'lazy'))) {
+                    $meta['loading'] = $loading;
                 }
 
                 if ($class && !$wraptag) {
