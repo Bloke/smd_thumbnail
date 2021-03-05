@@ -1022,6 +1022,8 @@ function smd_thumb_img($row, $currimg, $meta = array(), $dsp = '')
             $smd_thumb_data['h'] = $row['height'];
             $smd_thumb_data['html_w'] = $w;
             $smd_thumb_data['html_h'] = $h;
+            $smd_thumb_data['baseurl'] = dirname($meta['url']).'/'.basename($meta['url'], $ext);
+            $smd_thumb_data['basename'] = (!empty($meta['name']) ? basename($meta['name'], $ext) : '');
             return parse($dsp);
         } else {
             return '<img src="'.ihu.$img_dir.'/'.$dir.'/'.$id.$ext.$uDate.'"'.$w.$h.$extras.'>';
