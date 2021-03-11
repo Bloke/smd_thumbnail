@@ -713,15 +713,23 @@ function smd_thumb_insert()
     list($w, $h, $extension) = getimagesize($file);
 
     $valid_exts = array(
-        IMAGETYPE_GIF  => '.gif',
-        IMAGETYPE_JPEG => '.jpg',
-        IMAGETYPE_PNG  => '.png',
+        '.gif'  => IMAGETYPE_GIF,
+        '.jpg'  => IMAGETYPE_JPEG,
+        '.jpeg' => IMAGETYPE_JPEG,
+        '.png'  => IMAGETYPE_PNG,
     );
 
-    $ext = isset($valid_exts[$extension]) ? $valid_exts[$extension] : '';
+    $gd_info = gd_info();
+
+    if (isset($gd_info['WebP Support']) && $gd_info['WebP Support']) {
+        $valid_exts['.webp'] = IMAGETYPE_WEBP;
+    }
+
+    $ext = (string) array_search($extension, $valid_exts);
 
     if (($file !== false) && $profile && $ext) {
         $newpath = IMPATH . sanitizeForUrl($profile) . DS . $id . $ext;
+
         if (shift_uploaded_file($file, $newpath) === false) {
             // Failed: do nothing.
         } else {
@@ -737,7 +745,7 @@ function smd_thumb_insert()
                 }
             }
 
-            $message = gTxt('image_uploaded', array('{name}' => $name));
+//            $message = gTxt('image_uploaded', array('{name}' => $name));
         }
     }
 
@@ -756,7 +764,7 @@ function smd_thumb_insert()
     $url = html_entity_decode(join_qs($urlPieces));
 
     echo <<<EOS
-<script type="text/javascript">
+<script>
 window.location.href="{$url}";
 </script>
 <noscript>
