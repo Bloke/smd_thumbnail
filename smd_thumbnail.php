@@ -55,7 +55,8 @@ $plugin['flags'] = '2';
 // abc_string_name => Localized String
 
 $plugin['textpack'] = <<<EOT
-#@smd_thumb
+#@owner smd_thumb
+#@image
 #@language en, en-gb, en-us
 smd_thumb_actions => Actions
 smd_thumb_all_sizes => All sizes
