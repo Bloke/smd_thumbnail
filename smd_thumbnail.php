@@ -722,8 +722,12 @@ function smd_thumb_insert()
 
     $gd_info = gd_info();
 
-    if (isset($gd_info['WebP Support']) && $gd_info['WebP Support']) {
+    if (!empty($gd_info['WebP Support'])) {
         $valid_exts['.webp'] = IMAGETYPE_WEBP;
+    }
+
+    if (!empty($gd_info['AVIF Support'])) {
+        $valid_exts['.avif'] = IMAGETYPE_AVIF;
     }
 
     $ext = (string) array_search($extension, $valid_exts);
