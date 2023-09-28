@@ -255,7 +255,13 @@ function smd_thumb_inject_css($evt, $stp)
 
     if ($event === 'image') {
         $smd_thumb_styles = smd_thumb_get_style_rules();
-        echo '<style type="text/css">', $smd_thumb_styles['smd_thumb'], '</style>';
+        $content = $smd_thumb_styles['smd_thumb'];
+
+        if (class_exists('\Textpattern\UI\Style')) {
+            echo Txp::get('\Textpattern\UI\Style')->setContent($content);
+        } else {
+            echo '<style>' . $content . '</style>';
+        }
     }
 
     return;
