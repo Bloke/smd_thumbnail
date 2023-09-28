@@ -367,31 +367,32 @@ function smd_thumb_create_group($type, $lst = '')
     $images = safe_column('id', 'txp_image', $where);
     $count = count($images);
 
-    echo <<<EOJS
-<script>
+    $scriptout = <<<EOJS
 var bctr = 0; var btot = {$count};
 jQuery(function() {
     jQuery("#smd_thumb_btot").text("/{$count}");
 EOJS;
 
     foreach ($images as $img) {
-        echo <<<EOJS
-    sendAsyncEvent(
-    {
-        event: textpattern.event,
-        step: 'smd_thumb_create_one',
-        smd_thumb_imgid: {$img}
-    }, smd_create_group_feedback);
+        $scriptout .= <<<EOJS
+sendAsyncEvent(
+{
+    event: textpattern.event,
+    step: 'smd_thumb_create_one',
+    smd_thumb_imgid: {$img}
+}, smd_create_group_feedback);
 EOJS;
     }
-    echo '});';
-    echo <<<EOJS
+
+    $scriptout .= <<<EOJS
+});
 function smd_create_group_feedback() {
     bctr++;
     jQuery('#smd_thumb_bcurr').text(bctr);
 }
 EOJS;
-    echo '</script>';
+
+    echo script_js($scriptout);
 }
 
 /**
@@ -773,15 +774,17 @@ function smd_thumb_insert()
     );
 
     $url = html_entity_decode(join_qs($urlPieces));
+    $scriptout = 'window.location.href="{' . $url . '}";';
+    $noscriptout = '<meta http-equiv="refresh" content="0;url={' . $url . '}" />';
 
-    echo <<<EOS
-<script>
-window.location.href="{$url}";
-</script>
-<noscript>
-<meta http-equiv="refresh" content="0;url={$url}" />
-</noscript>
-EOS;
+    if (class_exists('\Textpattern\UI\Script')) {
+        echo Txp::get('\Textpattern\UI\Script')->setContent($scriptout)
+            ->setNoscript($noscriptout);
+    } else {
+        echo '<script>' . $scriptout . '</script>'.
+            n.'<noscript>' . $noscriptout . '</noscript>';
+    }
+
     exit;
 }
 
@@ -846,7 +849,7 @@ function smd_thumb_edit($evt, $stp, $dflt, $currimg)
     echo script_js(<<<EOC
 function smd_thumb_selector(sel) {
     var idx = 0;
-console.log(sel);
+
     jQuery("#smd_thumbs img").each(function() {
         if (jQuery(this).hasClass(sel)) {
             jQuery(this).toggleClass('smd_selected active');
