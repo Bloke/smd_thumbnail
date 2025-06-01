@@ -774,8 +774,8 @@ function smd_thumb_insert()
     );
 
     $url = html_entity_decode(join_qs($urlPieces));
-    $scriptout = 'window.location.href="{' . $url . '}";';
-    $noscriptout = '<meta http-equiv="refresh" content="0;url={' . $url . '}" />';
+    $scriptout = 'window.location.href="' . $url . '";';
+    $noscriptout = '<meta http-equiv="refresh" content="0;url=' . $url . '" />';
 
     if (class_exists('\Textpattern\UI\Script')) {
         echo Txp::get('\Textpattern\UI\Script')->setContent($scriptout)
